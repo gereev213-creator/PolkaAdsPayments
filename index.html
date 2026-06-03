@@ -2,929 +2,538 @@
 <html lang="ru">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-<title>Полка — Объявление</title>
-<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Полка Удмуртия</title>
+<script src="https://unpkg.com/@vkontakte/vk-bridge/dist/browser.min.js"></script>
 <style>
-:root{--or:#FF4D12;--or2:#FF6835;--or-bg:#FFF3EE;--or-bd:#FFCDB7;--tx:#1A1A1A;--sub:#6B7280;--bd:#E5E7EB;--bg:#F4F4F4;--w:#FFF;--gr:#22C55E;--r:14px}
-*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
-html,body{height:100%;overflow-x:hidden}
-body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text','Segoe UI',sans-serif;background:var(--bg);color:var(--tx);min-height:100vh}
+  :root {
+    --accent: #4C7EFF;
+    --accent2: #5C8EFF;
+    --bg: #f2f3f5;
+    --card: #ffffff;
+    --text: #1c1c1e;
+    --sub: #6c757d;
+    --border: #e8eaed;
+    --danger: #e64646;
+    --green: #4BB34B;
+    --radius: 14px;
+    --safe-top: env(safe-area-inset-top, 0px);
+    --safe-bot: env(safe-area-inset-bottom, 0px);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+  body { font-family: -apple-system, 'SF Pro Text', Roboto, sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
 
-/* HEADER */
-.hdr{background:var(--w);padding:12px 16px 8px;border-bottom:1px solid var(--bd);position:sticky;top:0;z-index:100;box-shadow:0 1px 8px rgba(0,0,0,.04)}
-.hdr-r{display:flex;align-items:center;gap:10px;margin-bottom:8px}
-.logo img{height:20px;display:block}
-.logo-fb{font-size:16px;font-weight:900;display:none;letter-spacing:-.5px}
-.slbl{margin-left:auto;font-size:11px;font-weight:700;color:var(--sub)}
-.prog{height:2.5px;background:#EBEBEB;border-radius:99px;overflow:hidden}
-.pf{height:100%;background:linear-gradient(90deg,var(--or),var(--or2));border-radius:99px;transition:width .38s cubic-bezier(.4,0,.2,1)}
+  /* NAV */
+  .nav { position: sticky; top: 0; z-index: 100; background: var(--card); border-bottom: 1px solid var(--border); padding: calc(var(--safe-top) + 10px) 16px 10px; display: flex; align-items: center; gap: 10px; }
+  .nav-back { width: 36px; height: 36px; border: none; background: var(--bg); border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; }
+  .nav-title { font-size: 17px; font-weight: 600; flex: 1; }
+  .nav-logo { font-size: 17px; font-weight: 700; color: var(--accent); }
 
-/* CONTENT */
-.cnt{padding:18px 16px 86px;max-width:480px;margin:0 auto}
+  /* TABS */
+  .tabs { display: flex; background: var(--card); border-bottom: 1px solid var(--border); }
+  .tab { flex: 1; padding: 12px 4px; text-align: center; font-size: 12px; font-weight: 500; color: var(--sub); border: none; background: none; cursor: pointer; border-bottom: 2px solid transparent; transition: color .15s; }
+  .tab.active { color: var(--accent); border-bottom-color: var(--accent); }
 
-/* SCREENS */
-.scr{display:none;animation:fu .2s ease}
-.scr.active{display:block}
-@keyframes fu{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
-.st{font-size:20px;font-weight:800;line-height:1.25;margin-bottom:4px}
-.ss{font-size:13px;color:var(--sub);line-height:1.5;margin-bottom:16px}
-.ss em{color:var(--or);font-style:normal}
+  /* SEARCH BAR */
+  .search-bar { padding: 10px 12px; background: var(--card); border-bottom: 1px solid var(--border); display: flex; gap: 8px; }
+  .search-input { flex: 1; border: 1.5px solid var(--border); border-radius: 10px; padding: 9px 12px; font-size: 15px; outline: none; background: var(--bg); transition: border-color .15s; }
+  .search-input:focus { border-color: var(--accent); }
+  .btn-icon { width: 40px; height: 40px; border: none; border-radius: 10px; background: var(--accent); color: #fff; font-size: 18px; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
 
-/* SVG helper */
-svg.i{fill:none;stroke:currentColor;stroke-width:1.85;stroke-linecap:round;stroke-linejoin:round}
+  /* FILTERS */
+  .filters { padding: 8px 12px; display: flex; gap: 8px; overflow-x: auto; background: var(--card); border-bottom: 1px solid var(--border); scrollbar-width: none; }
+  .filters::-webkit-scrollbar { display: none; }
+  .filter-chip { white-space: nowrap; border: 1.5px solid var(--border); border-radius: 20px; padding: 5px 12px; font-size: 13px; cursor: pointer; background: var(--bg); color: var(--text); flex-shrink: 0; transition: all .15s; }
+  .filter-chip.active { background: var(--accent); color: #fff; border-color: var(--accent); }
 
-/* CATEGORY GRID */
-.cg{display:grid;grid-template-columns:1fr 1fr;gap:9px}
-.cb{background:var(--w);border:2px solid var(--bd);border-radius:var(--r);padding:13px 11px;cursor:pointer;text-align:left;transition:border-color .15s,background .15s;-webkit-appearance:none}
-.cb:active{transform:scale(.97)}
-.cb.s{border-color:var(--or);background:var(--or-bg)}
+  /* CARDS */
+  .feed { padding: 10px 12px; display: flex; flex-direction: column; gap: 10px; }
+  .card { background: var(--card); border-radius: var(--radius); overflow: hidden; cursor: pointer; transition: transform .1s; box-shadow: 0 1px 4px rgba(0,0,0,.06); }
+  .card:active { transform: scale(.98); }
+  .card-img { width: 100%; height: 180px; object-fit: cover; background: var(--bg); }
+  .card-img-placeholder { width: 100%; height: 140px; background: var(--bg); display: flex; align-items: center; justify-content: center; font-size: 40px; color: #ccc; }
+  .card-body { padding: 12px; }
+  .card-title { font-size: 15px; font-weight: 600; margin-bottom: 4px; }
+  .card-price { font-size: 18px; font-weight: 700; color: var(--accent); margin-bottom: 6px; }
+  .card-meta { font-size: 12px; color: var(--sub); display: flex; gap: 10px; flex-wrap: wrap; }
+  .badge { display: inline-block; padding: 2px 7px; border-radius: 6px; font-size: 11px; font-weight: 600; }
+  .badge-new { background: #e8f5e9; color: #2e7d32; }
+  .badge-used { background: #fff3e0; color: #e65100; }
 
-.cn{font-size:13px;font-weight:700;color:var(--tx)}
-.cb.s .cn{color:var(--or)}
+  /* AD DETAIL */
+  .detail-photos { position: relative; }
+  .detail-photo { width: 100%; max-height: 320px; object-fit: cover; }
+  .photo-counter { position: absolute; bottom: 10px; right: 12px; background: rgba(0,0,0,.5); color: #fff; font-size: 12px; padding: 3px 8px; border-radius: 10px; }
+  .detail-body { padding: 14px 16px; }
+  .detail-title { font-size: 20px; font-weight: 700; margin-bottom: 6px; }
+  .detail-price { font-size: 26px; font-weight: 800; color: var(--accent); margin-bottom: 12px; }
+  .detail-section { margin-bottom: 14px; }
+  .detail-section-title { font-size: 12px; font-weight: 600; color: var(--sub); text-transform: uppercase; letter-spacing: .5px; margin-bottom: 6px; }
+  .detail-row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid var(--border); font-size: 14px; }
+  .detail-row:last-child { border-bottom: none; }
+  .detail-row-label { color: var(--sub); }
+  .detail-desc { font-size: 15px; line-height: 1.5; white-space: pre-wrap; }
+  .map-link { display: block; margin-top: 6px; color: var(--accent); font-size: 14px; text-decoration: none; }
+  .seller-card { display: flex; align-items: center; gap: 12px; padding: 12px; background: var(--bg); border-radius: 10px; cursor: pointer; }
+  .seller-avatar { width: 44px; height: 44px; border-radius: 50%; background: var(--accent); color: #fff; font-size: 18px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .seller-name { font-size: 15px; font-weight: 600; }
+  .seller-sub { font-size: 12px; color: var(--sub); margin-top: 2px; }
+  .stars { color: #f9a825; }
 
-/* CHOICES */
-.ch-l{display:flex;flex-direction:column;gap:9px}
-.ch{background:var(--w);border:2px solid var(--bd);border-radius:var(--r);padding:14px 15px;cursor:pointer;display:flex;align-items:center;gap:12px;transition:all .15s;-webkit-appearance:none}
-.ch:active{transform:scale(.98)}
-.ch.s{border-color:var(--or);background:var(--or-bg)}
+  /* ACTIONS */
+  .action-bar { position: sticky; bottom: 0; padding: 10px 12px calc(var(--safe-bot) + 10px); background: var(--card); border-top: 1px solid var(--border); display: flex; gap: 10px; }
+  .btn { flex: 1; padding: 13px; border: none; border-radius: 12px; font-size: 15px; font-weight: 600; cursor: pointer; transition: opacity .15s; }
+  .btn:active { opacity: .8; }
+  .btn-primary { background: var(--accent); color: #fff; }
+  .btn-secondary { background: var(--bg); color: var(--text); border: 1.5px solid var(--border); }
+  .btn-fav { width: 50px; flex: none; font-size: 22px; background: var(--bg); border: 1.5px solid var(--border); border-radius: 12px; }
+  .btn-fav.active { color: var(--danger); border-color: var(--danger); }
 
-.cht{font-size:14px;font-weight:700}
-.chs{font-size:11px;color:var(--sub);margin-top:2px;line-height:1.4}
-.ch.s .cht{color:var(--or)}
+  /* MISC */
+  .empty { text-align: center; padding: 60px 20px; color: var(--sub); }
+  .empty-icon { font-size: 48px; margin-bottom: 12px; }
+  .empty-text { font-size: 16px; font-weight: 500; }
+  .empty-sub { font-size: 14px; margin-top: 6px; }
+  .loader { text-align: center; padding: 40px; color: var(--sub); }
+  .spinner { width: 32px; height: 32px; border: 3px solid var(--border); border-top-color: var(--accent); border-radius: 50%; animation: spin .7s linear infinite; margin: 0 auto 12px; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .toast { position: fixed; bottom: calc(var(--safe-bot) + 80px); left: 50%; transform: translateX(-50%); background: #1c1c1e; color: #fff; padding: 10px 18px; border-radius: 20px; font-size: 14px; z-index: 999; opacity: 0; transition: opacity .2s; pointer-events: none; white-space: nowrap; }
+  .toast.show { opacity: 1; }
+  .sort-bar { display: flex; gap: 6px; padding: 8px 12px; overflow-x: auto; scrollbar-width: none; }
+  .sort-bar::-webkit-scrollbar { display: none; }
+  .sort-chip { white-space: nowrap; border: 1.5px solid var(--border); border-radius: 20px; padding: 4px 10px; font-size: 12px; cursor: pointer; background: var(--bg); transition: all .15s; flex-shrink: 0; }
+  .sort-chip.active { background: var(--text); color: #fff; border-color: var(--text); }
+  .dot { color: var(--sub); }
+  .page-btns { display: flex; justify-content: center; gap: 10px; padding: 12px; }
+  .page-btn { padding: 8px 18px; border: 1.5px solid var(--border); border-radius: 10px; background: var(--card); font-size: 14px; cursor: pointer; }
+  .page-btn:disabled { opacity: .4; cursor: not-allowed; }
 
-/* CHIPS */
-.chips{display:flex;flex-wrap:wrap;gap:7px}
-.chip{background:var(--w);border:2px solid var(--bd);border-radius:99px;padding:8px 15px;font-size:13px;font-weight:600;cursor:pointer;transition:all .15s;-webkit-appearance:none;color:var(--tx)}
-.chip:active{transform:scale(.95)}
-.chip.s{border-color:var(--or);background:var(--or);color:#fff}
-.chip.sk{border-style:dashed;color:var(--sub);font-weight:500}
-.chip.sk.s{border-color:var(--sub);background:#F0F0F0;color:var(--sub)}
-
-/* GENDER chips before size (big, styled) */
-.gnd-chips{display:grid;grid-template-columns:1fr 1fr;gap:9px}
-.gnd-btn{background:var(--w);border:2px solid var(--bd);border-radius:var(--r);padding:14px 11px;cursor:pointer;text-align:center;transition:all .15s;-webkit-appearance:none}
-.gnd-btn.s{border-color:var(--or);background:var(--or-bg)}
-
-.gnd-nm{font-size:13px;font-weight:700;color:var(--tx)}
-.gnd-btn.s .gnd-nm{color:var(--or)}
-.gnd-sub{font-size:11px;color:var(--sub);margin-top:2px}
-
-/* CITY */
-.pop-lbl{font-size:10px;font-weight:800;color:var(--sub);text-transform:uppercase;letter-spacing:.5px;margin-bottom:7px}
-.pop-g{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px}
-.pb{background:var(--w);border:2px solid var(--bd);border-radius:99px;padding:7px 13px;font-size:13px;font-weight:600;cursor:pointer;-webkit-appearance:none;color:var(--tx);transition:all .15s}
-.pb:active{transform:scale(.95)}
-.pb.s{border-color:var(--or);background:var(--or);color:#fff}
-.city-wr{position:relative;margin-bottom:4px}
-.city-in{width:100%;padding:12px 38px 12px 14px;border:2px solid var(--bd);border-radius:var(--r);font-size:15px;color:var(--tx);background:var(--w);outline:none;font-family:inherit;-webkit-appearance:none;transition:border-color .2s}
-.city-in:focus{border-color:var(--or)}
-.city-sic{position:absolute;right:13px;top:50%;transform:translateY(-50%);color:var(--sub);pointer-events:none}
-.city-dd{background:var(--w);border:2px solid var(--or-bd);border-radius:var(--r);overflow-y:auto;max-height:195px;display:none;box-shadow:0 8px 20px rgba(0,0,0,.09)}
-.city-dd.op{display:block}
-.co{padding:11px 14px;font-size:13px;font-weight:600;cursor:pointer;border-bottom:1px solid var(--bd);display:flex;align-items:center;gap:8px;transition:background .1s}
-.co:last-child{border-bottom:none}
-.co:active{background:var(--or-bg);color:var(--or)}
-.co-pin{color:var(--sub);flex-shrink:0}
-.co.hc .co-pin{color:var(--or)}
-.city-sel{display:flex;align-items:center;gap:8px;background:var(--or-bg);border:2px solid var(--or);border-radius:var(--r);padding:11px 14px;font-size:14px;font-weight:700;color:var(--or);margin-bottom:8px}
-.city-clr{margin-left:auto;cursor:pointer;color:var(--sub);font-size:20px;font-weight:300;line-height:1}
-
-/* DELIVERY */
-.dg{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-.db{background:var(--w);border:2px solid var(--bd);border-radius:10px;padding:11px 9px;font-size:13px;font-weight:600;cursor:pointer;text-align:center;transition:all .15s;position:relative;-webkit-appearance:none;color:var(--tx)}
-.db:active{transform:scale(.96)}
-.db.s{border-color:var(--or);background:var(--or-bg);color:var(--or)}
-.db.s::after{content:'✓';position:absolute;top:4px;right:6px;font-size:10px;color:var(--or);font-weight:900}
-.dbadge{display:inline-block;background:var(--or);color:#fff;border-radius:99px;font-size:10px;font-weight:800;padding:1px 7px;margin-left:4px;vertical-align:middle}
-
-/* FIELDS */
-.fld{margin-bottom:13px}
-.lb{font-size:10px;font-weight:800;color:var(--sub);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px;display:block}
-input[type=text],input[type=number],textarea{width:100%;padding:12px 14px;border:2px solid var(--bd);border-radius:var(--r);font-size:15px;color:var(--tx);background:var(--w);outline:none;transition:border-color .2s;font-family:inherit;-webkit-appearance:none}
-input:focus,textarea:focus{border-color:var(--or)}
-textarea{resize:none;min-height:100px}
-.pwr{position:relative}
-.ps{position:absolute;right:14px;top:50%;transform:translateY(-50%);font-size:17px;font-weight:700;color:var(--sub);pointer-events:none}
-input.pi{padding-right:32px}
-.cc{font-size:11px;color:var(--sub);text-align:right;margin-top:3px}
-
-/* AI IMPROVE */
-.ai-row{display:flex;gap:8px;margin-top:8px}
-.ai-btn{display:flex;align-items:center;gap:6px;background:var(--or-bg);border:1.5px solid var(--or-bd);border-radius:10px;padding:9px 14px;font-size:13px;font-weight:700;color:var(--or);cursor:pointer;-webkit-appearance:none;transition:all .15s;flex:1;justify-content:center}
-.ai-btn:active{transform:scale(.96)}
-.ai-btn:disabled{opacity:.5;cursor:not-allowed}
-.ai-ic{font-size:15px;line-height:1}
-.ai-spin{width:14px;height:14px;border:2px solid var(--or-bd);border-top-color:var(--or);border-radius:50%;animation:spin .6s linear infinite;display:none}
-.ai-btn.loading .ai-spin{display:block}
-.ai-btn.loading .ai-ic{display:none}
-.ai-msg{font-size:12px;color:var(--sub);margin-top:6px;display:none}
-.ai-msg.on{display:block}
-.ai-accept{background:var(--gr);color:#fff;border-color:var(--gr)}
-.edit-btn{width:100%;margin-top:14px;padding:13px;background:var(--bg);border:2px solid var(--bd);border-radius:var(--r);font-size:14px;font-weight:700;color:var(--sub);cursor:pointer;-webkit-appearance:none;transition:all .15s}
-.edit-btn:active{background:var(--bd)}
-
-/* PHOTOS */
-.ph-lmt{display:inline-flex;align-items:center;gap:5px;background:var(--w);border:1px solid var(--or-bd);border-radius:99px;padding:4px 11px;font-size:11px;font-weight:700;color:var(--or);margin-bottom:11px}
-.ph-zone{border:2px dashed var(--or-bd);border-radius:var(--r);background:var(--or-bg);padding:13px}
-.ph-zone-lbl{display:flex;align-items:center;gap:10px;cursor:pointer;margin-bottom:11px}
-.ph-zone-ic{width:40px;height:40px;border-radius:9px;background:var(--or);display:flex;align-items:center;justify-content:center;flex-shrink:0;color:#fff;font-size:24px;font-weight:300;line-height:1}
-.ph-zone-t{font-size:13px;font-weight:700;color:var(--or)}
-.ph-zone-s{font-size:11px;color:var(--sub);margin-top:2px}
-.ph-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
-.pht{position:relative;aspect-ratio:1;border-radius:9px;overflow:hidden;background:#DDD}
-.pht img{width:100%;height:100%;object-fit:cover}
-.phdel{position:absolute;top:4px;right:4px;width:20px;height:20px;background:rgba(0,0,0,.52);border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;color:#fff;font-size:12px;font-weight:700;line-height:1}
-.phup{position:absolute;inset:0;background:rgba(255,255,255,.72);display:flex;align-items:center;justify-content:center}
-.phsp{width:22px;height:22px;border:2px solid var(--bd);border-top-color:var(--or);border-radius:50%;animation:spin .6s linear infinite}
-.ph-add{border:2px dashed var(--or-bd);border-radius:9px;aspect-ratio:1;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;color:var(--or);background:rgba(255,77,18,.04);gap:3px;font-size:10px;font-weight:700}
-input[type=file]{display:none}
-
-
-
-/* PREVIEW — стиль канала бота */
-.prev-wrap{background:var(--w);border-radius:var(--r);border:1px solid var(--bd);overflow:hidden;box-shadow:0 2px 14px rgba(0,0,0,.06)}
-.prev-body{padding:14px 16px 16px}
-.prev-legit{display:inline-flex;align-items:center;background:linear-gradient(135deg,#FFB800,#FF6B00);color:#fff;border-radius:99px;padding:3px 11px;font-size:11px;font-weight:800;margin-bottom:9px}
-.prev-title{font-size:16px;font-weight:800;line-height:1.35;margin-bottom:8px;color:var(--tx)}
-.prev-desc{font-size:13px;color:var(--sub);line-height:1.5;margin-bottom:10px;white-space:pre-wrap}
-.prev-price{font-size:15px;font-weight:800;color:var(--tx);margin-bottom:6px}
-.prev-row{font-size:13px;color:var(--tx);margin-bottom:3px;line-height:1.4}
-.pph{display:flex;gap:5px;padding:10px 16px 0;overflow-x:auto}
-.pphoto{width:80px;height:80px;border-radius:8px;object-fit:cover;flex-shrink:0}
-
-/* SHIMMER ANIMATIONS */
-@keyframes shimmer{0%{background-position:200% center}100%{background-position:-200% center}}
-@keyframes pulse-glow{0%,100%{box-shadow:0 4px 12px rgba(255,77,18,.28)}50%{box-shadow:0 4px 22px rgba(255,77,18,.55)}}
-@keyframes slide-shine{0%{transform:translateX(-100%) skewX(-15deg)}100%{transform:translateX(300%) skewX(-15deg)}}
-.bnx{flex:1;height:46px;background:linear-gradient(135deg,var(--or),var(--or2));color:#fff;border:none;border-radius:11px;font-size:15px;font-weight:800;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:5px;transition:all .13s;-webkit-appearance:none;box-shadow:0 4px 12px rgba(255,77,18,.28);position:relative;overflow:hidden;animation:pulse-glow 2.4s ease-in-out infinite}
-.bnx::after{content:'';position:absolute;top:0;left:0;width:40%;height:100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,.25),transparent);animation:slide-shine 2s ease-in-out infinite}
-.bnx:active{transform:scale(.97);animation:none}
-.bnx.sub{background:linear-gradient(135deg,#16A34A,var(--gr));box-shadow:0 4px 12px rgba(34,197,94,.28);animation:none}
-.bnx.sub::after{display:none}
-.ai-btn{display:flex;align-items:center;gap:6px;background:linear-gradient(135deg,var(--or-bg),#FFF7F4);border:1.5px solid var(--or-bd);border-radius:10px;padding:9px 14px;font-size:13px;font-weight:700;color:var(--or);cursor:pointer;-webkit-appearance:none;transition:all .15s;flex:1;justify-content:center;position:relative;overflow:hidden}
-.ai-btn::after{content:'';position:absolute;top:0;left:0;width:50%;height:100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,.5),transparent);animation:slide-shine 3s ease-in-out infinite}
-.ai-btn:active{transform:scale(.96)}
-.ai-btn:disabled{opacity:.5;cursor:not-allowed}
-.ai-btn:disabled::after{display:none}
-
-/* EDIT MENU */
-.edit-menu{position:fixed;bottom:0;left:0;right:0;z-index:400;background:var(--w);border-radius:18px 18px 0 0;padding:8px 16px 32px;box-shadow:0 -4px 24px rgba(0,0,0,.12)}
-.edit-menu-t{font-size:13px;font-weight:700;color:var(--sub);text-align:center;padding:12px 0 8px;text-transform:uppercase;letter-spacing:.5px}
-.edit-menu-row{width:100%;padding:14px 0;border:none;background:none;font-size:15px;font-weight:600;color:var(--tx);cursor:pointer;text-align:left;border-bottom:1px solid var(--bd);display:block;-webkit-appearance:none}
-.edit-menu-cancel{width:100%;padding:14px 0;border:none;background:none;font-size:15px;font-weight:600;color:#EF4444;cursor:pointer;text-align:center;margin-top:6px;display:block;-webkit-appearance:none}
-/* BOTTOM BAR */
-.bar{position:fixed;bottom:0;left:0;right:0;z-index:200;background:var(--w);border-top:1px solid var(--bd);padding:9px 16px 18px;display:flex;gap:9px}
-.bbk{flex:0 0 44px;height:46px;background:var(--bg);border:2px solid var(--bd);border-radius:11px;font-size:17px;cursor:pointer;display:flex;align-items:center;justify-content:center;-webkit-appearance:none;color:var(--tx);transition:all .13s}
-.bbk:active{transform:scale(.93)}
-.bbk:disabled{opacity:.3;pointer-events:none}
-
-/* SUCCESS */
-#sok{text-align:center;padding-top:20px}
-.ok-ic{width:72px;height:72px;background:linear-gradient(135deg,var(--gr),#16A34A);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 16px;box-shadow:0 8px 20px rgba(34,197,94,.22);font-size:32px}
-.ok-t{font-size:21px;font-weight:800;margin-bottom:7px}
-.ok-s{font-size:13px;color:var(--sub);line-height:1.65}
-
-/* LOADER */
-#gl{display:none;position:fixed;inset:0;z-index:999;background:rgba(255,255,255,.87);align-items:center;justify-content:center;flex-direction:column;gap:11px}
-#gl.on{display:flex}
-.spin{width:36px;height:36px;border:3px solid var(--bd);border-top-color:var(--or);border-radius:50%;animation:spin .7s linear infinite}
-@keyframes spin{to{transform:rotate(360deg)}}
-.lt{font-size:13px;font-weight:600;color:var(--sub)}
-
-/* ERRORS */
-.err{font-size:12px;color:#EF4444;margin-top:5px;display:none}
-.err.on{display:block}
-
-
+  /* MODAL */
+  .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,.5); z-index: 200; display: flex; align-items: flex-end; }
+  .modal-overlay.hidden { display: none; }
+  .modal { background: var(--card); border-radius: 20px 20px 0 0; width: 100%; max-height: 90vh; overflow-y: auto; padding: 20px 16px calc(var(--safe-bot) + 20px); }
+  .modal-title { font-size: 17px; font-weight: 700; margin-bottom: 16px; text-align: center; }
+  .modal-close { position: absolute; top: 14px; right: 16px; font-size: 22px; cursor: pointer; color: var(--sub); }
+  .select-opt { display: flex; align-items: center; justify-content: space-between; padding: 12px 4px; border-bottom: 1px solid var(--border); cursor: pointer; font-size: 15px; }
+  .select-opt:last-child { border-bottom: none; }
+  .select-opt.selected { color: var(--accent); font-weight: 600; }
 </style>
 </head>
 <body>
-<div id="gl"><div class="spin"></div><div class="lt" id="lt">Загружаем…</div></div>
 
-<!-- HEADER -->
-<div class="hdr">
-  <div class="hdr-r">
-    <div class="logo">
-      <img src="data:image/png;base64,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" alt="Полка">
-      <span id="lfb" class="logo-fb">ПОЛКА</span>
-    </div>
-    <div class="slbl" id="slbl">Шаг 1</div>
-  </div>
-  <div class="prog"><div class="pf" id="pf" style="width:9%"></div></div>
-</div>
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
 
-<div class="cnt">
-
-<!-- S1 CATEGORY -->
-<div class="scr active" id="s1">
-  <div class="st">Категория</div>
-  <div class="ss">Выберите тип вашего товара</div>
-  <div class="cg">
-    <button class="cb" data-v="Одежда" onclick="selCat(this)">
-      <div class="cn">Одежда</div></button>
-    <button class="cb" data-v="Обувь" onclick="selCat(this)">
-      <div class="cn">Обувь</div></button>
-    <button class="cb" data-v="Техника" onclick="selCat(this)">
-      <div class="cn">Техника</div></button>
-    <button class="cb" data-v="Для дома" onclick="selCat(this)">
-      <div class="cn">Для дома</div></button>
-    <button class="cb" data-v="Игры / Хобби" onclick="selCat(this)">
-      <div class="cn">Игры / Хобби</div></button>
-    <button class="cb" data-v="Книги" onclick="selCat(this)">
-      <div class="cn">Книги</div></button>
-    <button class="cb" data-v="Красота / Уход" onclick="selCat(this)">
-      <div class="cn">Красота / Уход</div></button>
-    <button class="cb" data-v="Спорт / Фитнес" onclick="selCat(this)">
-      <div class="cn">Спорт / Фитнес</div></button>
-    <button class="cb" data-v="Детские товары" onclick="selCat(this)">
-      <div class="cn">Детские товары</div></button>
-    <button class="cb" data-v="Другое" onclick="selCat(this)">
-      <div class="cn">Другое</div></button>
-  </div>
-  <div class="err" id="e-cat">Выберите категорию</div>
-</div>
-
-<!-- S2 LEGIT -->
-<div class="scr" id="s2">
-  <div class="st">Тип размещения</div>
-  <div class="ss">Категория: <em id="l-cat">—</em></div>
-  <div class="ch-l">
-    <button class="ch" data-v="0" onclick="selLeg(this)">
-      <div><div class="cht">Обычное объявление</div><div class="chs">Стандартная публикация в ленте</div></div></button>
-    <button class="ch" data-v="1" onclick="selLeg(this)">
-      <div><div class="cht">Легит — оригинальная вещь</div><div class="chs">Отдельный канал · пометка «Оригинал»</div></div></button>
-  </div>
-  <div class="err" id="e-leg">Выберите тип</div>
-</div>
-
-<!-- S3 GENDER (одежда/обувь) -->
-<div class="scr" id="s3">
-  <div class="st">Для кого?</div>
-  <div class="ss">Определяет размерную сетку и канал публикации</div>
-  <div class="gnd-chips" id="gnd-grid">
-    <button class="gnd-btn" data-v="Мужская" onclick="selGnd(this)">
-      <div class="gnd-nm">Мужская</div>
-      <div class="gnd-sub" id="gnd-sub-m">38–46</div></button>
-    <button class="gnd-btn" data-v="Женская" onclick="selGnd(this)">
-      <div class="gnd-nm">Женская</div>
-      <div class="gnd-sub" id="gnd-sub-f">35–41</div></button>
-    <button class="gnd-btn" data-v="Детская" onclick="selGnd(this)">
-      <div class="gnd-nm">Детская</div>
-      <div class="gnd-sub" id="gnd-sub-k">80–164 / 16–35</div></button>
-    <button class="gnd-btn" data-v="" onclick="selGnd(this)" style="border-style:dashed">
-      <div class="gnd-nm" style="color:var(--sub)">Пропустить</div>
-      <div class="gnd-sub">без размера</div></button>
-  </div>
-  <div class="err" id="e-gnd">Выберите аудиторию</div>
-</div>
-
-<!-- S4 TITLE -->
-<div class="scr" id="s4">
-  <div class="st">Название</div>
-  <div class="ss">Кратко и понятно — покупатель должен сразу понять что продаётся</div>
-  <div class="fld">
-    <label class="lb">Название товара</label>
-    <input type="text" id="i-t" maxlength="80" placeholder="Пример: Nike Air Max 90, размер 42" oninput="cnt('i-t','c-t',80);chkT()">
-    <div class="cc" id="c-t">0 / 80</div>
-    <div class="err" id="e-t">Минимум 3 символа</div>
+<!-- FILTER MODAL -->
+<div class="modal-overlay hidden" id="filterModal">
+  <div class="modal" style="position:relative">
+    <span class="modal-close" onclick="closeModal()">✕</span>
+    <div class="modal-title">Фильтры</div>
+    <div id="modalContent"></div>
+    <button class="btn btn-primary" style="width:100%;margin-top:14px" onclick="applyFilters()">Применить</button>
+    <button class="btn btn-secondary" style="width:100%;margin-top:8px" onclick="resetFilters()">Сбросить</button>
   </div>
 </div>
 
-<!-- S5 CONDITION -->
-<div class="scr" id="s5">
-  <div class="st">Состояние</div>
-  <div class="ss">Честные объявления продаются быстрее</div>
-  <div class="chips" id="cond-ch">
-    <!-- Filled dynamically based on category -->
-  </div>
-  <div class="err" id="e-cond">Выберите состояние</div>
-</div>
-
-<!-- S6 SIZE -->
-<div class="scr" id="s6">
-  <div class="st">Размер</div>
-  <div class="ss" id="sz-sub">Выберите из списка</div>
-  <div class="chips" id="sz-ch"></div>
-  <div id="sz-cw" style="display:none;margin-top:10px">
-    <input type="text" id="i-sz" placeholder="Введите размер" maxlength="20">
-  </div>
-  <div class="err" id="e-sz">Выберите или введите размер</div>
-</div>
-
-<!-- S7 CITY -->
-<div class="scr" id="s7">
-  <div class="st">Город</div>
-  <div class="ss">Начните вводить — покажем подсказки</div>
-  <div id="csd" style="display:none" class="city-sel">
-    <svg class="i co-pin" width="15" height="15" viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
-    <span id="csn"></span>
-    <span class="city-clr" onclick="clrCity()">×</span>
-  </div>
-  <div id="cia">
-    <div class="pop-lbl">Популярные</div>
-    <div class="pop-g" id="pg"></div>
-    <div class="city-wr">
-      <input type="text" class="city-in" id="i-city" placeholder="Поиск города…" autocomplete="off" oninput="cityS()" onfocus="cityF()">
-      <svg class="city-sic i" width="15" height="15" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
-    </div>
-    <div class="city-dd" id="cdd"></div>
-  </div>
-  <div class="err" id="e-city">Укажите город</div>
-</div>
-
-<!-- S8 DELIVERY -->
-<div class="scr" id="s8">
-  <div class="st" id="dlv-t">Доставка</div>
-  <div class="ss">Можно выбрать несколько</div>
-  <div class="dg">
-    <button class="db" data-v="СДЭК"            onclick="togD(this)">СДЭК</button>
-    <button class="db" data-v="Почта России"    onclick="togD(this)">Почта России</button>
-    <button class="db" data-v="Boxberry"        onclick="togD(this)">Boxberry</button>
-    <button class="db" data-v="DPD"             onclick="togD(this)">DPD</button>
-    <button class="db" data-v="ПЭК"             onclick="togD(this)">ПЭК</button>
-    <button class="db" data-v="КСЭ"             onclick="togD(this)">КСЭ</button>
-    <button class="db" data-v="Яндекс Доставка" onclick="togD(this)">Яндекс Доставка</button>
-    <button class="db" data-v="OZON Доставка"   onclick="togD(this)">OZON Доставка</button>
-    <button class="db" data-v="Самовывоз"       onclick="togD(this)" style="grid-column:span 2">Самовывоз</button>
-  </div>
-  <div class="fld" style="margin-top:10px">
-    <input type="text" id="i-dlv" placeholder="Другой способ (необязательно)" maxlength="50">
-  </div>
-  <div class="err" id="e-dlv">Выберите хотя бы один способ</div>
-</div>
-
-<!-- S9 PRICE + DESC -->
-<div class="scr" id="s9">
-  <div class="st">Цена и описание</div>
-  <div class="fld">
-    <label class="lb">Цена</label>
-    <div class="pwr"><input type="number" class="pi" id="i-pr" placeholder="0" min="0" oninput="chkPr()"><span class="ps">₽</span></div>
-    <div class="err" id="e-pr">Введите корректную цену</div>
-  </div>
-  <div class="fld">
-    <label class="lb">Описание <span style="font-weight:400;text-transform:none">(необязательно)</span></label>
-    <textarea id="i-desc" placeholder="Опишите товар или нажмите «Сгенерировать» — ИИ составит описание из заполненных данных" maxlength="1000" oninput="cnt('i-desc','c-d',1000)"></textarea>
-    <div class="cc" id="c-d">0 / 1000</div>
-    <div class="ai-row">
-      <button class="ai-btn" id="ai-gen-btn" onclick="generateDesc()" title="Сгенерировать описание по данным товара">
-        <span class="ai-ic">✦</span>
-        <div class="ai-spin"></div>
-        Сгенерировать
-      </button>
-      <button class="ai-btn" id="ai-btn" onclick="improveDesc()" title="Улучшить написанное описание">
-        <span class="ai-ic">↑</span>
-        <div class="ai-spin"></div>
-        Улучшить
-      </button>
-    </div>
-    <div class="ai-msg" id="ai-msg"></div>
-  </div>
-</div>
-
-<!-- S10 CONTACTS -->
-<div class="scr" id="s10">
-  <div class="st">Контакты</div>
-  <div class="ss">Как с вами связаться покупателю?</div>
-  <div class="fld">
-    <label class="lb">Телефон или Telegram</label>
-    <input type="text" id="i-con" placeholder="+7 900 123-45-67 или @username" maxlength="100" oninput="chkCon()">
-    <div class="err" id="e-con">Укажите контакт</div>
-  </div>
-</div>
-
-<!-- S11 PHOTOS -->
-<div class="scr" id="s11">
-  <div class="st">Фотографии</div>
-  <div class="ss">Объявления с фото просматривают в 5 раз чаще</div>
-  <div class="ph-lmt">
-    <svg class="i" width="13" height="13" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
-    <span id="phlmt">До 3 фото</span>
-  </div>
-  <div class="ph-zone">
-    <label class="ph-zone-lbl" for="fi" id="phl">
-      <div class="ph-zone-ic">+</div>
-      <div><div class="ph-zone-t" id="phat">Добавить фото</div><div class="ph-zone-s">Нажмите чтобы выбрать из галереи</div></div>
-    </label>
-    <div class="ph-grid" id="phg"></div>
-  </div>
-  <input type="file" id="fi" accept="image/*" multiple onchange="onFiles(this)">
-  <div class="err" id="e-ph"></div>
-
-</div>
-
-<!-- S12 PREVIEW -->
-<div class="scr" id="s12">
-  <div class="st">Предпросмотр</div>
-  <div class="ss">Так объявление увидят покупатели</div>
-  <div class="prev" id="prev"></div>
-  <button class="edit-btn" onclick="goToEdit()">Редактировать объявление</button>
-</div>
-
-<!-- SUCCESS -->
-<div class="scr" id="sok">
-  <div class="ok-ic" style="font-size:26px;font-weight:700">✓</div>
-  <div class="ok-t">Объявление отправлено!</div>
-  <div class="ok-s">Ваше объявление на модерации.<br>Обычно проверка занимает до 30 минут.<br>Мы уведомим вас о результате.</div>
-</div>
-
-</div>
-
-<!-- BAR -->
-<div id="edit-overlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:300" onclick="closeEditMenu()"></div>
-<div class="bar" id="bar">
-  <button class="bbk" id="bbk" onclick="goBack()" disabled>←</button>
-  <button class="bnx" id="bnx" onclick="goNext()">Далее →</button>
-</div>
+<!-- APP -->
+<div id="app"></div>
 
 <script>
-// ─── INIT ─────────────────────────────────────
-const tg=window.Telegram?.WebApp;
-if(tg){tg.ready();tg.expand();}
-const P=new URLSearchParams(location.search);
-const TARIFF=P.get('tariff')||'Free';
-const PLMT=parseInt(P.get('photo_limit')||'3',10);
-const BOT_URL=(P.get('bot_url')||'').replace(/\/$/,'');
+// ── CONFIG ──────────────────────────────────────────────────────────────────
+const API = "https://YOUR_API_URL";  // ← сюда вставить URL вашего сервера
+const BOT_SCREEN = "polkaudm";
 
-// ─── SIZES ────────────────────────────────────
-const SIZES={
-  clothes_male:  ['XS','S','M','L','XL','XXL','XXXL','4XL'],
-  clothes_female:['XS','S','M','L','XL','XXL','42','44','46','48','50','52'],
-  clothes_kids:  ['80','86','92','98','104','110','116','122','128','134','140','146','152','158','164'],
-  shoes_male:    ['38','39','40','41','42','43','44','45','46','47'],
-  shoes_female:  ['35','36','37','38','39','40','41','42'],
-  shoes_kids:    ['16','17','18','19','20','21','22','23','24','25','26','27','28','29','30','31','32','33','34','35'],
-};
+// ── STATE ───────────────────────────────────────────────────────────────────
+let vkUserId = 0;
+let currentScreen = "feed";
+let feedState = { ads: [], page: 0, pages: 1, loading: false, query: "", city: "", cat: "", sort: "date" };
+let favState   = { ads: [], page: 0, pages: 1, loading: false };
+let detailState = { ad: null, seller: null, rating: null, isFav: false, photoIdx: 0 };
+let filterDraft = {};
 
-// ─── CONDITIONS ───────────────────────────────
-const COND_TECH=['· Новое','Отличное','Хорошее','Удовлетворительное','На запчасти'];
-const COND_STD =['· Новое','Отличное','Хорошее','Удовлетворительное'];
-
-// ─── CITIES ───────────────────────────────────
-const CH=new Set(["Москва","Санкт-Петербург","Абакан","Анадырь","Архангельск","Астрахань","Барнаул","Белгород","Биробиджан","Брянск","Великий Новгород","Владивосток","Владикавказ","Владимир","Волгоград","Вологда","Воронеж","Горно-Алтайск","Грозный","Екатеринбург","Иваново","Ижевск","Иркутск","Йошкар-Ола","Казань","Калининград","Калуга","Кемерово","Киров","Кострома","Краснодар","Красноярск","Курган","Курск","Липецк","Магадан","Майкоп","Махачкала","Мурманск","Назрань","Нальчик","Нижний Новгород","Новосибирск","Омск","Орёл","Оренбург","Пенза","Пермь","Псков","Пятигорск","Ростов-на-Дону","Рязань","Салехард","Самара","Саратов","Смоленск","Ставрополь","Сургут","Сыктывкар","Тамбов","Тверь","Томск","Тула","Тюмень","Улан-Удэ","Ульяновск","Уфа","Хабаровск","Ханты-Мансийск","Чебоксары","Челябинск","Черкесск","Чита","Элиста","Южно-Сахалинск","Якутск","Ярославль"]);
-const AC=["Абакан","Абинск","Азов","Александров","Алексин","Альметьевск","Анадырь","Анапа","Ангарск","Апатиты","Арзамас","Армавир","Арсеньев","Артём","Архангельск","Астрахань","Ачинск","Балаково","Балашиха","Балашов","Барнаул","Батайск","Белгород","Белово","Березники","Биробиджан","Бийск","Благовещенск","Братск","Брянск","Бугульма","Бузулук","Великий Новгород","Великие Луки","Видное","Владивосток","Владикавказ","Владимир","Волгоград","Волгодонск","Волжский","Вологда","Воронеж","Воткинск","Глазов","Горно-Алтайск","Грозный","Дербент","Дзержинск","Димитровград","Долгопрудный","Домодедово","Екатеринбург","Ессентуки","Железногорск","Жуковский","Иваново","Ижевск","Иркутск","Йошкар-Ола","Казань","Калининград","Калуга","Каменск-Уральский","Каспийск","Кемерово","Кинешма","Киров","Кисловодск","Клин","Ковров","Коломна","Комсомольск-на-Амуре","Королёв","Кострома","Краснодар","Красногорск","Красноярск","Курган","Курск","Кызыл","Липецк","Лобня","Люберцы","Магадан","Магнитогорск","Майкоп","Махачкала","Миасс","Москва","Мурманск","Муром","Мытищи","Набережные Челны","Назрань","Нальчик","Нарьян-Мар","Нефтекамск","Нефтеюганск","Нижневартовск","Нижнекамск","Нижний Новгород","Нижний Тагил","Новокузнецк","Новороссийск","Новосибирск","Новочеркасск","Ногинск","Норильск","Ноябрьск","Обнинск","Одинцово","Омск","Орёл","Оренбург","Орск","Пенза","Первоуральск","Пермь","Петрозаводск","Петропавловск-Камчатский","Подольск","Псков","Пушкино","Пятигорск","Реутов","Рубцовск","Рыбинск","Рязань","Салехард","Самара","Санкт-Петербург","Саранск","Саратов","Сергиев Посад","Серпухов","Симферополь","Смоленск","Сочи","Ставрополь","Стерлитамак","Сургут","Сыктывкар","Таганрог","Тамбов","Тверь","Тобольск","Тольятти","Томск","Тула","Тюмень","Улан-Удэ","Ульяновск","Уссурийск","Уфа","Хабаровск","Ханты-Мансийск","Хасавюрт","Химки","Чебоксары","Челябинск","Черкесск","Чита","Шахты","Щёлково","Электросталь","Элиста","Энгельс","Южно-Сахалинск","Якутск","Ярославль"].sort((a,b)=>a.localeCompare(b,'ru'));
-const POP=["Москва","Санкт-Петербург","Новосибирск","Екатеринбург","Казань","Краснодар","Нижний Новгород","Уфа"];
-
-// ─── STATE ────────────────────────────────────
-const S={cat:'',legit:null,gender:null,title:'',cond:'',size:'',city:'',dlv:[],price:'',desc:'',contact:'',photoIds:[]};
-let step=1;const MAX=12;
-const pf=[];// {prev,file,id,up}
-
-// ─── STEP LOGIC ───────────────────────────────
-const nL=()=>S.cat==='Одежда'||S.cat==='Обувь';
-const nSz=()=>(S.cat==='Одежда'||S.cat==='Обувь')&&S.gender!==null&&S.gender!=='';
-function nxt(n){
-  if(n===1)return nL()?2:4;
-  if(n===2)return nL()?3:4;
-  if(n===3)return 4;
-  if(n===4)return 5;
-  if(n===5)return nSz()?6:7;
-  if(n===6)return 7;
-  if(n===7)return 8;
-  if(n===8)return 9;
-  if(n===9)return 10;
-  if(n===10)return 11;
-  if(n===11)return 12;
-  return null;
-}
-function prv(n){
-  if(n===2)return 1;
-  if(n===3)return 2;
-  if(n===4)return nL()?3:1;
-  if(n===5)return 4;
-  if(n===6)return 5;
-  if(n===7)return nSz()?6:5;
-  if(n===8)return 7;
-  if(n===9)return 8;
-  if(n===10)return 9;
-  if(n===11)return 10;
-  if(n===12)return 11;
-  return null;
-}
-function totL(){let t=MAX;if(!nL())t-=2;else if(S.gender==='')t--;return t;}
-function logS(n){
-  let v=n;
-  if(!nL()&&n>=2)v-=2;
-  else if(!nL()&&n>=4)v--;
-  return Math.max(1,v);
-}
-
-// ─── SHOW ─────────────────────────────────────
-function show(n){
-  document.querySelectorAll('.scr').forEach(s=>s.classList.remove('active'));
-  (document.getElementById('s'+n)||document.getElementById('sok'))?.classList.add('active');
-  step=n;
-  document.getElementById('pf').style.width=Math.round(n/MAX*100)+'%';
-  document.getElementById('slbl').textContent='Шаг '+logS(n)+' из '+totL();
-  document.getElementById('bbk').disabled=(n===1);
-  const nx=document.getElementById('bnx');
-  if(n===MAX){nx.textContent='✓  Отправить';nx.classList.add('sub');}
-  else{nx.textContent='Далее →';nx.classList.remove('sub');}
-  document.getElementById('bar').style.display='';
-  window.scrollTo(0,0);
-}
-
-function prepS(n){
-  if(n===2) document.getElementById('l-cat').textContent=S.cat;
-  if(n===3) updateGndSubs();
-  if(n===4) updateTitlePlaceholder();
-  if(n===5) buildCond();
-  if(n===6) buildSz();
-  if(n===7) initCity();
-  if(n===11)buildPh();
-  if(n===12)buildPrev();
-}
-
-function updateTitlePlaceholder(){
-  const ph={
-    'Одежда':'Пример: Куртка Nike зимняя, размер M',
-    'Обувь':'Пример: Кроссовки Adidas Stan Smith, 42',
-    'Техника':'Пример: iPhone 13 Pro 256GB, чёрный',
-    'Для дома':'Пример: Диван угловой, серый, 2.4м',
-    'Игры / Хобби':'Пример: PlayStation 5 + 2 джойстика',
-    'Книги':'Пример: Достоевский «Идиот», новое изд.',
-    'Красота / Уход':'Пример: Крем Lancôme, 50мл, не открывался',
-    'Спорт / Фитнес':'Пример: Велосипед горный Trek, 27.5"',
-    'Детские товары':'Пример: Коляска Bugaboo Cameleon 3',
-    'Другое':'Пример: Чемодан Samsonite, большой',
-  };
-  const inp=document.getElementById('i-t');
-  inp.placeholder=ph[S.cat]||'Кратко и понятно — что продаётся';
-}
-
-function goNext(){if(!valid(step))return;collect(step);const nx=nxt(step);if(!nx||step===MAX){submit();return;}prepS(nx);show(nx);}
-function goBack(){const pv=prv(step);if(pv)show(pv);}
-function goToEdit(){
-  // Показываем меню редактирования — выбор шага
-  const steps=[
-    {n:1,lbl:'Категория'},
-    {n:2,lbl:'Тип размещения'},
-    {n:4,lbl:'Название'},
-    {n:5,lbl:'Состояние'},
-    {n:7,lbl:'Город'},
-    {n:8,lbl:'Доставка'},
-    {n:9,lbl:'Цена и описание'},
-    {n:10,lbl:'Контакты'},
-    {n:11,lbl:'Фотографии'},
-  ].filter(s=>nxt(s.n-1)!==null||s.n===1);
-  const menu=document.getElementById('edit-menu');
-  if(!menu){
-    const m=document.createElement('div');m.id='edit-menu';m.className='edit-menu';
-    m.innerHTML='<div class="edit-menu-t">Что редактировать?</div>'+
-      steps.map(s=>`<button class="edit-menu-row" onclick="goToStep(${s.n})">${s.lbl}</button>`).join('')+
-      '<button class="edit-menu-cancel" onclick="closeEditMenu()">Отмена</button>';
-    document.body.appendChild(m);
-    document.getElementById('edit-overlay').style.display='block';
-  } else {
-    menu.style.display='block';
-    document.getElementById('edit-overlay').style.display='block';
+// ── VK BRIDGE ───────────────────────────────────────────────────────────────
+async function initVK() {
+  try {
+    await vkBridge.send("VKWebAppInit");
+    const me = await vkBridge.send("VKWebAppGetUserInfo");
+    vkUserId = me.id;
+  } catch(e) {
+    console.warn("vkBridge init:", e);
   }
 }
-function goToStep(n){closeEditMenu();prepS(n);show(n);}
-function closeEditMenu(){
-  const m=document.getElementById('edit-menu');if(m)m.style.display='none';
-  document.getElementById('edit-overlay').style.display='none';
+
+// ── ROUTER ──────────────────────────────────────────────────────────────────
+function navigate(screen, params = {}) {
+  currentScreen = screen;
+  if (screen === "feed")   renderFeed();
+  if (screen === "favs")   renderFavs();
+  if (screen === "detail") renderDetail(params.adId);
 }
 
-// ─── GENDER SUBS ──────────────────────────────
-function updateGndSubs(){
-  const isShoe=S.cat==='Обувь';
-  document.getElementById('gnd-sub-m').textContent=isShoe?'38–47':'XS–4XL';
-  document.getElementById('gnd-sub-f').textContent=isShoe?'35–42':'XS–XXL, 42–52';
-  document.getElementById('gnd-sub-k').textContent=isShoe?'16–35':'80–164';
+// ── API ─────────────────────────────────────────────────────────────────────
+async function apiFetch(path) {
+  const r = await fetch(API + path);
+  if (!r.ok) throw new Error(r.status);
+  return r.json();
 }
 
-// ─── CONDITION ────────────────────────────────
-function buildCond(){
-  const isTech=S.cat==='Техника';
-  const arr=isTech?COND_TECH:COND_STD;
-  const w=document.getElementById('cond-ch');
-  w.innerHTML='';
-  arr.forEach(v=>{
-    const b=document.createElement('button');
-    b.className='chip';b.dataset.v=v;b.textContent=v;
-    b.onclick=()=>selCh(b,'cond-ch');
-    w.appendChild(b);
+async function apiPost(path, body) {
+  const r = await fetch(API + path, {
+    method: "POST", headers: {"Content-Type":"application/json"},
+    body: JSON.stringify(body)
   });
-  const sk=document.createElement('button');
-  sk.className='chip sk';sk.dataset.v='';sk.textContent='Пропустить';
-  sk.onclick=()=>selCh(sk,'cond-ch');
-  w.appendChild(sk);
+  if (!r.ok) throw new Error(r.status);
+  return r.json();
 }
 
-// ─── SIZE CHIPS ───────────────────────────────
-function buildSz(){
-  const isShoe=S.cat==='Обувь';
-  let key='clothes_male';
-  if(isShoe){
-    if(S.gender==='Женская')key='shoes_female';
-    else if(S.gender==='Детская')key='shoes_kids';
-    else key='shoes_male';
-    document.getElementById('sz-sub').textContent='Размер обуви';
-  } else {
-    if(S.gender==='Женская')key='clothes_female';
-    else if(S.gender==='Детская')key='clothes_kids';
-    else key='clothes_male';
-    document.getElementById('sz-sub').textContent='Размер одежды';
-  }
-  const sizes=SIZES[key];
-  const w=document.getElementById('sz-ch');w.innerHTML='';
-  sizes.forEach(s=>{
-    const b=document.createElement('button');b.className='chip';b.dataset.v=s;b.textContent=s;
-    b.onclick=()=>{document.getElementById('sz-cw').style.display='none';document.getElementById('i-sz').value='';selCh(b,'sz-ch');};
-    w.appendChild(b);
+// ── HELPERS ─────────────────────────────────────────────────────────────────
+function fmtPrice(p) { return Number(p).toLocaleString("ru-RU") + " ₽"; }
+function esc(s) { return String(s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
+function toast(msg) {
+  const el = document.getElementById("toast");
+  el.textContent = msg; el.classList.add("show");
+  setTimeout(() => el.classList.remove("show"), 2200);
+}
+function stars(avg, cnt) {
+  if (!cnt) return '<span class="dot">Нет отзывов</span>';
+  const full = Math.round(avg);
+  return `<span class="stars">${"★".repeat(full)}${"☆".repeat(5-full)}</span> ${avg} (${cnt})`;
+}
+function mapUrl(address, city) {
+  return "https://yandex.ru/maps/?text=" + encodeURIComponent([address, city].filter(Boolean).join(" "));
+}
+
+// ── FEED ────────────────────────────────────────────────────────────────────
+async function loadFeed(reset = false) {
+  if (feedState.loading) return;
+  if (reset) { feedState.page = 0; feedState.ads = []; }
+  feedState.loading = true;
+  renderFeedContent();
+
+  const qs = new URLSearchParams({
+    q: feedState.query, city: feedState.city,
+    category: feedState.cat, sort: feedState.sort,
+    page: feedState.page, limit: 20,
   });
-  const oth=document.createElement('button');oth.className='chip';oth.dataset.v='__c__';oth.textContent='Другой';
-  oth.onclick=()=>{w.querySelectorAll('.chip').forEach(c=>c.classList.remove('s'));oth.classList.add('s');document.getElementById('sz-cw').style.display='block';document.getElementById('i-sz').focus();};
-  w.appendChild(oth);
-  const sk=document.createElement('button');sk.className='chip sk';sk.dataset.v='';sk.textContent='Пропустить';
-  sk.onclick=()=>{document.getElementById('sz-cw').style.display='none';document.getElementById('i-sz').value='';selCh(sk,'sz-ch');};
-  w.appendChild(sk);
+  try {
+    const data = await apiFetch("/api/ads/search?" + qs);
+    if (reset) feedState.ads = data.ads;
+    else feedState.ads = [...feedState.ads, ...data.ads];
+    feedState.pages = data.pages;
+    feedState.total = data.total;
+  } catch(e) { toast("Ошибка загрузки"); }
+  feedState.loading = false;
+  renderFeedContent();
 }
 
-// ─── CITY ─────────────────────────────────────
-function initCity(){
-  const pg=document.getElementById('pg');pg.innerHTML='';
-  POP.forEach(c=>{
-    const b=document.createElement('button');b.className='pb'+(S.city===c?' s':'');b.textContent=c;b.dataset.v=c;
-    b.onclick=()=>{S.city=c;document.querySelectorAll('.pb').forEach(x=>x.classList.remove('s'));b.classList.add('s');showCS(c);hideE('e-city');};
-    pg.appendChild(b);
-  });
-  // Если город уже выбран — показываем бейдж, скрываем поле
-  if(S.city){showCS(S.city);}
-  else{document.getElementById('csd').style.display='none';document.getElementById('cia').style.display='block';}
-}
-function cityF(){if(document.getElementById('i-city').value)cityS();}
-function cityS(){
-  const q=document.getElementById('i-city').value.trim().toLowerCase();
-  const dd=document.getElementById('cdd');
-  if(!q){dd.classList.remove('op');return;}
-  const m=[...AC.filter(c=>c.toLowerCase().startsWith(q)),...AC.filter(c=>!c.toLowerCase().startsWith(q)&&c.toLowerCase().includes(q))].slice(0,12);
-  if(!m.length){dd.innerHTML='<div class="co">Не найден — введите вручную</div>';dd.classList.add('op');return;}
-  dd.innerHTML=m.map(c=>{const h=CH.has(c);return`<div class="co${h?' hc':''}" onclick="chooseC('${c.replace(/'/g,"\\'")}')"><svg class="co-pin i" width="13" height="13" viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/></svg>${c}${h?'<span style="margin-left:auto;font-size:10px;opacity:.55;font-weight:600">канал</span>':''}</div>`;}).join('');
-  dd.classList.add('op');
-}
-function chooseC(c){S.city=c;document.getElementById('cdd').classList.remove('op');document.getElementById('i-city').value='';document.querySelectorAll('.pb').forEach(b=>b.classList.toggle('s',b.dataset.v===c));showCS(c);hideE('e-city');}
-function showCS(c){document.getElementById('csn').textContent=c;document.getElementById('csd').style.display='flex';document.getElementById('cia').style.display='none';}
-function clrCity(){S.city='';document.getElementById('csd').style.display='none';document.getElementById('cia').style.display='block';document.getElementById('i-city').value='';document.querySelectorAll('.pb').forEach(b=>b.classList.remove('s'));}
-document.addEventListener('click',e=>{if(!e.target.closest('#s7'))document.getElementById('cdd')?.classList.remove('op');});
-
-// ─── AI DESCRIPTION ───────────────────────────
-const GROQ_KEY='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';
-let aiOriginal='';
-
-function collectAdInfo(){
-  const title=document.getElementById('i-t')?.value.trim()||S.title||'';
-  const price=document.getElementById('i-pr')?.value||S.price||'';
-  const condEl=document.querySelector('#cond-ch .chip.s');
-  const cond=condEl?condEl.dataset.v.replace('· ',''):S.cond||'';
-  const szEl=document.querySelector('#sz-ch .chip.s');
-  const size=szEl&&szEl.dataset.v==='__c__'?document.getElementById('i-sz').value.trim():(szEl?szEl.dataset.v:(S.size||''));
-  return {title,price,category:S.cat||'',condition:cond,size,gender:S.gender||'',city:S.city||''};
+function renderFeed() {
+  document.getElementById("app").innerHTML = `
+    <div class="nav">
+      <span class="nav-logo">📦 Полка</span>
+      <span class="nav-title"></span>
+    </div>
+    <div class="tabs">
+      <button class="tab active" onclick="navigate('feed')">🏠 Объявления</button>
+      <button class="tab" onclick="navigate('favs')">♡ Избранное</button>
+    </div>
+    <div class="search-bar">
+      <input class="search-input" id="searchInput" placeholder="Поиск товаров..." value="${esc(feedState.query)}">
+      <button class="btn-icon" onclick="doSearch()">🔍</button>
+      <button class="btn-icon" style="background:var(--bg);color:var(--text);border:1.5px solid var(--border)" onclick="openFilters()">⚙️</button>
+    </div>
+    <div class="filters" id="cityFilters"></div>
+    <div class="sort-bar" id="sortBar"></div>
+    <div id="feedContent"></div>
+  `;
+  document.getElementById("searchInput").addEventListener("keydown", e => { if(e.key==="Enter") doSearch(); });
+  renderCityChips();
+  renderSortChips();
+  if (!feedState.ads.length) loadFeed(true);
+  else renderFeedContent();
 }
 
-async function groqCall(systemPrompt, userContent){
-  const r=await fetch('https://api.groq.com/openai/v1/chat/completions',{
-    method:'POST',
-    headers:{'Content-Type':'application/json','Authorization':'Bearer '+GROQ_KEY},
-    body:JSON.stringify({
-      model:'llama3-8b-8192',
-      messages:[
-        {role:'system',content:systemPrompt},
-        {role:'user',content:userContent}
-      ],
-      max_tokens:350,
-      temperature:0.75
-    })
-  });
-  if(!r.ok) throw new Error('groq '+r.status);
-  const d=await r.json();
-  const txt=(d.choices?.[0]?.message?.content||'').trim();
-  if(!txt) throw new Error('empty');
-  return txt;
+function renderCityChips() {
+  const cities = ["Все", "Ижевск", "Сарапул", "Воткинск", "Глазов", "Можга"];
+  document.getElementById("cityFilters").innerHTML = cities.map(c => {
+    const active = (c === "Все" && !feedState.city) || c === feedState.city;
+    return `<span class="filter-chip ${active?"active":""}" onclick="setCity('${c==="Все"?"":c}')">${c}</span>`;
+  }).join("");
 }
 
-async function generateDesc(){
-  const info=collectAdInfo();
-  if(!info.title){showMsg('ai-msg','Сначала укажите название товара на шаге 4',false);return;}
-  const btn=document.getElementById('ai-gen-btn');
-  btn.disabled=true;btn.classList.add('loading');
-  showMsg('ai-msg','',false);
-  const system=`Ты помогаешь продавцам на российском маркетплейсе составлять описания объявлений. Пиши живым, естественным языком как на Авито. Описание должно быть связным, привлекательным и честным. Никаких списков, никаких эмодзи. Только связный текст, 2-3 предложения. Не придумывай детали которых нет в данных. Отвечай ТОЛЬКО текстом описания.`;
-  const parts=[];
-  parts.push('Название: '+info.title);
-  if(info.category) parts.push('Категория: '+info.category);
-  if(info.condition) parts.push('Состояние: '+info.condition);
-  if(info.size) parts.push('Размер: '+info.size);
-  if(info.gender) parts.push('Для кого: '+info.gender.toLowerCase());
-  if(info.city) parts.push('Город: '+info.city);
-  if(info.price) parts.push('Цена: '+info.price+' руб');
-  try{
-    const generated=await groqCall(system, parts.join('\n'));
-    document.getElementById('i-desc').value=generated;
-    cnt('i-desc','c-d',1000);
-    showMsg('ai-msg','Готово — можете отредактировать',true);
-  }catch(e){
-    console.warn('gen err',e);
-    let fb=info.title;
-    if(info.condition) fb+=', '+info.condition.toLowerCase();
-    if(info.size) fb+=', размер '+info.size;
-    fb+='.';
-    if(info.city) fb+=' Продаю в '+info.city+'.';
-    fb+=' Торг уместен, отвечу на вопросы.';
-    document.getElementById('i-desc').value=fb;
-    cnt('i-desc','c-d',1000);
-    showMsg('ai-msg','Описание составлено — отредактируйте под себя',true);
-  }finally{
-    btn.disabled=false;btn.classList.remove('loading');
+function renderSortChips() {
+  const sorts = [["date","По дате"],["price_asc","Дешевле"],["price_desc","Дороже"],["views","Популярные"]];
+  document.getElementById("sortBar").innerHTML = sorts.map(([v,l]) =>
+    `<span class="sort-chip ${feedState.sort===v?"active":""}" onclick="setSort('${v}')">${l}</span>`
+  ).join("");
+}
+
+function setCity(city) { feedState.city = city; loadFeed(true); renderCityChips(); }
+function setSort(sort) { feedState.sort = sort; loadFeed(true); renderSortChips(); }
+
+function doSearch() {
+  feedState.query = document.getElementById("searchInput").value.trim();
+  loadFeed(true);
+}
+
+function renderFeedContent() {
+  const el = document.getElementById("feedContent");
+  if (!el) return;
+  if (!feedState.ads.length && feedState.loading) {
+    el.innerHTML = `<div class="loader"><div class="spinner"></div>Загружаем объявления…</div>`;
+    return;
+  }
+  if (!feedState.ads.length) {
+    el.innerHTML = `<div class="empty"><div class="empty-icon">🔍</div><div class="empty-text">Ничего не найдено</div><div class="empty-sub">Попробуйте другой запрос</div></div>`;
+    return;
+  }
+  const cards = feedState.ads.map(ad => adCard(ad)).join("");
+  const hasMore = feedState.page + 1 < feedState.pages;
+  el.innerHTML = `
+    <div class="feed">${cards}</div>
+    ${hasMore ? `<div class="page-btns"><button class="page-btn" onclick="loadMore()">Загрузить ещё</button></div>` : ""}
+    <div style="padding:8px 0;text-align:center;color:var(--sub);font-size:12px">Всего: ${feedState.total||0}</div>
+  `;
+}
+
+function loadMore() { feedState.page++; loadFeed(false); }
+
+function adCard(ad) {
+  const img = ad.photos && ad.photos[0]
+    ? `<img class="card-img" src="${esc(ad.photos[0])}" loading="lazy" onerror="this.style.display='none'">`
+    : `<div class="card-img-placeholder">📦</div>`;
+  const city = ad.city ? `<span>📍 ${esc(ad.city)}</span>` : "";
+  const cond = ad.condition ? `<span class="badge ${ad.condition==="Новое"?"badge-new":"badge-used"}">${esc(ad.condition)}</span>` : "";
+  return `
+    <div class="card" onclick="navigate('detail',{adId:${ad.id}})">
+      ${img}
+      <div class="card-body">
+        <div class="card-title">${esc(ad.title)}</div>
+        <div class="card-price">${fmtPrice(ad.price)}</div>
+        <div class="card-meta">${city}${cond}</div>
+      </div>
+    </div>`;
+}
+
+// ── FAVS ────────────────────────────────────────────────────────────────────
+async function renderFavs() {
+  document.getElementById("app").innerHTML = `
+    <div class="nav">
+      <span class="nav-logo">📦 Полка</span>
+      <span class="nav-title"></span>
+    </div>
+    <div class="tabs">
+      <button class="tab" onclick="navigate('feed')">🏠 Объявления</button>
+      <button class="tab active" onclick="navigate('favs')">♡ Избранное</button>
+    </div>
+    <div id="favsContent"><div class="loader"><div class="spinner"></div>Загружаем…</div></div>
+  `;
+  if (!vkUserId) { document.getElementById("favsContent").innerHTML = `<div class="empty"><div class="empty-icon">🔐</div><div class="empty-text">Войдите через VK</div></div>`; return; }
+  try {
+    const data = await apiFetch(`/api/favorites?user_id=${vkUserId}`);
+    const el = document.getElementById("favsContent");
+    if (!data.ads.length) {
+      el.innerHTML = `<div class="empty"><div class="empty-icon">♡</div><div class="empty-text">Избранное пусто</div><div class="empty-sub">Сохраняйте понравившиеся объявления</div></div>`;
+    } else {
+      el.innerHTML = `<div class="feed">${data.ads.map(adCard).join("")}</div>`;
+    }
+  } catch(e) { toast("Ошибка загрузки избранного"); }
+}
+
+// ── DETAIL ──────────────────────────────────────────────────────────────────
+async function renderDetail(adId) {
+  document.getElementById("app").innerHTML = `
+    <div class="nav">
+      <button class="nav-back" onclick="history.back()">←</button>
+      <span class="nav-title">Объявление</span>
+    </div>
+    <div id="detailContent"><div class="loader"><div class="spinner"></div>Загружаем…</div></div>
+  `;
+  try {
+    const data = await apiFetch(`/api/ads/${adId}?viewer_id=${vkUserId}`);
+    detailState = { ad: data.ad, seller: data.seller, rating: data.rating, isFav: data.is_favorite, photoIdx: 0 };
+    renderDetailContent();
+  } catch(e) {
+    document.getElementById("detailContent").innerHTML = `<div class="empty"><div class="empty-icon">😕</div><div class="empty-text">Объявление не найдено</div></div>`;
   }
 }
 
-async function improveDesc(){
-  const txt=document.getElementById('i-desc').value.trim();
-  if(txt.length<5){showMsg('ai-msg','Сначала напишите описание',false);return;}
-  aiOriginal=txt;
-  const btn=document.getElementById('ai-btn');
-  btn.disabled=true;btn.classList.add('loading');
-  showMsg('ai-msg','',false);
-  const system=`Ты редактор объявлений для российского маркетплейса. Улучши текст: сделай его более живым и привлекательным как на Авито. Сохрани все факты из оригинала, ничего не придумывай. Никаких списков, никаких эмодзи. Связный текст 2-3 предложения. Отвечай ТОЛЬКО улучшенным текстом.`;
-  try{
-    const improved=await groqCall(system, txt);
-    document.getElementById('i-desc').value=improved;
-    cnt('i-desc','c-d',1000);
-    showMsg('ai-msg','Улучшено — проверьте текст',true);
-    btn.innerHTML='<span class="ai-ic">↩</span> Вернуть';
-    btn.onclick=()=>{
-      document.getElementById('i-desc').value=aiOriginal;
-      cnt('i-desc','c-d',1000);
-      showMsg('ai-msg','',false);
-      btn.innerHTML='<span class="ai-ic">↑</span> Улучшить';
-      btn.onclick=improveDesc;
-    };
-  }catch(e){
-    console.warn('improve err',e);
-    showMsg('ai-msg','Ошибка — попробуйте позже',false);
-  }finally{
-    btn.disabled=false;btn.classList.remove('loading');
+function renderDetailContent() {
+  const { ad, seller, rating, isFav, photoIdx } = detailState;
+  const photos = ad.photos || [];
+
+  const photoBlock = photos.length
+    ? `<div class="detail-photos" onclick="nextPhoto()">
+         <img class="detail-photo" src="${esc(photos[photoIdx])}" id="detailPhoto">
+         ${photos.length>1 ? `<div class="photo-counter">${photoIdx+1}/${photos.length}</div>` : ""}
+       </div>`
+    : `<div class="card-img-placeholder" style="height:200px">📦</div>`;
+
+  const rows = [
+    ad.condition && ["Состояние", ad.condition],
+    ad.category  && ["Категория", ad.category.replace(/^·\s*/,"")],
+    ad.size      && ["Размер", ad.size],
+    ad.city      && ["Город", ad.city],
+    ad.delivery  && ["Доставка", ad.delivery],
+  ].filter(Boolean);
+
+  const sellerName = seller?.first_name || "Продавец";
+  const sellerInitial = sellerName[0] || "?";
+  const verified = seller?.is_verified ? ' <span style="color:var(--green)">✓</span>' : "";
+
+  const mapLink = (ad.address && ad.city)
+    ? `<a class="map-link" href="${mapUrl(ad.address, ad.city)}" target="_blank">📍 ${esc(ad.address)} — посмотреть на карте</a>`
+    : ad.city ? `<span style="color:var(--sub);font-size:14px">📍 ${esc(ad.city)}</span>` : "";
+
+  document.getElementById("detailContent").innerHTML = `
+    ${photoBlock}
+    <div class="detail-body">
+      <div class="detail-title">${esc(ad.title)}</div>
+      <div class="detail-price">${fmtPrice(ad.price)}</div>
+
+      ${rows.length ? `
+      <div class="detail-section">
+        <div class="detail-section-title">Параметры</div>
+        ${rows.map(([l,v])=>`<div class="detail-row"><span class="detail-row-label">${l}</span><span>${esc(v)}</span></div>`).join("")}
+      </div>` : ""}
+
+      ${ad.description ? `
+      <div class="detail-section">
+        <div class="detail-section-title">Описание</div>
+        <div class="detail-desc">${esc(ad.description)}</div>
+      </div>` : ""}
+
+      ${mapLink ? `<div class="detail-section">${mapLink}</div>` : ""}
+
+      <div class="detail-section">
+        <div class="detail-section-title">Продавец</div>
+        <div class="seller-card" onclick="openBotContact(${ad.id})">
+          <div class="seller-avatar">${sellerInitial}</div>
+          <div>
+            <div class="seller-name">${esc(sellerName)}${verified}</div>
+            <div class="seller-sub">${stars(rating?.avg, rating?.count)}</div>
+          </div>
+          <span style="margin-left:auto;color:var(--sub)">›</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="action-bar">
+      <button class="btn btn-fav ${isFav?"active":""}" id="favBtn" onclick="toggleFav(${ad.id})">${isFav?"♥":"♡"}</button>
+      <button class="btn btn-secondary" onclick="openBotContact(${ad.id})">✉ Написать</button>
+      <button class="btn btn-primary" onclick="openInBot(${ad.id})">Открыть в боте</button>
+    </div>
+  `;
+}
+
+function nextPhoto() {
+  const photos = detailState.ad?.photos || [];
+  if (photos.length < 2) return;
+  detailState.photoIdx = (detailState.photoIdx + 1) % photos.length;
+  const el = document.getElementById("detailPhoto");
+  if (el) el.src = photos[detailState.photoIdx];
+  const cnt = document.querySelector(".photo-counter");
+  if (cnt) cnt.textContent = `${detailState.photoIdx+1}/${photos.length}`;
+}
+
+async function toggleFav(adId) {
+  if (!vkUserId) { toast("Войдите через VK"); return; }
+  try {
+    const data = await apiPost("/api/favorites/toggle", { user_id: vkUserId, ad_id: adId });
+    detailState.isFav = data.is_favorite;
+    const btn = document.getElementById("favBtn");
+    btn.textContent = data.is_favorite ? "♥" : "♡";
+    btn.classList.toggle("active", data.is_favorite);
+    toast(data.is_favorite ? "Добавлено в избранное" : "Удалено из избранного");
+  } catch(e) { toast("Ошибка"); }
+}
+
+function openBotContact(adId) {
+  openInVK(`https://vk.me/${BOT_SCREEN}?ref=contact_${adId}`);
+}
+
+function openInBot(adId) {
+  openInVK(`https://vk.me/${BOT_SCREEN}?ref=ad_${adId}`);
+}
+
+function openInVK(url) {
+  try {
+    vkBridge.send("VKWebAppOpenLink", { link: url });
+  } catch(e) {
+    window.open(url, "_blank");
   }
 }
-function showMsg(id,txt,ok){const el=document.getElementById(id);if(!el)return;el.textContent=txt;el.style.color=ok?'var(--gr)':'var(--sub)';el.classList.toggle('on',!!txt);}
 
-// ─── PHOTO ENHANCE ────────────────────────────
-function enhancePhoto(dataURL){
-  return Promise.resolve(dataURL);
-}
+// ── FILTERS ─────────────────────────────────────────────────────────────────
+let allCities = [], allCats = [];
 
-// ─── PHOTOS ───────────────────────────────────
-function buildPh(){
-  document.getElementById('phlmt').textContent='До '+PLMT+' фото · Тариф: '+TARIFF;
-  renderPh();
-}
-function renderPh(){
-  const g=document.getElementById('phg');g.innerHTML='';
-  pf.forEach((f,i)=>{
-    const d=document.createElement('div');d.className='pht';
-    const img=document.createElement('img');img.src=f.prev;
-    const del=document.createElement('div');del.className='phdel';del.textContent='×';del.onclick=()=>rmPh(i);
-    if(f.up){const ov=document.createElement('div');ov.className='phup';ov.innerHTML='<div class="phsp"></div>';d.appendChild(ov);}
-    d.appendChild(img);d.appendChild(del);g.appendChild(d);
-  });
-  if(pf.length<PLMT){
-    const a=document.createElement('div');a.className='ph-add';
-    a.innerHTML='<svg style="width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg><span>Фото</span>';
-    a.onclick=()=>document.getElementById('fi').click();
-    g.appendChild(a);
+async function openFilters() {
+  if (!allCities.length) {
+    try {
+      const d = await apiFetch("/api/dict");
+      allCities = d.cities; allCats = d.categories;
+    } catch(e) {}
   }
-  const lbl=document.getElementById('phl');lbl.style.display=pf.length>0?'none':'flex';
-  const at=document.getElementById('phat');if(at)at.textContent='Добавить фото ('+pf.length+'/'+PLMT+')';
+  filterDraft = { city: feedState.city, cat: feedState.cat };
+  renderFilterModal();
+  document.getElementById("filterModal").classList.remove("hidden");
 }
 
-async function onFiles(inp){
-  const files=[...inp.files];inp.value='';
-  const av=PLMT-pf.length;
-  if(av<=0){showE('e-ph','Достигнут лимит фото');return;}
-  for(const f of files.slice(0,av)){
-    const raw=await rdU(f);
-    const enhanced=await enhancePhoto(raw);
-    pf.push({prev:enhanced,file:f,id:null,up:false,enhanced});
-  }
-  renderPh();
-}
-function rdU(f){return new Promise(r=>{const rd=new FileReader();rd.onload=e=>r(e.target.result);rd.readAsDataURL(f);});}
-function rmPh(i){pf.splice(i,1);S.photoIds.splice(i,1);renderPh();}
-
-async function uploadPhs(){
-  const res=[];
-  for(const f of pf){
-    if(f.id){res.push(f.id);continue;}
-    f.up=true;renderPh();
-    try{
-      const blob=await(await fetch(f.enhanced||f.prev)).blob();
-      const fd=new FormData();fd.append('photo',blob,'photo.jpg');fd.append('init_data',tg?.initData||'');
-      const r=await fetch(BOT_URL+'/api/upload_photo',{method:'POST',body:fd});
-      if(r.ok){const j=await r.json();f.id=j.temp_id||j.file_id||null;if(f.id)res.push(f.id);}
-    }catch(e){console.warn('upload err',e);}
-    f.up=false;
-  }
-  renderPh();return res;
+function renderFilterModal() {
+  document.getElementById("modalContent").innerHTML = `
+    <div class="detail-section-title" style="margin-bottom:8px">Город</div>
+    <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:16px">
+      <span class="filter-chip ${!filterDraft.city?"active":""}" onclick="setDraftCity('')">Все</span>
+      ${allCities.map(c=>`<span class="filter-chip ${filterDraft.city===c?"active":""}" onclick="setDraftCity('${c}')">${c}</span>`).join("")}
+    </div>
+    <div class="detail-section-title" style="margin-bottom:8px">Категория</div>
+    <div style="display:flex;flex-wrap:wrap;gap:6px">
+      <span class="filter-chip ${!filterDraft.cat?"active":""}" onclick="setDraftCat('')">Все</span>
+      ${allCats.map(c=>`<span class="filter-chip ${filterDraft.cat===c?"active":""}" onclick="setDraftCat('${c}')">${esc(c)}</span>`).join("")}
+    </div>
+  `;
 }
 
-// ─── PREVIEW ──────────────────────────────────
-function buildPrev(){
-  const price=Number(S.price).toLocaleString('ru-RU');
-  const isL=S.legit===1;
-  const dlvs=S.dlv.join(', ');
+function setDraftCity(c) { filterDraft.city = c; renderFilterModal(); }
+function setDraftCat(c)  { filterDraft.cat  = c; renderFilterModal(); }
 
-  // Фото (горизонтальный скролл)
-  const phH=pf.length?'<div class="pph">'+pf.map(p=>'<img class="pphoto" src="'+p.prev+'">').join('')+'</div>':'';
-
-  // Текст объявления — точный формат канала бота
-  let txt='';
-  if(isL) txt+='<div class="prev-legit">◆ ЛЕГИТ · ОРИГИНАЛ</div>';
-  txt+=`<div class="prev-title">${esc(S.title)}</div>`;
-  if(S.desc) txt+=`<div class="prev-desc">${esc(S.desc)}</div>`;
-  txt+=`<div class="prev-price">Цена: ${price} ₽</div>`;
-  if(isL) txt+='<div class="prev-row">✓ Проверено модерацией Легит</div>';
-  if(S.cond) txt+=`<div class="prev-row">Состояние: ${esc(S.cond)}</div>`;
-  if(S.size) txt+=`<div class="prev-row">Размер: ${esc(S.size)}</div>`;
-  if(S.gender) txt+=`<div class="prev-row">Для: ${esc(S.gender.toLowerCase())} одежда</div>`;
-  if(S.city) txt+=`<div class="prev-row">Город: ${esc(S.city)}</div>`;
-  if(dlvs) txt+=`<div class="prev-row">Доставка: ${esc(dlvs)}</div>`;
-
-  // Кнопок нет — только контент объявления
-  document.getElementById('prev').innerHTML=`<div class="prev-wrap">${phH}<div class="prev-body">${txt}</div></div>`;
+function applyFilters() {
+  feedState.city = filterDraft.city;
+  feedState.cat  = filterDraft.cat;
+  closeModal();
+  loadFeed(true);
+  renderCityChips();
 }
 
-// ─── SELECTORS ────────────────────────────────
-function selCat(b){document.querySelectorAll('.cb').forEach(x=>x.classList.remove('s'));b.classList.add('s');S.cat=b.dataset.v;hideE('e-cat');}
-function selLeg(b){document.querySelectorAll('#s2 .ch').forEach(x=>x.classList.remove('s'));b.classList.add('s');S.legit=parseInt(b.dataset.v);hideE('e-leg');}
-function selGnd(b){document.querySelectorAll('.gnd-btn').forEach(x=>x.classList.remove('s'));b.classList.add('s');S.gender=b.dataset.v;hideE('e-gnd');}
-function selCh(b,id){document.querySelectorAll('#'+id+' .chip').forEach(c=>c.classList.remove('s'));b.classList.add('s');}
-function togD(b){
-  b.classList.toggle('s');
-  const n=document.querySelectorAll('#s8 .db.s').length;
-  const t=document.getElementById('dlv-t');let bdg=t.querySelector('.dbadge');
-  if(n>0){if(!bdg){bdg=document.createElement('span');bdg.className='dbadge';t.appendChild(bdg);}bdg.textContent=n;}
-  else if(bdg)bdg.remove();
-  hideE('e-dlv');
+function resetFilters() {
+  feedState.city = ""; feedState.cat = "";
+  filterDraft = {};
+  closeModal();
+  loadFeed(true);
 }
 
-// ─── VALIDATE ─────────────────────────────────
-function valid(n){
-  clrE();
-  if(n===1&&!S.cat){showE('e-cat');return false;}
-  if(n===2&&S.legit===null){showE('e-leg');return false;}
-  if(n===3&&!document.querySelector('.gnd-btn.s')){showE('e-gnd');return false;}
-  if(n===4){const t=document.getElementById('i-t').value.trim();if(t.length<3){showE('e-t');return false;}}
-  if(n===5&&!document.querySelector('#cond-ch .chip.s')){showE('e-cond');return false;}
-  if(n===6){const s=document.querySelector('#sz-ch .chip.s');if(!s){showE('e-sz');return false;}if(s.dataset.v==='__c__'&&!document.getElementById('i-sz').value.trim()){showE('e-sz');return false;}}
-  if(n===7){const iv=document.getElementById('i-city').value.trim();if(!S.city&&!iv){showE('e-city');return false;}if(!S.city&&iv)S.city=iv;}
-  if(n===8){if(!document.querySelectorAll('#s8 .db.s').length&&!document.getElementById('i-dlv').value.trim()){showE('e-dlv');return false;}}
-  if(n===9){const p=document.getElementById('i-pr').value;if(!p||isNaN(+p)||+p<0){showE('e-pr');return false;}}
-  if(n===10){if(!document.getElementById('i-con').value.trim()){showE('e-con');return false;}}
-  return true;
+function closeModal() {
+  document.getElementById("filterModal").classList.add("hidden");
 }
 
-// ─── COLLECT ──────────────────────────────────
-function collect(n){
-  if(n===3){S.gender=document.querySelector('.gnd-btn.s')?.dataset.v??'';}
-  if(n===4)S.title=document.getElementById('i-t').value.trim();
-  if(n===5){const s=document.querySelector('#cond-ch .chip.s');S.cond=s?s.dataset.v:'';}
-  if(n===6){const s=document.querySelector('#sz-ch .chip.s');S.size=s&&s.dataset.v==='__c__'?document.getElementById('i-sz').value.trim():(s?s.dataset.v:'');}
-  if(n===7){const iv=document.getElementById('i-city').value.trim();if(!S.city&&iv)S.city=iv;}
-  if(n===8){S.dlv=[];document.querySelectorAll('#s8 .db.s').forEach(b=>S.dlv.push(b.dataset.v));const c=document.getElementById('i-dlv').value.trim();if(c)S.dlv.push(c);}
-  if(n===9){S.price=document.getElementById('i-pr').value;S.desc=document.getElementById('i-desc').value.trim();}
-  if(n===10)S.contact=document.getElementById('i-con').value.trim();
+// ── DEEP LINK из поста ───────────────────────────────────────────────────────
+function handleStartParam() {
+  const params = new URLSearchParams(location.search);
+  // VK передаёт #vk_app_id=...&vk_user_id=...&start_group=...
+  const hash = new URLSearchParams(location.hash.replace("#",""));
+  const startParam = params.get("vk_ref") || hash.get("vk_ref") || "";
+  const m = startParam.match(/^(ad|contact|favorite)_(\d+)$/);
+  if (m) navigate("detail", { adId: parseInt(m[2]) });
+  else navigate("feed");
 }
 
-// ─── SUBMIT ───────────────────────────────────
-async function submit(){
-  setL(true,'Загружаем фото…');
-  S.photoIds=await uploadPhs();
-  setL(true,'Отправка объявления…');
-  const payload={action:'create_ad',category:S.cat,is_legit:S.legit,title:S.title,condition:S.cond,size:S.size,gender:S.gender,city:S.city,delivery:S.dlv.join(', '),price:Number(S.price),description:S.desc,contact_info:S.contact,photo_ids:S.photoIds,tariff:TARIFF};
-  await new Promise(r=>setTimeout(r,300));
-  setL(false);
-  if(tg?.sendData){tg.sendData(JSON.stringify(payload));tg.close();}
-  else{console.log('DEV:',payload);showOk();}
-}
-function showOk(){document.querySelectorAll('.scr').forEach(s=>s.classList.remove('active'));document.getElementById('sok').classList.add('active');document.getElementById('bar').style.display='none';document.getElementById('slbl').textContent='Готово!';document.getElementById('pf').style.width='100%';}
+// ── BACK BUTTON ──────────────────────────────────────────────────────────────
+window.addEventListener("popstate", () => navigate("feed"));
 
-// ─── UTILS ────────────────────────────────────
-function setL(on,t=''){const e=document.getElementById('gl');if(on){e.classList.add('on');document.getElementById('lt').textContent=t;}else e.classList.remove('on');}
-function cnt(i,c,m){document.getElementById(c).textContent=document.getElementById(i).value.length+' / '+m;}
-function chkT(){if(document.getElementById('i-t').value.trim().length>=3)hideE('e-t');}
-function chkPr(){const p=document.getElementById('i-pr').value;if(p&&!isNaN(+p)&&+p>=0)hideE('e-pr');}
-function chkCon(){if(document.getElementById('i-con').value.trim())hideE('e-con');}
-function showE(id,txt){const e=document.getElementById(id);if(e){if(txt)e.textContent=txt;e.classList.add('on');}}
-function hideE(id){document.getElementById(id)?.classList.remove('on');}
-function clrE(){document.querySelectorAll('.err').forEach(e=>e.classList.remove('on'));}
-function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
-
-// ─── BOOT ─────────────────────────────────────
-document.getElementById('phlmt').textContent='До '+PLMT+' фото · Тариф: '+TARIFF;
-initCity();
-show(1);
+// ── INIT ────────────────────────────────────────────────────────────────────
+(async () => {
+  await initVK();
+  handleStartParam();
+})();
 </script>
 </body>
 </html>
