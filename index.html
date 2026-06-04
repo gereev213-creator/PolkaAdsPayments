@@ -2,367 +2,568 @@
 <html lang="ru">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no" />
-  <title>Доска объявлений по Удмуртии</title>
+  <meta
+    name="viewport"
+    content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no"
+  />
+
+  <title>Полка</title>
+
   <script src="https://unpkg.com/@vkontakte/vk-bridge/dist/browser.min.js"></script>
 
   <style>
     * {
-      margin: 0; padding: 0; box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
       -webkit-tap-highlight-color: transparent;
       font-family: -apple-system, BlinkMacSystemFont, Inter, sans-serif;
     }
+
     :root {
-      --bg: #f2f5f8; --card: #ffffff;
-      --accent: #4c7eff; --accent2: #6ea1ff;
-      --text: #121212; --sub: #7c8591;
-      --border: #e8edf3; --shadow: 0 4px 20px rgba(0,0,0,.05);
+      --bg: #f2f5f8;
+      --card: #ffffff;
+
+      --accent: #4c7eff;
+      --accent2: #6ea1ff;
+
+      --text: #121212;
+      --sub: #7c8591;
+
+      --border: #e8edf3;
+
+      --shadow:
+        0 4px 20px rgba(0,0,0,.05);
+
       --radius: 22px;
     }
-    body { background: var(--bg); color: var(--text); overflow-x: hidden; }
-    #app { min-height: 100vh; padding-bottom: 90px; }
 
-    /* Шапка */
-    .topbar { position: sticky; top: 0; background: rgba(242, 245, 248, 0.85); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); padding: 12px 16px; z-index: 100; }
-    .topbar-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
-    .logo-wrap { display: flex; align-items: center; gap: 8px; }
-    .logo { width: 32px; height: 32px; object-fit: contain; }
-    .brand { font-size: 20px; font-weight: 800; letter-spacing: -0.5px; }
-    .user-btn { width: 36px; height: 36px; border-radius: 50%; background: var(--card); border: 1px solid var(--border); overflow: hidden; }
-    .search { background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 10px 14px; display: flex; align-items: center; gap: 10px; box-shadow: var(--shadow); }
-    .search input { border: none; outline: none; background: transparent; width: 100%; font-size: 15px; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      overflow-x: hidden;
+    }
 
-    /* Баннер */
-    .hero { background: linear-gradient(135deg, var(--accent), var(--accent2)); margin: 4px 16px 16px 16px; padding: 24px; border-radius: var(--radius); color: #fff; position: relative; overflow: hidden; box-shadow: 0 12px 30px rgba(76,126,255,0.25); }
-    .hero h2 { font-size: 24px; font-weight: 800; line-height: 1.2; margin-bottom: 6px; position: relative; z-index: 2; }
-    .hero p { font-size: 14px; opacity: 0.9; position: relative; z-index: 2; }
-    .hero-pattern { position: absolute; right: -20px; bottom: -30px; width: 150px; opacity: 0.15; transform: rotate(-15deg); z-index: 1; }
+    #app {
+      min-height: 100vh;
+      padding-bottom: 100px;
+    }
 
-    /* Категории */
-    .categories { display: flex; gap: 12px; overflow-x: auto; padding: 4px 16px 16px 16px; }
-    .categories::-webkit-scrollbar { display: none; }
-    .cat { background: var(--card); padding: 10px 16px; border-radius: 14px; display: flex; align-items: center; gap: 8px; box-shadow: var(--shadow); border: 1px solid var(--border); flex-shrink: 0; cursor: pointer; }
-    .cat.active { background: var(--text); color: #fff; border-color: var(--text); }
-    .cat img { width: 20px; height: 20px; }
-    .page-title { font-size: 18px; font-weight: 700; padding: 0 16px 12px 16px; }
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 100;
 
-    /* Сетка объявлений */
-    .feed { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; padding: 0 16px; }
-    .card { background: var(--card); border-radius: var(--radius); overflow: hidden; box-shadow: var(--shadow); border: 1px solid var(--border); display: flex; flex-direction: column; cursor: pointer; }
-    .card-photo { width: 100%; padding-top: 100%; position: relative; background: #eaedf1; }
-    .card-photo img { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; }
-    .card-body { padding: 12px; display: flex; flex-direction: column; gap: 4px; flex-grow: 1; }
-    .price { font-size: 16px; font-weight: 800; }
-    .title { font-size: 13px; font-weight: 500; line-height: 1.3; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; min-height: 34px; }
-    .meta { font-size: 11px; color: var(--sub); margin-top: 4px; }
+      background: rgba(242,245,248,.82);
+      backdrop-filter: blur(16px);
 
-    /* Стили Формы Создания */
-    .form-container { padding: 16px; background: var(--card); margin: 16px; border-radius: var(--radius); border: 1px solid var(--border); box-shadow: var(--shadow); }
-    .form-group { margin-bottom: 16px; display: flex; flex-direction: column; gap: 6px; }
-    .form-group label { font-size: 14px; font-weight: 600; color: var(--text); }
-    .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 12px; border: 1px solid var(--border); border-radius: 12px; background: var(--bg); font-size: 15px; outline: none; }
-    .form-group textarea { resize: none; height: 100px; }
-    .submit-btn { background: var(--accent); color: white; border: none; padding: 14px; border-radius: 14px; font-weight: 700; font-size: 16px; width: 100%; cursor: pointer; box-shadow: 0 4px 12px rgba(76,126,255,0.2); }
+      padding:
+        env(safe-area-inset-top)
+        18px
+        16px
+        16px;
+    }
 
-    /* Экран деталей товара */
-    .details-container { padding: 16px; }
-    .details-back { display: inline-flex; align-items: center; gap: 6px; color: var(--accent); font-weight: 600; margin-bottom: 16px; cursor: pointer; }
-    .details-photo { width: 100%; border-radius: var(--radius); overflow: hidden; box-shadow: var(--shadow); margin-bottom: 16px; background: #fff; }
-    .details-photo img { width: 100%; max-height: 350px; object-fit: cover; display: block; }
-    .details-info { background: var(--card); padding: 20px; border-radius: var(--radius); border: 1px solid var(--border); box-shadow: var(--shadow); display: flex; flex-direction: column; gap: 10px; }
-    .action-row { display: flex; gap: 10px; margin-top: 14px; }
-    .chat-btn { flex: 1; background: #4c7eff; color: white; border: none; padding: 14px; border-radius: 12px; font-weight: 700; text-align: center; text-decoration: none; font-size: 15px; }
-    .fav-btn { background: var(--bg); border: 1px solid var(--border); padding: 14px; border-radius: 12px; font-size: 18px; cursor: pointer; }
+    .topbar-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
 
-    /* Навигация */
-    .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: rgba(255,255,255,0.85); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-top: 1px solid var(--border); padding: 8px 16px calc(8px + env(safe-area-inset-bottom)); display: flex; justify-content: space-around; align-items: center; z-index: 100; }
-    .nav-item { display: flex; flex-direction: column; align-items: center; gap: 4px; font-size: 10px; color: var(--sub); font-weight: 500; cursor: pointer; }
-    .nav-item.active { color: var(--accent); }
-    .nav-icon { font-size: 20px; }
-    .create-btn { width: 48px; height: 48px; background: var(--text); color: #fff; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 24px; font-weight: 300; box-shadow: 0 4px 16px rgba(0,0,0,0.15); transform: translateY(-4px); cursor: pointer; }
+    .logo-wrap {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .logo {
+      width: 42px;
+      height: 42px;
+      object-fit: contain;
+    }
+
+    .brand {
+      font-size: 24px;
+      font-weight: 800;
+      letter-spacing: -.4px;
+    }
+
+    .user-btn {
+      width: 42px;
+      height: 42px;
+
+      border-radius: 50%;
+      background: white;
+
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      box-shadow: var(--shadow);
+    }
+
+    .user-btn img {
+      width: 22px;
+      opacity: .85;
+    }
+
+    .search {
+      margin-top: 16px;
+
+      background: white;
+      border-radius: 18px;
+
+      padding: 14px 16px;
+
+      display: flex;
+      align-items: center;
+      gap: 10px;
+
+      box-shadow: var(--shadow);
+    }
+
+    .search input {
+      border: none;
+      outline: none;
+      width: 100%;
+      font-size: 16px;
+      background: transparent;
+    }
+
+    .categories {
+      display: flex;
+      gap: 12px;
+      overflow-x: auto;
+
+      padding:
+        18px
+        16px
+        8px;
+    }
+
+    .categories::-webkit-scrollbar {
+      display: none;
+    }
+
+    .cat {
+      min-width: 92px;
+
+      background: white;
+      border-radius: 22px;
+
+      padding: 14px 10px;
+
+      text-align: center;
+
+      box-shadow: var(--shadow);
+
+      transition: .2s;
+    }
+
+    .cat.active {
+      background: var(--accent);
+      color: white;
+    }
+
+    .cat img {
+      width: 38px;
+      height: 38px;
+      object-fit: contain;
+      margin-bottom: 8px;
+    }
+
+    .cat-title {
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .feed {
+      padding: 8px 16px;
+      display: grid;
+      gap: 18px;
+    }
+
+    .card {
+      background: white;
+      border-radius: 28px;
+      overflow: hidden;
+      box-shadow: var(--shadow);
+    }
+
+    .card-photo {
+      position: relative;
+      aspect-ratio: 1/1;
+      overflow: hidden;
+    }
+
+    .card-photo img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .fav {
+      position: absolute;
+      top: 14px;
+      right: 14px;
+
+      width: 42px;
+      height: 42px;
+
+      border-radius: 50%;
+      background: rgba(255,255,255,.9);
+
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      backdrop-filter: blur(12px);
+    }
+
+    .fav span {
+      font-size: 20px;
+    }
+
+    .card-body {
+      padding: 16px;
+    }
+
+    .price {
+      font-size: 26px;
+      font-weight: 800;
+      margin-bottom: 8px;
+    }
+
+    .title {
+      font-size: 17px;
+      font-weight: 700;
+      line-height: 1.35;
+
+      margin-bottom: 10px;
+    }
+
+    .meta {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+
+      color: var(--sub);
+      font-size: 14px;
+    }
+
+    .seller {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .seller img {
+      width: 22px;
+      opacity: .7;
+    }
+
+    .bottom-nav {
+      position: fixed;
+      left: 16px;
+      right: 16px;
+      bottom:
+        calc(env(safe-area-inset-bottom) + 12px);
+
+      background: rgba(255,255,255,.92);
+
+      border-radius: 28px;
+
+      padding: 12px 10px;
+
+      display: flex;
+      justify-content: space-around;
+
+      backdrop-filter: blur(16px);
+
+      box-shadow:
+        0 8px 40px rgba(0,0,0,.1);
+
+      z-index: 500;
+    }
+
+    .nav-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+
+      font-size: 12px;
+      font-weight: 700;
+
+      color: #8b97a6;
+    }
+
+    .nav-item.active {
+      color: var(--accent);
+    }
+
+    .nav-icon {
+      font-size: 22px;
+    }
+
+    .create-btn {
+      transform: translateY(-22px);
+
+      width: 64px;
+      height: 64px;
+
+      border-radius: 50%;
+      background: linear-gradient(
+        135deg,
+        var(--accent),
+        var(--accent2)
+      );
+
+      color: white;
+
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      font-size: 34px;
+      font-weight: 300;
+
+      box-shadow:
+        0 10px 30px rgba(76,126,255,.35);
+    }
+
+    .hero {
+      margin: 16px;
+      padding: 24px;
+
+      border-radius: 30px;
+
+      background:
+        linear-gradient(
+          135deg,
+          #4c7eff,
+          #75a3ff
+        );
+
+      color: white;
+
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero h2 {
+      font-size: 30px;
+      line-height: 1.1;
+      margin-bottom: 10px;
+    }
+
+    .hero p {
+      opacity: .92;
+      line-height: 1.45;
+      max-width: 70%;
+    }
+
+    .hero-pattern {
+      position: absolute;
+      right: -10px;
+      bottom: -10px;
+
+      width: 140px;
+      opacity: .12;
+    }
+
+    .page-title {
+      font-size: 22px;
+      font-weight: 800;
+      padding: 16px;
+    }
+    
+    .empty-feed {
+      text-align: center;
+      padding: 40px 20px;
+      color: var(--sub);
+      font-size: 16px;
+    }
   </style>
 </head>
+
 <body>
-
-  <div id="app">
-    <div id="screen-feed" class="app-screen">
-      <div class="topbar">
-        <div class="topbar-row">
-          <div class="logo-wrap">
-            <img class="logo" src="https://i.postimg.cc/5QSkYwbd/polka-logo-2-png.png" />
-            <div class="brand">Полка</div>
-          </div>
-          <div class="user-btn"><img id="user-avatar" src="" style="width:100%; height:100%; object-fit:cover;" /></div>
-        </div>
-        <div class="search">🔍<input id="searchInput" placeholder="Поиск в Удмуртии..." oninput="handleSearch(this.value)" /></div>
-      </div>
-
-      <div class="hero">
-        <h2>Маркетплейс<br />Удмуртии</h2>
-        <p>Покупай и продавай внутри приложения.</p>
-        <img class="hero-pattern" src="https://i.postimg.cc/kRvh6x9L/trafaret-papik-pro-tmxp-p-trafareti-solyarnii-znak-udmurtii-1-Photoroom-2.png" />
-      </div>
-
-      <div class="categories" id="categories-list"></div>
-      <div class="page-title">Рекомендации</div>
-      <div class="feed" id="feed-container"></div>
-    </div>
-
-    <div id="screen-create" class="app-screen" style="display: none;">
-      <div class="page-title" style="padding-top:20px; text-align:center;">Новое объявление</div>
-      <div class="form-container">
-        <form id="addAdForm" onsubmit="submitNewAd(event)">
-          <div class="form-group">
-            <label>Название товара / услуги</label>
-            <input type="text" id="form-title" required placeholder="Например: iPhone 13 Pro">
-          </div>
-          <div class="form-group">
-            <label>Категория</label>
-            <select id="form-category" required>
-              <option value="· Техника">Техника</option>
-              <option value="· Одежда">Одежда</option>
-              <option value="· Аренда жилья">Жильё (Аренда)</option>
-              <option value="· Прочие вещи">Прочие вещи</option>
-              <option value="· Вакансии">Работа / Вакансии</option>
-            </select>
-          </div>
-          <div class="form-group">
-            <label>Цена (₽)</label>
-            <input type="number" id="form-price" required placeholder="0">
-          </div>
-          <div class="form-group">
-            <label>Город</label>
-            <select id="form-city" required>
-              <option value="Ижевск">Ижевск</option>
-              <option value="Сарапул">Сарапул</option>
-              <option value="Воткинск">Воткинск</option>
-              <option value="Глазов">Глазов</option>
-              <option value="Можга">Можга</option>
-            </select>
-          </div>
-          <div class="form-group">
-            <label>Состояние</label>
-            <select id="form-condition">
-              <option value="Новый">Новый</option>
-              <option value="Отличное">Отличное</option>
-              <option value="Хорошее">Хорошее</option>
-              <option value="Б/У">Б/У</option>
-            </select>
-          </div>
-          <div class="form-group">
-            <label>Описание</label>
-            <textarea id="form-description" required placeholder="Опишите ваш товар подробно..."></textarea>
-          </div>
-          <div class="form-group">
-            <label>Ссылка на фото (URL)</label>
-            <input type="url" id="form-photo" placeholder="https://example.com/image.jpg">
-          </div>
-          <button type="submit" class="submit-btn">Опубликовать маркетплейс</button>
-        </form>
-      </div>
-    </div>
-
-    <div id="screen-details" class="app-screen" style="display: none;">
-      <div class="details-container">
-        <div class="details-back" onclick="switchScreen('feed')">← Назад в ленту</div>
-        <div class="details-photo"><img id="det-photo" src="" /></div>
-        <div class="details-info">
-          <h2 id="det-price" style="font-size: 24px; font-weight: 800; color: var(--accent);"></h2>
-          <h3 id="det-title" style="font-size: 18px; font-weight: 700;"></h3>
-          <div id="det-meta" style="font-size: 13px; color: var(--sub);"></div>
-          <p id="det-desc" style="font-size: 14px; line-height: 1.5; margin-top: 10px; white-space: pre-line;"></p>
-          
-          <div class="action-row">
-            <a id="det-chat-link" href="#" target="_blank" class="chat-btn">✉ Написать продавцу</a>
-            <button class="fav-btn" onclick="alert('Добавлено в избранное!')">♡</button>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <div class="bottom-nav">
-      <div class="nav-item active" id="nav-home" onclick="switchScreen('feed')">
-        <div class="nav-icon">🏠</div>Главная
-      </div>
-      <div class="nav-item" onclick="alert('Раздел в разработке')">
-        <div class="nav-icon">♡</div>Избранное
-      </div>
-      <div class="create-btn" onclick="switchScreen('create')">+</div>
-      <div class="nav-item" onclick="alert('Раздел в разработке')">
-        <div class="nav-icon">💬</div>Чаты
-      </div>
-      <div class="nav-item" onclick="switchScreen('feed'); alert('Ваш ID в системе: ' + state.user.id)">
-        <div class="nav-icon">👤</div>Профиль
-      </div>
-    </div>
-  </div>
+  <div id="app"></div>
 
   <script>
-    // НАСТРОЙКА АДРЕСА СЕРВЕРА
-    const API_URL = 'https://shorthand-words-visit.loca.lt/api'; // Сюда вставляйте ваш актуальный адрес Ngrok или localtunnel
+    // Твой живой адрес туннеля ngrok
+    const API_URL = 'https://endorphin-trump-cavalier.ngrok-free.dev/api';
+
+    const assets = {
+      logo: 'https://i.postimg.cc/5QSkYwbd/polka-logo-2-png.png',
+      user: 'https://i.postimg.cc/gLWT2MFG/icons8-user-64.png',
+      pattern: 'https://i.postimg.cc/kRvh6x9L/trafaret-papik-pro-tmxp-p-trafareti-solyarnii-znak-udmurtii-1-Photoroom-2.png',
+      categories: {
+        auto: 'https://i.postimg.cc/sGrNgnFL/icons8-avtomobil-100.png',
+        home: 'https://i.postimg.cc/4HgSx8CD/icons8-zdanie-s-terrasoj-na-kryse-100.png',
+        furniture: 'https://i.postimg.cc/SYhvxZ0w/icons8-mebel-100.png',
+        clothes: 'https://i.postimg.cc/4HgSx8kZ/icons8-futbolka-100.png',
+        tech: 'https://i.postimg.cc/xN241sDQ/icons8-printer-100.png',
+        work: 'https://i.postimg.cc/xN241sD2/icons8-rabota-100.png',
+      },
+    };
 
     const state = {
       activeCategory: 'all',
-      searchQuery: '',
-      user: { id: 668567292, name: 'Гость', photo: 'https://i.postimg.cc/gLWT2MFG/icons8-user-64.png' },
-      ads: []
+      ads: [], // Сюда будут прилетать реальные товары с сервера
+      isLoading: true
     };
 
     const categories = [
-      { id: 'all', title: 'Все', icon: 'https://i.postimg.cc/5QSkYwbd/polka-logo-2-png.png' },
-      { id: 'tech', title: 'Техника', icon: 'https://i.postimg.cc/xN241sDQ/icons8-printer-100.png' },
-      { id: 'clothes', title: 'Одежда', icon: 'https://i.postimg.cc/4HgSx8kZ/icons8-futbolka-100.png' },
-      { id: 'home', title: 'Жильё', icon: 'https://i.postimg.cc/4HgSx8CD/icons8-zdanie-s-terrasoj-na-kryse-100.png' },
-      { id: 'work', title: 'Работа', icon: 'https://i.postimg.cc/xN241sD2/icons8-rabota-100.png' },
+      { id: 'all', title: 'Все', icon: assets.logo },
+      { id: 'auto', title: 'Авто', icon: assets.categories.auto },
+      { id: 'tech', title: 'Техника', icon: assets.categories.tech },
+      { id: 'home', title: 'Жильё', icon: assets.categories.home },
+      { id: 'furniture', title: 'Мебель', icon: assets.categories.furniture },
+      { id: 'clothes', title: 'Одежда', icon: assets.categories.clothes },
+      { id: 'work', title: 'Работа', icon: assets.categories.work },
     ];
-
-    function switchScreen(screenId) {
-      document.querySelectorAll('.app-screen').forEach(s => s.style.display = 'none');
-      document.getElementById('screen-' + screenId).style.display = 'block';
-      
-      document.getElementById('nav-home').classList.remove('active');
-      if(screenId === 'feed') document.getElementById('nav-home').classList.add('active');
-    }
 
     async function initVK() {
       try {
         await vkBridge.send('VKWebAppInit');
-        const userData = await vkBridge.send('VKWebAppGetUserInfo');
-        if (userData) {
-          state.user.id = userData.id;
-          state.user.name = userData.first_name;
-          state.user.photo = userData.photo_200;
-          document.getElementById('user-avatar').src = state.user.photo;
-        }
       } catch (e) {
-        document.getElementById('user-avatar').src = state.user.photo;
-        console.log('Запущено вне VK, используем тестовый профиль.');
+        console.log("VK Bridge Init Error:", e);
       }
     }
 
-    function renderCategories() {
-      const container = document.getElementById('categories-list');
-      container.innerHTML = categories.map(cat => `
-        <div class="cat ${state.activeCategory === cat.id ? 'active' : ''}" onclick="selectCategory('${cat.id}')">
-          <img src="${cat.icon}" />
-          <div class="cat-title">${cat.title}</div>
-        </div>
-      `).join('');
-    }
-
+    // 🌟 Функция асинхронной загрузки объявлений с сервера
     async function loadAds() {
       try {
-        let url = `${API_URL}/ads?category=${state.activeCategory}&query=${encodeURIComponent(state.searchQuery)}`;
-        const response = await fetch(url);
-        state.ads = await response.json();
+        state.isLoading = true;
+        render();
         
-        const feedContainer = document.getElementById('feed-container');
-        if (state.ads.length === 0) {
-          feedContainer.innerHTML = `<div style="grid-column:1/-1; text-align:center; color:var(--sub); padding:40px 0;">Объявлений нет</div>`;
-          return;
-        }
+        const response = await fetch(`${API_URL}/ads`);
+        if (!response.ok) throw new Error('Ошибка сети');
+        
+        state.ads = await response.json();
+      } catch (e) {
+        console.error("Не удалось загрузить объявления с сервера:", e);
+        state.ads = [];
+      } finally {
+        state.isLoading = false;
+        render();
+      }
+    }
 
-        feedContainer.innerHTML = state.ads.map(ad => `
-          <div class="card" onclick="openAdDetails(${ad.id})">
-            <div class="card-photo"><img src="${ad.photo}" loading="lazy" /></div>
+    function render() {
+      const app = document.getElementById('app');
+
+      // Фильтруем товары по выбранной категории на фронтенде
+      const filteredAds = state.activeCategory === 'all'
+        ? state.ads
+        : state.ads.filter(ad => ad.category === state.activeCategory);
+
+      // Генерируем HTML для ленты объявлений
+      let feedHtml = '';
+      if (state.isLoading) {
+        feedHtml = `<div class="empty-feed">🔄 Загрузка объявлений с Полки...</div>`;
+      } else if (filteredAds.length === 0) {
+        feedHtml = `<div class="empty-feed">📦 Тут пока пусто. Станьте первым, кто добавит товар в этой категории через бота!</div>`;
+      } else {
+        feedHtml = filteredAds.map(ad => `
+          <div class="card">
+            <div class="card-photo">
+              <img src="${ad.photo}" />
+              <div class="fav"><span>♡</span></div>
+            </div>
+
             <div class="card-body">
-              <div class="price">${ad.price}</div>
-              <div class="title">${ad.title}</div>
-              <div class="meta">📍 ${ad.city}</div>
+              <div class="price">
+                ${Number(ad.price).toLocaleString('ru-RU')} ₽
+              </div>
+
+              <div class="title">
+                ${ad.title}
+              </div>
+
+              <div class="meta">
+                <div>📍 ${ad.city || 'Удмуртия'}</div>
+                <div class="seller">
+                  <img src="${assets.user}" />
+                  ${ad.seller}
+                </div>
+              </div>
             </div>
           </div>
         `).join('');
-      } catch (e) {
-        console.error(e);
       }
+
+      app.innerHTML = `
+        <div class="topbar">
+          <div class="topbar-row">
+            <div class="logo-wrap">
+              <img class="logo" src="${assets.logo}" />
+              <div class="brand">Полка</div>
+            </div>
+
+            <div class="user-btn">
+              <img src="${assets.user}" />
+            </div>
+          </div>
+
+          <div class="search">
+            🔍
+            <input placeholder="Поиск объявлений..." />
+          </div>
+        </div>
+
+        <div class="hero">
+          <h2>Маркетплейс<br />Удмуртии</h2>
+          <p>Покупай, продавай и находи всё рядом.</p>
+          <img class="hero-pattern" src="${assets.pattern}" />
+        </div>
+
+        <div class="categories">
+          ${categories.map(cat => `
+            <div
+              class="cat ${state.activeCategory === cat.id ? 'active' : ''}"
+              onclick="selectCategory('${cat.id}')"
+            >
+              <img src="${cat.icon}" />
+              <div class="cat-title">${cat.title}</div>
+            </div>
+          `).join('')}
+        </div>
+
+        <div class="page-title">Рекомендации</div>
+
+        <div class="feed">
+          ${feedHtml}
+        </div>
+
+        <div class="bottom-nav">
+          <div class="nav-item active">
+            <div class="nav-icon">🏠</div>Главная
+          </div>
+          <div class="nav-item">
+            <div class="nav-icon">♡</div>Избранное
+          </div>
+          <div class="create-btn">+</div>
+          <div class="nav-item">
+            <div class="nav-icon">💬</div>Чаты
+          </div>
+          <div class="nav-item">
+            <div class="nav-icon">👤</div>Профиль
+          </div>
+        </div>
+      `;
     }
 
     function selectCategory(id) {
       state.activeCategory = id;
-      renderCategories();
-      loadAds();
+      render();
     }
 
-    let searchTimeout;
-    function handleSearch(val) {
-      state.searchQuery = val;
-      clearTimeout(searchTimeout);
-      searchTimeout = setTimeout(() => loadAds(), 400);
-    }
-
-    // Открытие карточки конкретного товара
-    async function openAdDetails(id) {
-      try {
-        const response = await fetch(`${API_URL}/ads/${id}`);
-        if (!response.ok) return;
-        const ad = await response.json();
-
-        document.getElementById('det-photo').src = ad.photo;
-        document.getElementById('det-price').innerText = ad.price;
-        document.getElementById('det-title').innerText = ad.title;
-        document.getElementById('det-meta').innerText = `📍 Город: ${ad.city} | Категория: ${ad.category} | Состояние: ${ad.condition || 'Не указано'}`;
-        document.getElementById('det-desc').innerText = ad.description;
-        document.getElementById('det-chat-link').href = `https://vk.com/im?sel=${ad.user_id}`;
-
-        window.location.hash = `ad_id=${id}`;
-        switchScreen('details');
-      } catch(e) {
-        alert('Ошибка загрузки товара.');
-      }
-    }
-
-    // Отправка формы создания объявления на сервер
-    async function submitNewAd(event) {
-      event.preventDefault();
-      
-      const defaultPhoto = 'https://images.unsplash.com/photo-1579546929518-9e396f3cc809?q=80&w=600';
-      const payload = {
-        user_id: state.user.id,
-        title: document.getElementById('form-title').value,
-        category: document.getElementById('form-category').value,
-        price: parseInt(document.getElementById('form-price').value) || 0,
-        city: document.getElementById('form-city').value,
-        condition: document.getElementById('form-condition').value,
-        description: document.getElementById('form-description').value,
-        photo: document.getElementById('form-photo').value || defaultPhoto
-      };
-
-      try {
-        const response = await fetch(`${API_URL}/ads`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payload)
-        });
-
-        if (response.ok) {
-          alert('Ура! Объявление успешно создано и опубликовано в каналы ВКонтакте!');
-          document.getElementById('addAdForm').reset();
-          switchScreen('feed');
-          loadAds();
-        } else {
-          alert('Ошибка публикации на сервере.');
-        }
-      } catch (e) {
-        alert('Не удалось связаться с сервером.');
-      }
-    }
-
-    // Проверка диплинков при открытии из постов
-    function checkDirectLinks() {
-      const hash = window.location.hash;
-      if (hash && hash.startsWith('#ad_id=')) {
-        const id = parseInt(hash.replace('#ad_id=', ''));
-        if (id) openAdDetails(id);
-      }
-    }
-
-    // Инициализация
-    window.onload = async () => {
-      await initVK();
-      renderCategories();
-      await loadAds();
-      checkDirectLinks();
-    };
+    // Запуск процессов
+    initVK();
+    render();
+    loadAds(); // Запрашиваем данные с сервера сразу при открытии
   </script>
 </body>
 </html>
