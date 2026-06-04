@@ -2,402 +2,160 @@
 <html lang="ru">
 <head>
   <meta charset="UTF-8" />
-  <meta
-    name="viewport"
-    content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no"
-  />
-
+  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no" />
   <title>Полка</title>
-
   <script src="https://unpkg.com/@vkontakte/vk-bridge/dist/browser.min.js"></script>
-
   <style>
     * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
+      margin: 0; padding: 0; box-sizing: border-box;
       -webkit-tap-highlight-color: transparent;
       font-family: -apple-system, BlinkMacSystemFont, Inter, sans-serif;
     }
-
     :root {
-      --bg: #f2f5f8;
-      --card: #ffffff;
-
-      --accent: #4c7eff;
-      --accent2: #6ea1ff;
-
-      --text: #121212;
-      --sub: #7c8591;
-
-      --border: #e8edf3;
-
-      --shadow:
-        0 4px 20px rgba(0,0,0,.05);
-
-      --radius: 22px;
+      --bg: #f2f5f8; --card: #ffffff;
+      --accent: #4c7eff; --accent2: #6ea1ff;
+      --text: #121212; --sub: #7c8591;
+      --border: #e8edf3; --shadow: 0 4px 20px rgba(0,0,0,.05);
     }
-
-    body {
-      background: var(--bg);
-      color: var(--text);
-      overflow-x: hidden;
-    }
-
-    #app {
-      min-height: 100vh;
-      padding-bottom: 100px;
-    }
-
-    .topbar {
-      position: sticky;
-      top: 0;
-      z-index: 100;
-
-      background: rgba(242,245,248,.82);
-      backdrop-filter: blur(16px);
-
-      padding:
-        env(safe-area-inset-top)
-        18px
-        16px
-        16px;
-    }
-
-    .topbar-row {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-    }
-
-    .logo-wrap {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-
-    .logo {
-      width: 42px;
-      height: 42px;
-      object-fit: contain;
-    }
-
-    .brand {
-      font-size: 24px;
-      font-weight: 800;
-      letter-spacing: -.4px;
-    }
-
-    .user-btn {
-      width: 42px;
-      height: 42px;
-
-      border-radius: 50%;
-      background: white;
-
-      display: flex;
-      align-items: center;
-      justify-content: center;
-
-      box-shadow: var(--shadow);
-    }
-
-    .user-btn img {
-      width: 22px;
-      opacity: .85;
-    }
-
-    .search {
-      margin-top: 16px;
-
-      background: white;
-      border-radius: 18px;
-
-      padding: 14px 16px;
-
-      display: flex;
-      align-items: center;
-      gap: 10px;
-
-      box-shadow: var(--shadow);
-    }
-
-    .search input {
-      border: none;
-      outline: none;
-      width: 100%;
-      font-size: 16px;
-      background: transparent;
-    }
-
-    .categories {
-      display: flex;
-      gap: 12px;
-      overflow-x: auto;
-
-      padding:
-        18px
-        16px
-        8px;
-    }
-
-    .categories::-webkit-scrollbar {
-      display: none;
-    }
-
-    .cat {
-      min-width: 92px;
-
-      background: white;
-      border-radius: 22px;
-
-      padding: 14px 10px;
-
-      text-align: center;
-
-      box-shadow: var(--shadow);
-
-      transition: .2s;
-    }
-
-    .cat.active {
-      background: var(--accent);
-      color: white;
-    }
-
-    .cat img {
-      width: 38px;
-      height: 38px;
-      object-fit: contain;
-      margin-bottom: 8px;
-    }
-
-    .cat-title {
-      font-size: 13px;
-      font-weight: 700;
-    }
-
-    .feed {
-      padding: 8px 16px;
-      display: grid;
-      gap: 18px;
-    }
-
-    .card {
-      background: white;
-      border-radius: 28px;
-      overflow: hidden;
-      box-shadow: var(--shadow);
-    }
-
-    .card-photo {
-      position: relative;
-      aspect-ratio: 1/1;
-      overflow: hidden;
-    }
-
-    .card-photo img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-    }
-
-    .fav {
-      position: absolute;
-      top: 14px;
-      right: 14px;
-
-      width: 42px;
-      height: 42px;
-
-      border-radius: 50%;
-      background: rgba(255,255,255,.9);
-
-      display: flex;
-      align-items: center;
-      justify-content: center;
-
-      backdrop-filter: blur(12px);
-    }
-
-    .fav span {
-      font-size: 20px;
-    }
-
-    .card-body {
-      padding: 16px;
-    }
-
-    .price {
-      font-size: 26px;
-      font-weight: 800;
-      margin-bottom: 8px;
-    }
-
-    .title {
-      font-size: 17px;
-      font-weight: 700;
-      line-height: 1.35;
-
-      margin-bottom: 10px;
-    }
-
-    .meta {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-
-      color: var(--sub);
-      font-size: 14px;
-    }
-
-    .seller {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .seller img {
-      width: 22px;
-      opacity: .7;
-    }
-
-    .bottom-nav {
-      position: fixed;
-      left: 16px;
-      right: 16px;
-      bottom:
-        calc(env(safe-area-inset-bottom) + 12px);
-
-      background: rgba(255,255,255,.92);
-
-      border-radius: 28px;
-
-      padding: 12px 10px;
-
-      display: flex;
-      justify-content: space-around;
-
-      backdrop-filter: blur(16px);
-
-      box-shadow:
-        0 8px 40px rgba(0,0,0,.1);
-
-      z-index: 500;
-    }
-
-    .nav-item {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 6px;
-
-      font-size: 12px;
-      font-weight: 700;
-
-      color: #8b97a6;
-    }
-
-    .nav-item.active {
-      color: var(--accent);
-    }
-
-    .nav-icon {
-      font-size: 22px;
-    }
-
-    .create-btn {
-      transform: translateY(-22px);
-
-      width: 64px;
-      height: 64px;
-
-      border-radius: 50%;
-      background: linear-gradient(
-        135deg,
-        var(--accent),
-        var(--accent2)
-      );
-
-      color: white;
-
-      display: flex;
-      align-items: center;
-      justify-content: center;
-
-      font-size: 34px;
-      font-weight: 300;
-
-      box-shadow:
-        0 10px 30px rgba(76,126,255,.35);
-    }
-
-    .hero {
-      margin: 16px;
-      padding: 24px;
-
-      border-radius: 30px;
-
-      background:
-        linear-gradient(
-          135deg,
-          #4c7eff,
-          #75a3ff
-        );
-
-      color: white;
-
-      position: relative;
-      overflow: hidden;
-    }
-
-    .hero h2 {
-      font-size: 30px;
-      line-height: 1.1;
-      margin-bottom: 10px;
-    }
-
-    .hero p {
-      opacity: .92;
-      line-height: 1.45;
-      max-width: 70%;
-    }
-
-    .hero-pattern {
-      position: absolute;
-      right: -10px;
-      bottom: -10px;
-
-      width: 140px;
-      opacity: .12;
-    }
-
-    .page-title {
-      font-size: 22px;
-      font-weight: 800;
-      padding: 16px;
-    }
+    body { background: var(--bg); color: var(--text); overflow-x: hidden; }
+    #app { min-height: 100vh; padding-bottom: 110px; }
     
-    .empty-feed {
-      text-align: center;
-      padding: 40px 20px;
-      color: var(--sub);
-      font-size: 16px;
+    /* Шапка */
+    .topbar {
+      position: sticky; top: 0; z-index: 100;
+      background: rgba(242,245,248,.82); backdrop-filter: blur(16px);
+      padding: env(safe-area-inset-top) 18px 16px 16px;
+    }
+    .topbar-row { display: flex; align-items: center; justify-content: space-between; }
+    .logo-wrap { display: flex; align-items: center; gap: 12px; }
+    .logo { width: 42px; height: 42px; object-fit: contain; }
+    .brand { font-size: 24px; font-weight: 800; letter-spacing: -.4px; }
+    .top-actions { display: flex; gap: 8px; }
+    .user-btn, .mock-btn {
+      height: 42px; border-radius: 14px; background: white;
+      display: flex; align-items: center; justify-content: center; box-shadow: var(--shadow); cursor: pointer;
+    }
+    .user-btn { width: 42px; border-radius: 50%; }
+    .mock-btn { padding: 0 12px; font-size: 12px; font-weight: 700; color: var(--accent); border: 1px dashed var(--accent); }
+    .user-btn img { width: 22px; opacity: .85; }
+    .search { margin-top: 16px; background: white; border-radius: 18px; padding: 14px 16px; display: flex; align-items: center; gap: 10px; box-shadow: var(--shadow); }
+    .search input { border: none; outline: none; width: 100%; font-size: 16px; background: transparent; }
+    
+    /* Категории */
+    .categories { display: flex; gap: 12px; overflow-x: auto; padding: 18px 16px 8px; }
+    .categories::-webkit-scrollbar { display: none; }
+    .cat { min-width: 92px; background: white; border-radius: 22px; padding: 14px 10px; text-align: center; box-shadow: var(--shadow); cursor: pointer; }
+    .cat.active { background: var(--accent); color: white; }
+    .cat img { width: 38px; height: 38px; object-fit: contain; margin-bottom: 8px; }
+    .cat-title { font-size: 13px; font-weight: 700; }
+    
+    /* Лента */
+    .feed { padding: 8px 16px; display: grid; gap: 18px; }
+    .card { background: white; border-radius: 28px; overflow: hidden; box-shadow: var(--shadow); }
+    .card-photo { position: relative; aspect-ratio: 1/1; overflow: hidden; }
+    .card-photo img { width: 100%; height: 100%; object-fit: cover; }
+    .card-body { padding: 16px; }
+    .price { font-size: 26px; font-weight: 800; margin-bottom: 8px; }
+    .title { font-size: 17px; font-weight: 700; line-height: 1.35; margin-bottom: 10px; }
+    .meta { display: flex; align-items: center; justify-content: space-between; color: var(--sub); font-size: 14px; }
+    .seller { display: flex; align-items: center; gap: 8px; }
+    .seller img { width: 22px; opacity: .7; }
+    
+    /* Навигация */
+    .bottom-nav {
+      position: fixed; left: 16px; right: 16px; bottom: calc(env(safe-area-inset-bottom) + 12px);
+      background: rgba(255,255,255,.92); border-radius: 28px; padding: 12px 10px;
+      display: flex; justify-content: space-around; backdrop-filter: blur(16px);
+      box-shadow: 0 8px 40px rgba(0,0,0,.1); z-index: 500;
+    }
+    .nav-item { display: flex; flex-direction: column; align-items: center; gap: 6px; font-size: 12px; font-weight: 700; color: #8b97a6; cursor: pointer; }
+    .nav-item.active { color: var(--accent); }
+    .nav-icon { font-size: 22px; }
+    .create-btn { transform: translateY(-22px); width: 64px; height: 64px; border-radius: 50%; background: linear-gradient(135deg, var(--accent), var(--accent2)); color: white; display: flex; align-items: center; justify-content: center; font-size: 34px; font-weight: 300; box-shadow: 0 10px 30px rgba(76,126,255,.35); cursor: pointer; }
+    
+    .hero { margin: 16px; padding: 24px; border-radius: 30px; background: linear-gradient(135deg, #4c7eff, #75a3ff); color: white; position: relative; overflow: hidden; }
+    .hero h2 { font-size: 30px; line-height: 1.1; margin-bottom: 10px; }
+    .hero p { opacity: .92; line-height: 1.45; max-width: 70%; }
+    .page-title { font-size: 22px; font-weight: 800; padding: 16px; }
+    .empty-feed { text-align: center; padding: 40px 20px; color: var(--sub); font-size: 16px; }
+    .tab-content { padding: 20px; text-align: center; margin-top: 40px; }
+
+    /* Всплывающее окно (Модалка) формы создания */
+    .modal-overlay {
+      position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.4); z-index: 2000;
+      display: none; align-items: flex-end; justify-content: center;
+    }
+    .modal-overlay.active { display: flex; }
+    .modal-content {
+      background: white; width: 100%; max-width: 500px;
+      border-top-left-radius: 32px; border-top-right-radius: 32px;
+      padding: 24px 24px calc(env(safe-area-inset-bottom) + 24px);
+      box-shadow: 0 -10px 40px rgba(0,0,0,0.15);
+      animation: slideUp 0.3s ease-out;
+    }
+    @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+    .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+    .modal-title { font-size: 22px; font-weight: 800; }
+    .close-modal { font-size: 28px; color: var(--sub); cursor: pointer; }
+    .form-group { margin-bottom: 16px; }
+    .form-group label { display: block; font-size: 14px; font-weight: 700; color: var(--sub); margin-bottom: 6px; }
+    .form-group input, .form-group select {
+      width: 100%; padding: 14px; border: 1px solid var(--border);
+      border-radius: 16px; background: var(--bg); font-size: 16px; outline: none;
+    }
+    .form-submit {
+      width: 100%; padding: 16px; border: none; border-radius: 18px;
+      background: var(--accent); color: white; font-size: 16px; font-weight: 700;
+      cursor: pointer; margin-top: 10px; box-shadow: 0 4px 15px rgba(76,126,255,0.2);
     }
   </style>
 </head>
-
 <body>
   <div id="app"></div>
 
+  <!-- Окно подачи объявления -->
+  <div class="modal-overlay" id="createModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <div class="modal-title">Новое объявление</div>
+        <div class="close-modal" onclick="toggleModal(false)">&times;</div>
+      </div>
+      <form onsubmit="handleCreateAd(event)">
+        <div class="form-group">
+          <label>Название товара</label>
+          <input type="text" id="adTitle" placeholder="Например, iPhone 12 Pro" required />
+        </div>
+        <div class="form-group">
+          <label>Цена (₽)</label>
+          <input type="number" id="adPrice" placeholder="0" required />
+        </div>
+        <div class="form-group">
+          <label>Категория</label>
+          <select id="adCategory">
+            <option value="tech">Техника</option>
+            <option value="auto">Автомобили</option>
+            <option value="home">Жилье</option>
+            <option value="furniture">Мебель</option>
+            <option value="clothes">Одежда</option>
+            <option value="work">Работа</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Город Удмуртии</label>
+          <input type="text" id="adCity" placeholder="Ижевск, Воткинск, Глазов..." value="Ижевск" />
+        </div>
+        <button type="submit" class="form-submit">Разместить на Полке</button>
+      </form>
+    </div>
+  </div>
+
   <script>
-    // Твой живой адрес туннеля ngrok
     const API_URL = 'https://endorphin-trump-cavalier.ngrok-free.dev/api';
 
     const assets = {
       logo: 'https://i.postimg.cc/5QSkYwbd/polka-logo-2-png.png',
       user: 'https://i.postimg.cc/gLWT2MFG/icons8-user-64.png',
-      pattern: 'https://i.postimg.cc/kRvh6x9L/trafaret-papik-pro-tmxp-p-trafareti-solyarnii-znak-udmurtii-1-Photoroom-2.png',
       categories: {
         auto: 'https://i.postimg.cc/sGrNgnFL/icons8-avtomobil-100.png',
         home: 'https://i.postimg.cc/4HgSx8CD/icons8-zdanie-s-terrasoj-na-kryse-100.png',
@@ -405,12 +163,13 @@
         clothes: 'https://i.postimg.cc/4HgSx8kZ/icons8-futbolka-100.png',
         tech: 'https://i.postimg.cc/xN241sDQ/icons8-printer-100.png',
         work: 'https://i.postimg.cc/xN241sD2/icons8-rabota-100.png',
-      },
+      }
     };
 
     const state = {
+      activeTab: 'home',
       activeCategory: 'all',
-      ads: [], // Сюда будут прилетать реальные товары с сервера
+      ads: [],
       isLoading: true
     };
 
@@ -425,73 +184,153 @@
     ];
 
     async function initVK() {
+      try { await vkBridge.send('VKWebAppInit'); } catch (e) { console.log(e); }
+    }
+
+    async function loadAds() {
+      if (state.activeTab !== 'home') return;
       try {
-        await vkBridge.send('VKWebAppInit');
+        state.isLoading = true; render();
+        const response = await fetch(`${API_URL}/ads`);
+        if (!response.ok) throw new Error();
+        state.ads = await response.json();
       } catch (e) {
-        console.log("VK Bridge Init Error:", e);
+        state.ads = [];
+      } finally {
+        state.isLoading = false; render();
       }
     }
 
-    // 🌟 Функция асинхронной загрузки объявлений с сервера
-    async function loadAds() {
-      try {
-        state.isLoading = true;
-        render();
-        
-        const response = await fetch(`${API_URL}/ads`);
-        if (!response.ok) throw new Error('Ошибка сети');
-        
-        state.ads = await response.json();
-      } catch (e) {
-        console.error("Не удалось загрузить объявления с сервера:", e);
-        state.ads = [];
-      } finally {
-        state.isLoading = false;
-        render();
+    // Открытие/закрытие нашей новой формы
+    function toggleModal(show) {
+      const modal = document.getElementById('createModal');
+      if (show) {
+        modal.classList.add('active');
+      } else {
+        modal.classList.remove('active');
       }
+    }
+
+    // Обработка отправки формы создания
+    function handleCreateAd(event) {
+      event.preventDefault();
+      
+      const title = document.getElementById('adTitle').value;
+      const price = document.getElementById('adPrice').value;
+      const category = document.getElementById('adCategory').value;
+      const city = document.getElementById('adCity').value;
+
+      // Создаем объект объявления
+      const newAd = {
+        id: Date.now(),
+        user_id: 123456,
+        title: title,
+        price: Number(price),
+        category: category,
+        city: city || 'Ижевск',
+        photo: "https://i.ibb.co/cKQX5bpD/Frame-184.png", // Заглушка для фото
+        seller: "Вы (через приложение)"
+      };
+
+      // 1. Добавляем мгновенно на экран клиента
+      state.ads.unshift(newAd);
+      
+      // 2. Закрываем форму и перерисовываем интерфейс
+      toggleModal(false);
+      render();
+
+      // Очищаем поля формы
+      document.getElementById('adTitle').value = '';
+      document.getElementById('adPrice').value = '';
+
+      // 3. Пытаемся отправить данные на ваш сервер (если бэкенд поддерживает POST)
+      fetch(`${API_URL}/ads`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(newAd)
+      }).catch(err => console.log("Локальное сохранение сработало. Для сохранения на бэкенде настройте POST-метод."));
+    }
+
+    function injectMockAd() {
+      const mockTemplates = [
+        { title: "ВАЗ 2114, 2011", price: 135000, category: "auto", city: "Ижевск" },
+        { title: "iPhone 13 Pro 256GB", price: 54000, category: "tech", city: "Воткинск" },
+        { title: "1-к квартира, 40м²", price: 3200000, category: "home", city: "Ижевск" },
+        { title: "Кожаная куртка Zara", price: 35000, category: "clothes", city: "Глазов" }
+      ];
+      
+      const randomTemplate = mockTemplates[Math.floor(Math.random() * mockTemplates.length)];
+      const newAd = {
+        id: Date.now(),
+        user_id: 668567292,
+        title: randomTemplate.title,
+        price: randomTemplate.price,
+        category: randomTemplate.category,
+        city: randomTemplate.city,
+        photo: "https://i.ibb.co/cKQX5bpD/Frame-184.png",
+        seller: "Тестовый Бот"
+      };
+      
+      state.ads.unshift(newAd);
+      render();
     }
 
     function render() {
       const app = document.getElementById('app');
+      let mainContentHtml = '';
 
-      // Фильтруем товары по выбранной категории на фронтенде
-      const filteredAds = state.activeCategory === 'all'
-        ? state.ads
-        : state.ads.filter(ad => ad.category === state.activeCategory);
+      if (state.activeTab === 'home') {
+        const filteredAds = state.activeCategory === 'all'
+          ? state.ads
+          : state.ads.filter(ad => ad.category === state.activeCategory);
 
-      // Генерируем HTML для ленты объявлений
-      let feedHtml = '';
-      if (state.isLoading) {
-        feedHtml = `<div class="empty-feed">🔄 Загрузка объявлений с Полки...</div>`;
-      } else if (filteredAds.length === 0) {
-        feedHtml = `<div class="empty-feed">📦 Тут пока пусто. Станьте первым, кто добавит товар в этой категории через бота!</div>`;
-      } else {
-        feedHtml = filteredAds.map(ad => `
-          <div class="card">
-            <div class="card-photo">
-              <img src="${ad.photo}" />
-              <div class="fav"><span>♡</span></div>
-            </div>
-
-            <div class="card-body">
-              <div class="price">
-                ${Number(ad.price).toLocaleString('ru-RU')} ₽
+        let feedHtml = '';
+        if (state.isLoading) {
+          feedHtml = `<div class="empty-feed">🔄 Загрузка объявлений...</div>`;
+        } else if (filteredAds.length === 0) {
+          feedHtml = `<div class="empty-feed">📦 Тут пока пусто. Нажмите на центральный «+» внизу, чтобы разместить первое объявление!</div>`;
+        } else {
+          feedHtml = filteredAds.map(ad => `
+            <div class="card">
+              <div class="card-photo">
+                <img src="${ad.photo}" />
               </div>
-
-              <div class="title">
-                ${ad.title}
-              </div>
-
-              <div class="meta">
-                <div>📍 ${ad.city || 'Удмуртия'}</div>
-                <div class="seller">
-                  <img src="${assets.user}" />
-                  ${ad.seller}
+              <div class="card-body">
+                <div class="price">${Number(ad.price).toLocaleString('ru-RU')} ₽</div>
+                <div class="title">${ad.title}</div>
+                <div class="meta">
+                  <div>📍 ${ad.city || 'Удмуртия'}</div>
+                  <div class="seller"><img src="${assets.user}" /> ${ad.seller || 'Продавец'}</div>
                 </div>
               </div>
             </div>
+          `).join('');
+        }
+
+        mainContentHtml = `
+          <div class="hero">
+            <h2>Маркетплейс<br />Удмуртии</h2>
+            <p>Покупай, продавай и находи всё рядом.</p>
           </div>
-        `).join('');
+          <div class="categories">
+            ${categories.map(cat => `
+              <div class="cat ${state.activeCategory === cat.id ? 'active' : ''}" onclick="selectCategory('${cat.id}')">
+                <img src="${cat.icon}" />
+                <div class="cat-title">${cat.title}</div>
+              </div>
+            `).join('')}
+          </div>
+          <div class="page-title">Рекомендации</div>
+          <div class="feed">${feedHtml}</div>
+        `;
+      } else {
+        const tabTitles = { favorites: '❤️ Избранное', chats: '💬 Ваши сообщения', profile: '👤 Личный профиль' };
+        mainContentHtml = `
+          <div class="tab-content">
+            <h2>${tabTitles[state.activeTab]}</h2>
+            <p style="color: var(--sub); margin-top: 10px;">Этот раздел находится в разработке.</p>
+          </div>
+        `;
       }
 
       app.innerHTML = `
@@ -501,54 +340,28 @@
               <img class="logo" src="${assets.logo}" />
               <div class="brand">Полка</div>
             </div>
-
-            <div class="user-btn">
-              <img src="${assets.user}" />
+            <div class="top-actions">
+              <div class="mock-btn" onclick="injectMockAd()">+ Авто-тест</div>
+              <div class="user-btn" onclick="switchTab('profile')"><img src="${assets.user}" /></div>
             </div>
           </div>
-
-          <div class="search">
-            🔍
-            <input placeholder="Поиск объявлений..." />
-          </div>
+          ${state.activeTab === 'home' ? '<div class="search">🔍 <input placeholder="Поиск объявлений..." /></div>' : ''}
         </div>
 
-        <div class="hero">
-          <h2>Маркетплейс<br />Удмуртии</h2>
-          <p>Покупай, продавай и находи всё рядом.</p>
-          <img class="hero-pattern" src="${assets.pattern}" />
-        </div>
-
-        <div class="categories">
-          ${categories.map(cat => `
-            <div
-              class="cat ${state.activeCategory === cat.id ? 'active' : ''}"
-              onclick="selectCategory('${cat.id}')"
-            >
-              <img src="${cat.icon}" />
-              <div class="cat-title">${cat.title}</div>
-            </div>
-          `).join('')}
-        </div>
-
-        <div class="page-title">Рекомендации</div>
-
-        <div class="feed">
-          ${feedHtml}
-        </div>
+        ${mainContentHtml}
 
         <div class="bottom-nav">
-          <div class="nav-item active">
+          <div class="nav-item ${state.activeTab === 'home' ? 'active' : ''}" onclick="switchTab('home')">
             <div class="nav-icon">🏠</div>Главная
           </div>
-          <div class="nav-item">
+          <div class="nav-item ${state.activeTab === 'favorites' ? 'active' : ''}" onclick="switchTab('favorites')">
             <div class="nav-icon">♡</div>Избранное
           </div>
-          <div class="create-btn">+</div>
-          <div class="nav-item">
+          <div class="create-btn" onclick="toggleModal(true)">+</div>
+          <div class="nav-item ${state.activeTab === 'chats' ? 'active' : ''}" onclick="switchTab('chats')">
             <div class="nav-icon">💬</div>Чаты
           </div>
-          <div class="nav-item">
+          <div class="nav-item ${state.activeTab === 'profile' ? 'active' : ''}" onclick="switchTab('profile')">
             <div class="nav-icon">👤</div>Профиль
           </div>
         </div>
@@ -560,10 +373,15 @@
       render();
     }
 
-    // Запуск процессов
+    function switchTab(tabId) {
+      state.activeTab = tabId;
+      render();
+      if (tabId === 'home') loadAds();
+    }
+
     initVK();
     render();
-    loadAds(); // Запрашиваем данные с сервера сразу при открытии
+    loadAds();
   </script>
 </body>
 </html>
