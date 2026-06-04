@@ -26,8 +26,8 @@
   /* NAV */
   .nav { position: sticky; top: 0; z-index: 100; background: var(--card); border-bottom: 1px solid var(--border); padding: calc(var(--safe-top) + 10px) 16px 10px; display: flex; align-items: center; gap: 10px; }
   .nav-back { width: 36px; height: 36px; border: none; background: var(--bg); border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; }
+  .nav-logo { height: 32px; flex-shrink: 0; }
   .nav-title { font-size: 17px; font-weight: 600; flex: 1; }
-  .nav-logo { font-size: 17px; font-weight: 700; color: var(--accent); }
 
   /* TABS */
   .tabs { display: flex; background: var(--card); border-bottom: 1px solid var(--border); }
@@ -43,8 +43,10 @@
   /* FILTERS */
   .filters { padding: 8px 12px; display: flex; gap: 8px; overflow-x: auto; background: var(--card); border-bottom: 1px solid var(--border); scrollbar-width: none; }
   .filters::-webkit-scrollbar { display: none; }
-  .filter-chip { white-space: nowrap; border: 1.5px solid var(--border); border-radius: 20px; padding: 5px 12px; font-size: 13px; cursor: pointer; background: var(--bg); color: var(--text); flex-shrink: 0; transition: all .15s; }
+  .filter-chip { white-space: nowrap; border: 1.5px solid var(--border); border-radius: 20px; padding: 5px 12px; font-size: 13px; cursor: pointer; background: var(--bg); color: var(--text); flex-shrink: 0; transition: all .15s; display: inline-flex; align-items: center; gap: 6px; }
   .filter-chip.active { background: var(--accent); color: #fff; border-color: var(--accent); }
+  .filter-chip img { width: 16px; height: 16px; object-fit: contain; }
+  .filter-chip.active img { filter: brightness(0) invert(1); }
 
   /* CARDS */
   .feed { padding: 10px 12px; display: flex; flex-direction: column; gap: 10px; }
@@ -53,14 +55,15 @@
   .card-img { width: 100%; height: 180px; object-fit: cover; background: var(--bg); }
   .card-img-placeholder { width: 100%; height: 140px; background: var(--bg); display: flex; align-items: center; justify-content: center; font-size: 40px; color: #ccc; }
   .card-body { padding: 12px; }
-  .card-title { font-size: 15px; font-weight: 600; margin-bottom: 4px; }
+  .card-title { font-size: 15px; font-weight: 600; margin-bottom: 4px; display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+  .card-cat-icon { width: 16px; height: 16px; object-fit: contain; opacity: 0.6; }
   .card-price { font-size: 18px; font-weight: 700; color: var(--accent); margin-bottom: 6px; }
-  .card-meta { font-size: 12px; color: var(--sub); display: flex; gap: 10px; flex-wrap: wrap; }
+  .card-meta { font-size: 12px; color: var(--sub); display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
   .badge { display: inline-block; padding: 2px 7px; border-radius: 6px; font-size: 11px; font-weight: 600; }
   .badge-new { background: #e8f5e9; color: #2e7d32; }
   .badge-used { background: #fff3e0; color: #e65100; }
 
-  /* AD DETAIL */
+  /* DETAIL */
   .detail-photos { position: relative; }
   .detail-photo { width: 100%; max-height: 320px; object-fit: cover; }
   .photo-counter { position: absolute; bottom: 10px; right: 12px; background: rgba(0,0,0,.5); color: #fff; font-size: 12px; padding: 3px 8px; border-radius: 10px; }
@@ -75,14 +78,15 @@
   .detail-desc { font-size: 15px; line-height: 1.5; white-space: pre-wrap; }
   .map-link { display: block; margin-top: 6px; color: var(--accent); font-size: 14px; text-decoration: none; }
   .seller-card { display: flex; align-items: center; gap: 12px; padding: 12px; background: var(--bg); border-radius: 10px; cursor: pointer; }
-  .seller-avatar { width: 44px; height: 44px; border-radius: 50%; background: var(--accent); color: #fff; font-size: 18px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
-  .seller-name { font-size: 15px; font-weight: 600; }
+  .seller-avatar { width: 44px; height: 44px; border-radius: 50%; background: var(--accent); color: #fff; font-weight: 700; display: flex; align-items: center; justify-content: center; overflow: hidden; flex-shrink: 0; }
+  .seller-avatar img { width: 100%; height: 100%; object-fit: cover; }
+  .seller-name { font-size: 15px; font-weight: 600; display: flex; align-items: center; gap: 4px; }
   .seller-sub { font-size: 12px; color: var(--sub); margin-top: 2px; }
   .stars { color: #f9a825; }
 
   /* ACTIONS */
   .action-bar { position: sticky; bottom: 0; padding: 10px 12px calc(var(--safe-bot) + 10px); background: var(--card); border-top: 1px solid var(--border); display: flex; gap: 10px; }
-  .btn { flex: 1; padding: 13px; border: none; border-radius: 12px; font-size: 15px; font-weight: 600; cursor: pointer; transition: opacity .15s; }
+  .btn { flex: 1; padding: 13px; border: none; border-radius: 12px; font-size: 15px; font-weight: 600; cursor: pointer; transition: opacity .15s; display: flex; align-items: center; justify-content: center; gap: 8px; }
   .btn:active { opacity: .8; }
   .btn-primary { background: var(--accent); color: #fff; }
   .btn-secondary { background: var(--bg); color: var(--text); border: 1.5px solid var(--border); }
@@ -103,144 +107,171 @@
   .sort-bar::-webkit-scrollbar { display: none; }
   .sort-chip { white-space: nowrap; border: 1.5px solid var(--border); border-radius: 20px; padding: 4px 10px; font-size: 12px; cursor: pointer; background: var(--bg); transition: all .15s; flex-shrink: 0; }
   .sort-chip.active { background: var(--text); color: #fff; border-color: var(--text); }
-  .dot { color: var(--sub); }
   .page-btns { display: flex; justify-content: center; gap: 10px; padding: 12px; }
   .page-btn { padding: 8px 18px; border: 1.5px solid var(--border); border-radius: 10px; background: var(--card); font-size: 14px; cursor: pointer; }
-  .page-btn:disabled { opacity: .4; cursor: not-allowed; }
 
   /* MODAL */
   .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,.5); z-index: 200; display: flex; align-items: flex-end; }
   .modal-overlay.hidden { display: none; }
-  .modal { background: var(--card); border-radius: 20px 20px 0 0; width: 100%; max-height: 90vh; overflow-y: auto; padding: 20px 16px calc(var(--safe-bot) + 20px); }
+  .modal { background: var(--card); border-radius: 20px 20px 0 0; width: 100%; max-height: 90vh; overflow-y: auto; padding: 20px 16px calc(var(--safe-bot) + 20px); position: relative; }
   .modal-title { font-size: 17px; font-weight: 700; margin-bottom: 16px; text-align: center; }
   .modal-close { position: absolute; top: 14px; right: 16px; font-size: 22px; cursor: pointer; color: var(--sub); }
-  .select-opt { display: flex; align-items: center; justify-content: space-between; padding: 12px 4px; border-bottom: 1px solid var(--border); cursor: pointer; font-size: 15px; }
-  .select-opt:last-child { border-bottom: none; }
-  .select-opt.selected { color: var(--accent); font-weight: 600; }
 </style>
 </head>
 <body>
-
-<!-- TOAST -->
 <div class="toast" id="toast"></div>
-
-<!-- FILTER MODAL -->
-<div class="modal-overlay hidden" id="filterModal">
-  <div class="modal" style="position:relative">
-    <span class="modal-close" onclick="closeModal()">✕</span>
-    <div class="modal-title">Фильтры</div>
-    <div id="modalContent"></div>
-    <button class="btn btn-primary" style="width:100%;margin-top:14px" onclick="applyFilters()">Применить</button>
-    <button class="btn btn-secondary" style="width:100%;margin-top:8px" onclick="resetFilters()">Сбросить</button>
-  </div>
-</div>
-
-<!-- APP -->
+<div class="modal-overlay hidden" id="filterModal"><div class="modal"><span class="modal-close" onclick="closeModal()">✕</span><div class="modal-title">Фильтры</div><div id="modalContent"></div><button class="btn btn-primary" style="width:100%;margin-top:14px" onclick="applyFilters()">Применить</button><button class="btn btn-secondary" style="width:100%;margin-top:8px" onclick="resetFilters()">Сбросить</button></div></div>
 <div id="app"></div>
 
 <script>
-// ── CONFIG ──────────────────────────────────────────────────────────────────
-const API = "https://YOUR_API_URL";  // ← сюда вставить URL вашего сервера
+// ===== КОНФИГУРАЦИЯ =====
+const USE_MOCK = true;  // при true используются заглушки, при false – реальный API
+const API_URL = USE_MOCK ? "" : "https://ваш-домен.ru";   // замените на реальный адрес
 const BOT_SCREEN = "polkaudm";
 
-// ── STATE ───────────────────────────────────────────────────────────────────
+// ===== ИКОНКИ =====
+const ICONS = {
+  logo: "https://i.postimg.cc/5QSkYwbd/polka-logo-2-png.png",
+  user: "https://i.postimg.cc/gLWT2MFG/icons8-user-64.png",
+  eye: "https://i.postimg.cc/dZjSk8vp/icons8-eye-90-3.png",
+  car: "https://i.postimg.cc/sGrNgnFL/icons8-avtomobil'-100.png",
+  wrench: "https://i.postimg.cc/BP0VnhWR/icons8-gaecnyj-kluc-100.png",
+  building: "https://i.postimg.cc/4HgSx8CD/icons8-zdanie-s-terrasoj-na-kryse-100.png",
+  furniture: "https://i.postimg.cc/SYhvxZ0w/icons8-mebel'-100.png",
+  hammer: "https://i.postimg.cc/wRpGjW8d/icons8-molotok-100.png",
+  printer: "https://i.postimg.cc/xN241sDQ/icons8-printer-100.png",
+  job: "https://i.postimg.cc/xN241sD2/icons8-rabota-100.png",
+  tshirt: "https://i.postimg.cc/4HgSx8kZ/icons8-futbolka-100.png",
+  udmurtia: "https://i.postimg.cc/kRvh6x9L/trafaret-papik-pro-tmxp-p-trafareti-solyarnii-znak-udmurtii-1-Photoroom-2.png",
+  bot: "https://i.postimg.cc/PvQFpmhB/bot-png.png",
+  box: "https://i.postimg.cc/N2kP91Bh/korobka-png.png"
+};
+
+// ===== ГЛОБАЛЬНОЕ СОСТОЯНИЕ =====
 let vkUserId = 0;
 let currentScreen = "feed";
-let feedState = { ads: [], page: 0, pages: 1, loading: false, query: "", city: "", cat: "", sort: "date" };
-let favState   = { ads: [], page: 0, pages: 1, loading: false };
+let feedState = { ads: [], page: 0, pages: 1, loading: false, query: "", city: "", cat: "", sort: "date", total: 0 };
 let detailState = { ad: null, seller: null, rating: null, isFav: false, photoIdx: 0 };
-let filterDraft = {};
 
-// ── VK BRIDGE ───────────────────────────────────────────────────────────────
+// ===== VK BRIDGE =====
 async function initVK() {
   try {
     await vkBridge.send("VKWebAppInit");
-    const me = await vkBridge.send("VKWebAppGetUserInfo");
-    vkUserId = me.id;
-  } catch(e) {
-    console.warn("vkBridge init:", e);
+    const user = await vkBridge.send("VKWebAppGetUserInfo");
+    vkUserId = user.id;
+    console.log("VK user id:", vkUserId);
+  } catch(e) { console.warn("VK init error", e); }
+}
+
+// ===== HELPER =====
+function fmtPrice(p) { return Number(p).toLocaleString("ru-RU") + " ₽"; }
+function esc(s) { return String(s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
+function toast(msg) { const el = document.getElementById("toast"); el.textContent = msg; el.classList.add("show"); setTimeout(() => el.classList.remove("show"), 2200); }
+function stars(avg, cnt) { if (!cnt) return '<span class="dot">Нет отзывов</span>'; const full = Math.round(avg); return `<span class="stars">${"★".repeat(full)}${"☆".repeat(5-full)}</span> ${avg} (${cnt})`; }
+function mapUrl(address, city) { return "https://yandex.ru/maps/?text=" + encodeURIComponent([address, city].filter(Boolean).join(" ")); }
+function getCategoryIcon(category) {
+  const cat = (category || "").toLowerCase();
+  if (cat.includes("автомобиль") || cat.includes("транспорт")) return ICONS.car;
+  if (cat.includes("техника") || cat.includes("электроника")) return ICONS.printer;
+  if (cat.includes("мебель")) return ICONS.furniture;
+  if (cat.includes("одежда") || cat.includes("обувь")) return ICONS.tshirt;
+  if (cat.includes("работа") || cat.includes("вакансия") || cat.includes("подработка")) return ICONS.job;
+  if (cat.includes("аренда") || cat.includes("продажа жилья")) return ICONS.building;
+  if (cat.includes("инструмент") || cat.includes("ключ")) return ICONS.wrench;
+  return ICONS.box;
+}
+
+// ===== API (с мок-данными для тестирования) =====
+async function apiGet(path) {
+  if (USE_MOCK) {
+    await new Promise(r => setTimeout(r, 300));
+    if (path === "/api/dict") {
+      return {
+        cities: ["Ижевск", "Сарапул", "Воткинск", "Глазов", "Можга"],
+        categories: ["Техника", "Одежда", "Обувь", "Мебель", "Вакансии", "Аренда жилья", "Продажа жилья", "Прочие вещи"]
+      };
+    }
+    if (path.startsWith("/api/ads/search")) {
+      const url = new URL(path, "http://mock");
+      const q = url.searchParams.get("q") || "";
+      const city = url.searchParams.get("city") || "";
+      const page = parseInt(url.searchParams.get("page") || "0");
+      const mockAds = [
+        { id: 1, title: "iPhone 13", price: 45000, city: "Ижевск", condition: "Отличное", photos: [], category: "Техника" },
+        { id: 2, title: "Куртка зимняя", price: 3500, city: "Сарапул", condition: "Хорошее", photos: [], category: "Одежда" },
+        { id: 3, title: "Велосипед", price: 12000, city: "Воткинск", condition: "Удовлетворительное", photos: [], category: "Прочие вещи" },
+        { id: 4, title: "Квартира 2-комн", price: 2500000, city: "Глазов", condition: "Новое", photos: [], category: "Продажа жилья" }
+      ];
+      let filtered = mockAds;
+      if (q) filtered = filtered.filter(a => a.title.toLowerCase().includes(q.toLowerCase()));
+      if (city) filtered = filtered.filter(a => a.city === city);
+      const total = filtered.length;
+      const limit = 20;
+      const pages = Math.ceil(total / limit);
+      const start = page * limit;
+      const ads = filtered.slice(start, start + limit);
+      return { ads, page, pages, total };
+    }
+    if (path.match(/\/api\/ads\/\d+/)) {
+      const id = parseInt(path.split("/").pop());
+      const ad = { id, title: "iPhone 13", price: 45000, city: "Ижевск", condition: "Отличное", description: "Отличный телефон, почти новый.", photos: [], category: "Техника", address: "ул. Пушкинская 10" };
+      const seller = { user_id: 123, first_name: "Алексей", is_verified: true };
+      const rating = { avg: 4.8, count: 15 };
+      const is_favorite = false;
+      return { ad, seller, rating, is_favorite };
+    }
+    if (path === "/api/favorites") return { ads: [] };
+    return {};
   }
-}
-
-// ── ROUTER ──────────────────────────────────────────────────────────────────
-function navigate(screen, params = {}) {
-  currentScreen = screen;
-  if (screen === "feed")   renderFeed();
-  if (screen === "favs")   renderFavs();
-  if (screen === "detail") renderDetail(params.adId);
-}
-
-// ── API ─────────────────────────────────────────────────────────────────────
-async function apiFetch(path) {
-  const r = await fetch(API + path);
-  if (!r.ok) throw new Error(r.status);
-  return r.json();
+  const res = await fetch(API_URL + path);
+  if (!res.ok) throw new Error(`HTTP ${res.status}`);
+  return res.json();
 }
 
 async function apiPost(path, body) {
-  const r = await fetch(API + path, {
-    method: "POST", headers: {"Content-Type":"application/json"},
-    body: JSON.stringify(body)
-  });
-  if (!r.ok) throw new Error(r.status);
-  return r.json();
+  if (USE_MOCK) {
+    await new Promise(r => setTimeout(r, 200));
+    if (path === "/api/favorites/toggle") return { is_favorite: true };
+    return {};
+  }
+  const res = await fetch(API_URL + path, { method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify(body) });
+  if (!res.ok) throw new Error(`HTTP ${res.status}`);
+  return res.json();
 }
 
-// ── HELPERS ─────────────────────────────────────────────────────────────────
-function fmtPrice(p) { return Number(p).toLocaleString("ru-RU") + " ₽"; }
-function esc(s) { return String(s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
-function toast(msg) {
-  const el = document.getElementById("toast");
-  el.textContent = msg; el.classList.add("show");
-  setTimeout(() => el.classList.remove("show"), 2200);
-}
-function stars(avg, cnt) {
-  if (!cnt) return '<span class="dot">Нет отзывов</span>';
-  const full = Math.round(avg);
-  return `<span class="stars">${"★".repeat(full)}${"☆".repeat(5-full)}</span> ${avg} (${cnt})`;
-}
-function mapUrl(address, city) {
-  return "https://yandex.ru/maps/?text=" + encodeURIComponent([address, city].filter(Boolean).join(" "));
+// ===== НАВИГАЦИЯ =====
+function navigate(screen, params={}) {
+  currentScreen = screen;
+  if (screen === "feed") renderFeed();
+  if (screen === "favs") renderFavs();
+  if (screen === "detail") renderDetail(params.adId);
 }
 
-// ── FEED ────────────────────────────────────────────────────────────────────
-async function loadFeed(reset = false) {
+// ===== ЛЕНТА =====
+async function loadFeed(reset=true) {
   if (feedState.loading) return;
   if (reset) { feedState.page = 0; feedState.ads = []; }
   feedState.loading = true;
   renderFeedContent();
 
-  const qs = new URLSearchParams({
-    q: feedState.query, city: feedState.city,
-    category: feedState.cat, sort: feedState.sort,
-    page: feedState.page, limit: 20,
-  });
   try {
-    const data = await apiFetch("/api/ads/search?" + qs);
+    const url = `/api/ads/search?q=${encodeURIComponent(feedState.query)}&city=${feedState.city}&category=${feedState.cat}&sort=${feedState.sort}&page=${feedState.page}&limit=20`;
+    const data = await apiGet(url);
     if (reset) feedState.ads = data.ads;
     else feedState.ads = [...feedState.ads, ...data.ads];
     feedState.pages = data.pages;
     feedState.total = data.total;
-  } catch(e) { toast("Ошибка загрузки"); }
+    feedState.page = data.page;
+  } catch(e) { toast("Ошибка загрузки"); console.error(e); }
   feedState.loading = false;
   renderFeedContent();
 }
 
 function renderFeed() {
   document.getElementById("app").innerHTML = `
-    <div class="nav">
-      <span class="nav-logo">📦 Полка</span>
-      <span class="nav-title"></span>
-    </div>
-    <div class="tabs">
-      <button class="tab active" onclick="navigate('feed')">🏠 Объявления</button>
-      <button class="tab" onclick="navigate('favs')">♡ Избранное</button>
-    </div>
-    <div class="search-bar">
-      <input class="search-input" id="searchInput" placeholder="Поиск товаров..." value="${esc(feedState.query)}">
-      <button class="btn-icon" onclick="doSearch()">🔍</button>
-      <button class="btn-icon" style="background:var(--bg);color:var(--text);border:1.5px solid var(--border)" onclick="openFilters()">⚙️</button>
-    </div>
+    <div class="nav"><img class="nav-logo" src="${ICONS.logo}" alt="Полка"><span class="nav-title"></span></div>
+    <div class="tabs"><button class="tab active" onclick="navigate('feed')">🏠 Объявления</button><button class="tab" onclick="navigate('favs')">♡ Избранное</button></div>
+    <div class="search-bar"><input class="search-input" id="searchInput" placeholder="Поиск товаров..." value="${esc(feedState.query)}"><button class="btn-icon" onclick="doSearch()">🔍</button><button class="btn-icon" style="background:var(--bg);color:var(--text);border:1.5px solid var(--border)" onclick="openFilters()">⚙️</button></div>
     <div class="filters" id="cityFilters"></div>
     <div class="sort-bar" id="sortBar"></div>
     <div id="feedContent"></div>
@@ -252,8 +283,12 @@ function renderFeed() {
   else renderFeedContent();
 }
 
-function renderCityChips() {
-  const cities = ["Все", "Ижевск", "Сарапул", "Воткинск", "Глазов", "Можга"];
+async function renderCityChips() {
+  let cities = ["Все"];
+  try {
+    const dict = await apiGet("/api/dict");
+    cities = ["Все", ...dict.cities];
+  } catch(e) { cities = ["Все", "Ижевск", "Сарапул", "Воткинск", "Глазов"]; }
   document.getElementById("cityFilters").innerHTML = cities.map(c => {
     const active = (c === "Все" && !feedState.city) || c === feedState.city;
     return `<span class="filter-chip ${active?"active":""}" onclick="setCity('${c==="Все"?"":c}')">${c}</span>`;
@@ -262,18 +297,12 @@ function renderCityChips() {
 
 function renderSortChips() {
   const sorts = [["date","По дате"],["price_asc","Дешевле"],["price_desc","Дороже"],["views","Популярные"]];
-  document.getElementById("sortBar").innerHTML = sorts.map(([v,l]) =>
-    `<span class="sort-chip ${feedState.sort===v?"active":""}" onclick="setSort('${v}')">${l}</span>`
-  ).join("");
+  document.getElementById("sortBar").innerHTML = sorts.map(([v,l]) => `<span class="sort-chip ${feedState.sort===v?"active":""}" onclick="setSort('${v}')">${l}</span>`).join("");
 }
 
 function setCity(city) { feedState.city = city; loadFeed(true); renderCityChips(); }
 function setSort(sort) { feedState.sort = sort; loadFeed(true); renderSortChips(); }
-
-function doSearch() {
-  feedState.query = document.getElementById("searchInput").value.trim();
-  loadFeed(true);
-}
+function doSearch() { feedState.query = document.getElementById("searchInput").value.trim(); loadFeed(true); }
 
 function renderFeedContent() {
   const el = document.getElementById("feedContent");
@@ -291,45 +320,29 @@ function renderFeedContent() {
   el.innerHTML = `
     <div class="feed">${cards}</div>
     ${hasMore ? `<div class="page-btns"><button class="page-btn" onclick="loadMore()">Загрузить ещё</button></div>` : ""}
-    <div style="padding:8px 0;text-align:center;color:var(--sub);font-size:12px">Всего: ${feedState.total||0}</div>
+    <div style="padding:8px 0;text-align:center;color:var(--sub);font-size:12px">Всего: ${feedState.total}</div>
   `;
 }
 
 function loadMore() { feedState.page++; loadFeed(false); }
 
 function adCard(ad) {
-  const img = ad.photos && ad.photos[0]
-    ? `<img class="card-img" src="${esc(ad.photos[0])}" loading="lazy" onerror="this.style.display='none'">`
-    : `<div class="card-img-placeholder">📦</div>`;
+  const img = ad.photos && ad.photos[0] ? `<img class="card-img" src="${esc(ad.photos[0])}" loading="lazy" onerror="this.style.display='none'">` : `<div class="card-img-placeholder">📦</div>`;
   const city = ad.city ? `<span>📍 ${esc(ad.city)}</span>` : "";
   const cond = ad.condition ? `<span class="badge ${ad.condition==="Новое"?"badge-new":"badge-used"}">${esc(ad.condition)}</span>` : "";
-  return `
-    <div class="card" onclick="navigate('detail',{adId:${ad.id}})">
-      ${img}
-      <div class="card-body">
-        <div class="card-title">${esc(ad.title)}</div>
-        <div class="card-price">${fmtPrice(ad.price)}</div>
-        <div class="card-meta">${city}${cond}</div>
-      </div>
-    </div>`;
+  const catIcon = ad.category ? `<img class="card-cat-icon" src="${getCategoryIcon(ad.category)}" alt="">` : "";
+  return `<div class="card" onclick="navigate('detail',{adId:${ad.id}})">${img}<div class="card-body"><div class="card-title">${catIcon}<span>${esc(ad.title)}</span></div><div class="card-price">${fmtPrice(ad.price)}</div><div class="card-meta">${city}${cond}</div></div></div>`;
 }
 
-// ── FAVS ────────────────────────────────────────────────────────────────────
+// ===== ИЗБРАННОЕ =====
 async function renderFavs() {
   document.getElementById("app").innerHTML = `
-    <div class="nav">
-      <span class="nav-logo">📦 Полка</span>
-      <span class="nav-title"></span>
-    </div>
-    <div class="tabs">
-      <button class="tab" onclick="navigate('feed')">🏠 Объявления</button>
-      <button class="tab active" onclick="navigate('favs')">♡ Избранное</button>
-    </div>
-    <div id="favsContent"><div class="loader"><div class="spinner"></div>Загружаем…</div></div>
+    <div class="nav"><img class="nav-logo" src="${ICONS.logo}" alt="Полка"><span class="nav-title"></span></div>
+    <div class="tabs"><button class="tab" onclick="navigate('feed')">🏠 Объявления</button><button class="tab active" onclick="navigate('favs')">♡ Избранное</button></div>
+    <div id="favsContent"><div class="loader"><div class="spinner"></div></div></div>
   `;
-  if (!vkUserId) { document.getElementById("favsContent").innerHTML = `<div class="empty"><div class="empty-icon">🔐</div><div class="empty-text">Войдите через VK</div></div>`; return; }
   try {
-    const data = await apiFetch(`/api/favorites?user_id=${vkUserId}`);
+    const data = await apiGet(`/api/favorites?user_id=${vkUserId}`);
     const el = document.getElementById("favsContent");
     if (!data.ads.length) {
       el.innerHTML = `<div class="empty"><div class="empty-icon">♡</div><div class="empty-text">Избранное пусто</div><div class="empty-sub">Сохраняйте понравившиеся объявления</div></div>`;
@@ -339,17 +352,14 @@ async function renderFavs() {
   } catch(e) { toast("Ошибка загрузки избранного"); }
 }
 
-// ── DETAIL ──────────────────────────────────────────────────────────────────
+// ===== КАРТОЧКА ОБЪЯВЛЕНИЯ =====
 async function renderDetail(adId) {
   document.getElementById("app").innerHTML = `
-    <div class="nav">
-      <button class="nav-back" onclick="history.back()">←</button>
-      <span class="nav-title">Объявление</span>
-    </div>
-    <div id="detailContent"><div class="loader"><div class="spinner"></div>Загружаем…</div></div>
+    <div class="nav"><button class="nav-back" onclick="history.back()">←</button><span class="nav-title">Объявление</span></div>
+    <div id="detailContent"><div class="loader"><div class="spinner"></div></div></div>
   `;
   try {
-    const data = await apiFetch(`/api/ads/${adId}?viewer_id=${vkUserId}`);
+    const data = await apiGet(`/api/ads/${adId}?viewer_id=${vkUserId}`);
     detailState = { ad: data.ad, seller: data.seller, rating: data.rating, isFav: data.is_favorite, photoIdx: 0 };
     renderDetailContent();
   } catch(e) {
@@ -360,68 +370,28 @@ async function renderDetail(adId) {
 function renderDetailContent() {
   const { ad, seller, rating, isFav, photoIdx } = detailState;
   const photos = ad.photos || [];
-
-  const photoBlock = photos.length
-    ? `<div class="detail-photos" onclick="nextPhoto()">
-         <img class="detail-photo" src="${esc(photos[photoIdx])}" id="detailPhoto">
-         ${photos.length>1 ? `<div class="photo-counter">${photoIdx+1}/${photos.length}</div>` : ""}
-       </div>`
-    : `<div class="card-img-placeholder" style="height:200px">📦</div>`;
-
+  const photoBlock = photos.length ? `<div class="detail-photos" onclick="nextPhoto()"><img class="detail-photo" src="${esc(photos[photoIdx])}" id="detailPhoto">${photos.length>1 ? `<div class="photo-counter">${photoIdx+1}/${photos.length}</div>` : ""}</div>` : `<div class="card-img-placeholder" style="height:200px">📦</div>`;
   const rows = [
-    ad.condition && ["Состояние", ad.condition],
-    ad.category  && ["Категория", ad.category.replace(/^·\s*/,"")],
-    ad.size      && ["Размер", ad.size],
-    ad.city      && ["Город", ad.city],
-    ad.delivery  && ["Доставка", ad.delivery],
-  ].filter(Boolean);
-
+    ["Состояние", ad.condition],
+    ["Категория", ad.category],
+    ["Размер", ad.size],
+    ["Город", ad.city],
+    ["Доставка", ad.delivery]
+  ].filter(([_,v]) => v);
   const sellerName = seller?.first_name || "Продавец";
-  const sellerInitial = sellerName[0] || "?";
-  const verified = seller?.is_verified ? ' <span style="color:var(--green)">✓</span>' : "";
-
-  const mapLink = (ad.address && ad.city)
-    ? `<a class="map-link" href="${mapUrl(ad.address, ad.city)}" target="_blank">📍 ${esc(ad.address)} — посмотреть на карте</a>`
-    : ad.city ? `<span style="color:var(--sub);font-size:14px">📍 ${esc(ad.city)}</span>` : "";
-
+  const verified = seller?.is_verified ? '<span style="color:var(--green)">✓</span>' : "";
+  const mapLink = (ad.address && ad.city) ? `<a class="map-link" href="${mapUrl(ad.address, ad.city)}" target="_blank">📍 ${esc(ad.address)} — посмотреть на карте</a>` : (ad.city ? `<span style="color:var(--sub);font-size:14px">📍 ${esc(ad.city)}</span>` : "");
   document.getElementById("detailContent").innerHTML = `
     ${photoBlock}
     <div class="detail-body">
       <div class="detail-title">${esc(ad.title)}</div>
       <div class="detail-price">${fmtPrice(ad.price)}</div>
-
-      ${rows.length ? `
-      <div class="detail-section">
-        <div class="detail-section-title">Параметры</div>
-        ${rows.map(([l,v])=>`<div class="detail-row"><span class="detail-row-label">${l}</span><span>${esc(v)}</span></div>`).join("")}
-      </div>` : ""}
-
-      ${ad.description ? `
-      <div class="detail-section">
-        <div class="detail-section-title">Описание</div>
-        <div class="detail-desc">${esc(ad.description)}</div>
-      </div>` : ""}
-
+      ${rows.length ? `<div class="detail-section"><div class="detail-section-title">Параметры</div>${rows.map(([l,v])=>`<div class="detail-row"><span class="detail-row-label">${l}</span><span>${esc(v)}</span></div>`).join("")}</div>` : ""}
+      ${ad.description ? `<div class="detail-section"><div class="detail-section-title">Описание</div><div class="detail-desc">${esc(ad.description)}</div></div>` : ""}
       ${mapLink ? `<div class="detail-section">${mapLink}</div>` : ""}
-
-      <div class="detail-section">
-        <div class="detail-section-title">Продавец</div>
-        <div class="seller-card" onclick="openBotContact(${ad.id})">
-          <div class="seller-avatar">${sellerInitial}</div>
-          <div>
-            <div class="seller-name">${esc(sellerName)}${verified}</div>
-            <div class="seller-sub">${stars(rating?.avg, rating?.count)}</div>
-          </div>
-          <span style="margin-left:auto;color:var(--sub)">›</span>
-        </div>
-      </div>
+      <div class="detail-section"><div class="detail-section-title">Продавец</div><div class="seller-card" onclick="openBotContact(${ad.id})"><div class="seller-avatar"><img src="${ICONS.user}" alt=""></div><div><div class="seller-name">${esc(sellerName)} ${verified}</div><div class="seller-sub">${stars(rating?.avg, rating?.count)}</div></div><span style="margin-left:auto;color:var(--sub)">›</span></div></div>
     </div>
-
-    <div class="action-bar">
-      <button class="btn btn-fav ${isFav?"active":""}" id="favBtn" onclick="toggleFav(${ad.id})">${isFav?"♥":"♡"}</button>
-      <button class="btn btn-secondary" onclick="openBotContact(${ad.id})">✉ Написать</button>
-      <button class="btn btn-primary" onclick="openInBot(${ad.id})">Открыть в боте</button>
-    </div>
+    <div class="action-bar"><button class="btn btn-fav ${isFav?"active":""}" id="favBtn" onclick="toggleFav(${ad.id})">${isFav?"♥":"♡"}</button><button class="btn btn-secondary" onclick="openBotContact(${ad.id})">✉ Написать</button><button class="btn btn-primary" onclick="openInBot(${ad.id})">Открыть в боте</button></div>
   `;
 }
 
@@ -447,93 +417,61 @@ async function toggleFav(adId) {
   } catch(e) { toast("Ошибка"); }
 }
 
-function openBotContact(adId) {
-  openInVK(`https://vk.me/${BOT_SCREEN}?ref=contact_${adId}`);
-}
+// ===== КОНТАКТ И ОТКРЫТИЕ В БОТЕ =====
+function openBotContact(adId) { openInVK(`https://vk.me/${BOT_SCREEN}?ref=contact_${adId}`); }
+function openInBot(adId) { openInVK(`https://vk.me/${BOT_SCREEN}?ref=ad_${adId}`); }
+function openInVK(url) { try { vkBridge.send("VKWebAppOpenLink", { link: url }); } catch(e) { window.open(url, "_blank"); } }
 
-function openInBot(adId) {
-  openInVK(`https://vk.me/${BOT_SCREEN}?ref=ad_${adId}`);
-}
-
-function openInVK(url) {
-  try {
-    vkBridge.send("VKWebAppOpenLink", { link: url });
-  } catch(e) {
-    window.open(url, "_blank");
-  }
-}
-
-// ── FILTERS ─────────────────────────────────────────────────────────────────
+// ===== ФИЛЬТРЫ =====
 let allCities = [], allCats = [];
-
 async function openFilters() {
-  if (!allCities.length) {
-    try {
-      const d = await apiFetch("/api/dict");
-      allCities = d.cities; allCats = d.categories;
-    } catch(e) {}
-  }
+  try {
+    const dict = await apiGet("/api/dict");
+    allCities = dict.cities; allCats = dict.categories;
+  } catch(e) {}
   filterDraft = { city: feedState.city, cat: feedState.cat };
   renderFilterModal();
   document.getElementById("filterModal").classList.remove("hidden");
 }
-
+let filterDraft = {};
 function renderFilterModal() {
+  const catsHtml = allCats.map(c => {
+    const iconUrl = getCategoryIcon(c);
+    const active = filterDraft.cat === c;
+    return `<span class="filter-chip ${active?"active":""}" onclick="setDraftCat('${c}')"><img src="${iconUrl}"> ${esc(c)}</span>`;
+  }).join("");
   document.getElementById("modalContent").innerHTML = `
     <div class="detail-section-title" style="margin-bottom:8px">Город</div>
     <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:16px">
       <span class="filter-chip ${!filterDraft.city?"active":""}" onclick="setDraftCity('')">Все</span>
-      ${allCities.map(c=>`<span class="filter-chip ${filterDraft.city===c?"active":""}" onclick="setDraftCity('${c}')">${c}</span>`).join("")}
+      ${allCities.map(c=>`<span class="filter-chip ${filterDraft.city===c?"active":""}" onclick="setDraftCity('${c}')">${esc(c)}</span>`).join("")}
     </div>
     <div class="detail-section-title" style="margin-bottom:8px">Категория</div>
     <div style="display:flex;flex-wrap:wrap;gap:6px">
       <span class="filter-chip ${!filterDraft.cat?"active":""}" onclick="setDraftCat('')">Все</span>
-      ${allCats.map(c=>`<span class="filter-chip ${filterDraft.cat===c?"active":""}" onclick="setDraftCat('${c}')">${esc(c)}</span>`).join("")}
+      ${catsHtml}
     </div>
   `;
 }
-
 function setDraftCity(c) { filterDraft.city = c; renderFilterModal(); }
 function setDraftCat(c)  { filterDraft.cat  = c; renderFilterModal(); }
+function applyFilters() { feedState.city = filterDraft.city; feedState.cat = filterDraft.cat; closeModal(); loadFeed(true); renderCityChips(); }
+function resetFilters() { feedState.city = ""; feedState.cat = ""; filterDraft = {}; closeModal(); loadFeed(true); renderCityChips(); }
+function closeModal() { document.getElementById("filterModal").classList.add("hidden"); }
 
-function applyFilters() {
-  feedState.city = filterDraft.city;
-  feedState.cat  = filterDraft.cat;
-  closeModal();
-  loadFeed(true);
-  renderCityChips();
-}
-
-function resetFilters() {
-  feedState.city = ""; feedState.cat = "";
-  filterDraft = {};
-  closeModal();
-  loadFeed(true);
-}
-
-function closeModal() {
-  document.getElementById("filterModal").classList.add("hidden");
-}
-
-// ── DEEP LINK из поста ───────────────────────────────────────────────────────
+// ===== DEEP LINK =====
 function handleStartParam() {
   const params = new URLSearchParams(location.search);
-  // VK передаёт #vk_app_id=...&vk_user_id=...&start_group=...
   const hash = new URLSearchParams(location.hash.replace("#",""));
-  const startParam = params.get("vk_ref") || hash.get("vk_ref") || "";
-  const m = startParam.match(/^(ad|contact|favorite)_(\d+)$/);
+  const ref = params.get("vk_ref") || hash.get("vk_ref") || "";
+  const m = ref.match(/^(ad|contact|favorite)_(\d+)$/);
   if (m) navigate("detail", { adId: parseInt(m[2]) });
   else navigate("feed");
 }
 
-// ── BACK BUTTON ──────────────────────────────────────────────────────────────
+// ===== ЗАПУСК =====
 window.addEventListener("popstate", () => navigate("feed"));
-
-// ── INIT ────────────────────────────────────────────────────────────────────
-(async () => {
-  await initVK();
-  handleStartParam();
-})();
+(async () => { await initVK(); handleStartParam(); })();
 </script>
 </body>
 </html>
