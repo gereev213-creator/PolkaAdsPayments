@@ -1,460 +1,1042 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no" />
-  <title>Полка — Маркетплейс Удмуртии</title>
-  <script src="https://unpkg.com/@vkontakte/vk-bridge/dist/browser.min.js"></script>
-  <style>
-    * {
-      margin: 0; padding: 0; box-sizing: border-box;
-      -webkit-tap-highlight-color: transparent;
-      font-family: -apple-system, BlinkMacSystemFont, Inter, sans-serif;
-    }
-    :root {
-      --bg: #f2f5f8; --card: #ffffff;
-      --accent: #4c7eff; --accent2: #6ea1ff;
-      --text: #121212; --sub: #7c8591;
-      --border: #e8edf3; --shadow: 0 4px 20px rgba(0,0,0,.05);
-    }
-    body { background: var(--bg); color: var(--text); overflow-x: hidden; }
-    #app { min-height: 100vh; padding-bottom: 110px; }
-    
-    /* Шапка */
-    .topbar {
-      position: sticky; top: 0; z-index: 100;
-      background: rgba(242,245,248,.82); backdrop-filter: blur(16px);
-      padding: env(safe-area-inset-top) 18px 16px 16px;
-    }
-    .topbar-row { display: flex; align-items: center; justify-content: space-between; }
-    .logo-wrap { display: flex; align-items: center; gap: 12px; }
-    .logo { width: 42px; height: 42px; object-fit: contain; }
-    .brand { font-size: 24px; font-weight: 800; letter-spacing: -.4px; }
-    .top-actions { display: flex; gap: 8px; }
-    .user-btn, .mock-btn {
-      height: 42px; border-radius: 14px; background: white;
-      display: flex; align-items: center; justify-content: center; box-shadow: var(--shadow); cursor: pointer;
-    }
-    .user-btn { width: 42px; border-radius: 50%; }
-    .mock-btn { padding: 0 12px; font-size: 12px; font-weight: 700; color: var(--accent); border: 1px dashed var(--accent); }
-    .user-btn img { width: 22px; opacity: .85; }
-    .search { margin-top: 16px; background: white; border-radius: 18px; padding: 14px 16px; display: flex; align-items: center; gap: 10px; box-shadow: var(--shadow); }
-    .search input { border: none; outline: none; width: 100%; font-size: 16px; background: transparent; }
-    
-    /* Категории */
-    .categories { display: flex; gap: 12px; overflow-x: auto; padding: 18px 16px 8px; }
-    .categories::-webkit-scrollbar { display: none; }
-    .cat { min-width: 92px; background: white; border-radius: 22px; padding: 14px 10px; text-align: center; box-shadow: var(--shadow); cursor: pointer; }
-    .cat.active { background: var(--accent); color: white; }
-    .cat img { width: 38px; height: 38px; object-fit: contain; margin-bottom: 8px; }
-    .cat-title { font-size: 13px; font-weight: 700; }
-    
-    /* Лента */
-    .feed { padding: 8px 16px; display: grid; gap: 18px; }
-    .card { background: white; border-radius: 28px; overflow: hidden; box-shadow: var(--shadow); position: relative; }
-    .card-photo { position: relative; aspect-ratio: 1/1; overflow: hidden; background: #f9f9f9; }
-    .card-photo img { width: 100%; height: 100%; object-fit: cover; }
-    .card-body { padding: 16px; }
-    .price { font-size: 26px; font-weight: 800; margin-bottom: 8px; }
-    .title { font-size: 17px; font-weight: 700; line-height: 1.35; margin-bottom: 10px; }
-    .meta { display: flex; align-items: center; justify-content: space-between; color: var(--sub); font-size: 14px; }
-    .seller { display: flex; align-items: center; gap: 8px; }
-    .seller img { width: 22px; opacity: .7; }
-    
-    /* Кнопка Избранного на карточке */
-    .fav-badge {
-      position: absolute; top: 16px; right: 16px; width: 40px; height: 40px;
-      border-radius: 50%; background: white; display: flex; align-items: center;
-      justify-content: center; box-shadow: 0 4px 10px rgba(0,0,0,0.15); z-index: 10; cursor: pointer; font-size: 20px;
-    }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
+<title>Полка</title>
+<script src="https://unpkg.com/@vkontakte/vk-bridge/dist/browser.min.js"></script>
+<style>
+/* ── VK Human Interface tokens ─────────────────────────────────────────── */
+:root {
+  --c-bg:           #f2f3f5;
+  --c-card:         #ffffff;
+  --c-divider:      rgba(0,0,0,.12);
+  --c-text-primary: #000000;
+  --c-text-second:  #818c99;
+  --c-accent:       #3f8ae0;
+  --c-accent-2:     #2a5885;
+  --c-red:          #e64646;
+  --c-green:        #4bb34b;
+  --c-orange:       #ffa000;
+  --c-pill-bg:      #f0f2f5;
+  --c-skeleton:     #e8eaf0;
+  --radius-card:    12px;
+  --radius-btn:     10px;
+  --safe-t: env(safe-area-inset-top,    0px);
+  --safe-b: env(safe-area-inset-bottom, 0px);
+  --safe-l: env(safe-area-inset-left,   0px);
+  --safe-r: env(safe-area-inset-right,  0px);
+  --bar-h:  56px;
+  --tab-h:  calc(52px + var(--safe-b));
+  --font:   -apple-system,"SF Pro Text","Helvetica Neue",Arial,sans-serif;
+}
+[data-theme="dark"] {
+  --c-bg:           #19191a;
+  --c-card:         #232324;
+  --c-divider:      rgba(255,255,255,.12);
+  --c-text-primary: #e1e3e6;
+  --c-text-second:  #76787a;
+  --c-pill-bg:      #2c2d2e;
+  --c-skeleton:     #2c2d2e;
+}
 
-    /* Навигация */
-    .bottom-nav {
-      position: fixed; left: 16px; right: 16px; bottom: calc(env(safe-area-inset-bottom) + 12px);
-      background: rgba(255,255,255,.92); border-radius: 28px; padding: 12px 10px;
-      display: flex; justify-content: space-around; backdrop-filter: blur(16px);
-      box-shadow: 0 8px 40px rgba(0,0,0,.1); z-index: 500;
-    }
-    .nav-item { display: flex; flex-direction: column; align-items: center; gap: 6px; font-size: 12px; font-weight: 700; color: #8b97a6; cursor: pointer; }
-    .nav-item.active { color: var(--accent); }
-    .nav-icon { font-size: 22px; }
-    .create-btn { transform: translateY(-22px); width: 64px; height: 64px; border-radius: 50%; background: linear-gradient(135deg, var(--accent), var(--accent2)); color: white; display: flex; align-items: center; justify-content: center; font-size: 34px; font-weight: 300; box-shadow: 0 10px 30px rgba(76,126,255,.35); cursor: pointer; }
-    
-    .hero { margin: 16px; padding: 24px; border-radius: 30px; background: linear-gradient(135deg, #4c7eff, #75a3ff); color: white; position: relative; overflow: hidden; }
-    .hero h2 { font-size: 30px; line-height: 1.1; margin-bottom: 10px; }
-    .hero p { opacity: .92; line-height: 1.45; max-width: 70%; }
-    .page-title { font-size: 22px; font-weight: 800; padding: 16px; }
-    .empty-feed { text-align: center; padding: 40px 20px; color: var(--sub); font-size: 16px; }
-    .tab-content { padding: 20px; text-align: left; margin-top: 10px; }
+/* ── Reset ──────────────────────────────────────────────────────────────── */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;overflow:hidden;overscroll-behavior:none}
+body{
+  font-family:var(--font);
+  font-size:15px;
+  line-height:1.4;
+  color:var(--c-text-primary);
+  background:var(--c-bg);
+  -webkit-tap-highlight-color:transparent;
+  -webkit-font-smoothing:antialiased;
+}
+button{font-family:inherit;cursor:pointer;border:none;background:none;outline:none}
+img{display:block;max-width:100%}
+a{color:inherit;text-decoration:none}
 
-    /* Модалка формы */
-    .modal-overlay {
-      position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-      background: rgba(0,0,0,0.4); z-index: 2000;
-      display: none; align-items: flex-end; justify-content: center;
-    }
-    .modal-overlay.active { display: flex; }
-    .modal-content {
-      background: white; width: 100%; max-width: 500px;
-      border-top-left-radius: 32px; border-top-right-radius: 32px;
-      padding: 24px 24px calc(env(safe-area-inset-bottom) + 24px);
-      box-shadow: 0 -10px 40px rgba(0,0,0,0.15);
-      animation: slideUp 0.3s ease-out;
-    }
-    @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
-    .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-    .modal-title { font-size: 22px; font-weight: 800; }
-    .close-modal { font-size: 28px; color: var(--sub); cursor: pointer; }
-    .form-group { margin-bottom: 16px; }
-    .form-group label { display: block; font-size: 14px; font-weight: 700; color: var(--sub); margin-bottom: 6px; }
-    .form-group input, .form-group select, .form-group textarea {
-      width: 100%; padding: 14px; border: 1px solid var(--border);
-      border-radius: 16px; background: var(--bg); font-size: 16px; outline: none;
-    }
-    .form-submit {
-      width: 100%; padding: 16px; border: none; border-radius: 18px;
-      background: var(--accent); color: white; font-size: 16px; font-weight: 700;
-      cursor: pointer; margin-top: 10px; box-shadow: 0 4px 15px rgba(76,126,255,0.2);
-    }
-    .chat-item { background: white; padding: 16px; border-radius: 20px; margin-bottom: 12px; box-shadow: var(--shadow); display: flex; gap: 14px; align-items: center; }
-    .chat-avatar { width: 45px; height: 45px; background: #e2e8f0; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 20px; }
-  </style>
+/* ── Layout ─────────────────────────────────────────────────────────────── */
+#app{
+  position:fixed;inset:0;
+  display:grid;
+  grid-template-rows:var(--bar-h) 1fr var(--tab-h);
+  grid-template-areas:"header" "view" "tabs";
+}
+
+/* ── Header ─────────────────────────────────────────────────────────────── */
+#header{
+  grid-area:header;
+  display:flex;align-items:center;
+  padding:0 16px;
+  padding-top:var(--safe-t);
+  background:var(--c-card);
+  border-bottom:1px solid var(--c-divider);
+  position:relative;
+  z-index:10;
+}
+.header-back{
+  display:none;align-items:center;gap:2px;
+  color:var(--c-accent);font-size:17px;font-weight:400;
+  padding:8px 8px 8px 0;margin-right:4px;
+  transition:opacity .15s;
+}
+.header-back svg{width:11px;height:18px;fill:none;stroke:currentColor;stroke-width:2.5;stroke-linecap:round}
+.header-back.visible{display:flex}
+.header-back:active{opacity:.5}
+#header-title{
+  font-size:17px;font-weight:600;
+  flex:1;text-align:center;
+}
+.header-right{
+  display:flex;align-items:center;
+  min-width:60px;justify-content:flex-end;
+}
+.header-share-btn{
+  color:var(--c-accent);
+  font-size:15px;font-weight:400;
+  padding:8px 0 8px 8px;
+  display:none;
+}
+.header-share-btn:active{opacity:.5}
+.header-share-btn.visible{display:block}
+
+/* ── Tabs ────────────────────────────────────────────────────────────────── */
+#tabs{
+  grid-area:tabs;
+  display:grid;grid-template-columns:1fr 1fr;
+  background:var(--c-card);
+  border-top:1px solid var(--c-divider);
+}
+.tab-btn{
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:3px;padding-bottom:var(--safe-b);
+  color:var(--c-text-second);
+  font-size:10px;font-weight:500;
+  transition:color .15s;
+  position:relative;
+}
+.tab-btn svg{width:24px;height:24px}
+.tab-btn.active{color:var(--c-accent)}
+.tab-btn:active{opacity:.6}
+.tab-badge{
+  position:absolute;top:8px;right:calc(50% - 18px);
+  background:var(--c-red);color:#fff;
+  font-size:10px;font-weight:700;line-height:1;
+  padding:2px 5px;border-radius:10px;
+  min-width:16px;text-align:center;
+  display:none;
+}
+.tab-badge.show{display:block}
+
+/* ── View container ─────────────────────────────────────────────────────── */
+#views{
+  grid-area:view;
+  position:relative;overflow:hidden;
+}
+.view{
+  position:absolute;inset:0;
+  overflow-y:auto;
+  -webkit-overflow-scrolling:touch;
+  overscroll-behavior:contain;
+  background:var(--c-bg);
+  transition:transform .3s cubic-bezier(.4,0,.2,1),opacity .3s;
+}
+.view.hidden{
+  transform:translateX(100%);
+  pointer-events:none;
+}
+.view.back-hidden{
+  transform:translateX(-30%);
+  opacity:.5;
+  pointer-events:none;
+}
+
+/* ── Skeleton ────────────────────────────────────────────────────────────── */
+@keyframes shimmer{
+  from{background-position:200% 0}
+  to{background-position:-200% 0}
+}
+.sk{
+  background:linear-gradient(90deg,var(--c-skeleton) 25%,
+    color-mix(in srgb,var(--c-skeleton) 60%,var(--c-card)) 50%,
+    var(--c-skeleton) 75%);
+  background-size:200% 100%;
+  animation:shimmer 1.4s infinite;
+  border-radius:8px;
+}
+
+/* ── Gallery ─────────────────────────────────────────────────────────────── */
+.gallery{
+  position:relative;
+  width:100%;
+  aspect-ratio:4/3;
+  background:var(--c-skeleton);
+  overflow:hidden;
+  cursor:pointer;
+}
+.gallery-slides{
+  display:flex;
+  height:100%;
+  transition:transform .3s cubic-bezier(.4,0,.2,1);
+  will-change:transform;
+}
+.gallery-slide{
+  min-width:100%;height:100%;
+  display:flex;align-items:center;justify-content:center;
+  overflow:hidden;
+  background:var(--c-skeleton);
+}
+.gallery-slide img{
+  width:100%;height:100%;
+  object-fit:cover;
+}
+.gallery-dots{
+  position:absolute;bottom:10px;left:50%;transform:translateX(-50%);
+  display:flex;gap:5px;
+}
+.gallery-dots span{
+  width:6px;height:6px;border-radius:50%;
+  background:rgba(255,255,255,.5);
+  transition:background .2s,width .2s;
+}
+.gallery-dots span.active{background:#fff;width:14px;border-radius:3px}
+.gallery-counter{
+  position:absolute;bottom:10px;right:14px;
+  background:rgba(0,0,0,.45);color:#fff;
+  font-size:12px;font-weight:600;
+  padding:3px 8px;border-radius:20px;
+  display:none;
+}
+.gallery-no-photo{
+  width:100%;aspect-ratio:4/3;
+  display:flex;align-items:center;justify-content:center;
+  background:var(--c-pill-bg);
+  font-size:56px;color:var(--c-text-second);
+}
+
+/* ── Cards ───────────────────────────────────────────────────────────────── */
+.card{
+  background:var(--c-card);
+  margin:0 0 8px;
+  padding:14px 16px;
+}
+.card:first-child{border-radius:0 0 var(--radius-card) var(--radius-card)}
+.card+.card{border-radius:var(--radius-card)}
+.card-last{margin-bottom:16px}
+
+/* ── Price + title ───────────────────────────────────────────────────────── */
+.price{
+  font-size:28px;font-weight:700;
+  line-height:1.2;margin-bottom:4px;
+}
+.ad-title{
+  font-size:18px;font-weight:600;
+  line-height:1.3;margin-bottom:10px;
+}
+.pills{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:2px}
+.pill{
+  background:var(--c-pill-bg);
+  padding:4px 10px;border-radius:20px;
+  font-size:13px;color:var(--c-text-second);
+}
+.pill.green{background:#ebf8eb;color:var(--c-green)}
+.pill.orange{background:#fff3e0;color:var(--c-orange)}
+
+/* ── Seller ──────────────────────────────────────────────────────────────── */
+.seller-row{display:flex;align-items:center;gap:12px}
+.seller-ava{
+  width:42px;height:42px;border-radius:50%;flex-shrink:0;
+  background:var(--c-accent-2);color:#fff;
+  display:flex;align-items:center;justify-content:center;
+  font-size:18px;font-weight:700;
+  overflow:hidden;
+}
+.seller-ava img{width:100%;height:100%;object-fit:cover}
+.seller-name{font-size:15px;font-weight:600}
+.seller-sub{font-size:13px;color:var(--c-text-second);margin-top:1px}
+.verified-badge{display:inline-block;margin-left:4px;vertical-align:middle;font-size:14px}
+
+/* ── Meta rows ───────────────────────────────────────────────────────────── */
+.meta-row{
+  display:flex;align-items:flex-start;gap:8px;
+  padding:10px 0;border-bottom:1px solid var(--c-divider);
+  font-size:15px;
+}
+.meta-row:last-child{border-bottom:none;padding-bottom:0}
+.meta-row:first-child{padding-top:0}
+.meta-key{color:var(--c-text-second);flex:0 0 100px}
+.meta-val{flex:1;color:var(--c-text-primary)}
+
+/* ── Description ────────────────────────────────────────────────────────── */
+.desc{
+  font-size:15px;line-height:1.6;
+  color:var(--c-text-primary);
+  white-space:pre-wrap;
+  word-break:break-word;
+}
+.desc-clamp{
+  -webkit-line-clamp:5;
+  -webkit-box-orient:vertical;
+  display:-webkit-box;
+  overflow:hidden;
+}
+.desc-more{
+  display:none;
+  color:var(--c-accent);font-size:14px;
+  margin-top:6px;cursor:pointer;
+}
+.desc-more.show{display:block}
+
+/* ── Action bar (bottom floating) ──────────────────────────────────────── */
+.action-bar{
+  position:sticky;bottom:0;
+  background:var(--c-card);
+  padding:8px 12px calc(8px + var(--safe-b));
+  border-top:1px solid var(--c-divider);
+  display:flex;gap:8px;
+  z-index:5;
+}
+.btn{
+  height:48px;border-radius:var(--radius-btn);
+  font-size:16px;font-weight:600;
+  display:flex;align-items:center;justify-content:center;gap:6px;
+  transition:opacity .12s,transform .1s;
+  user-select:none;
+  -webkit-user-select:none;
+}
+.btn:active{opacity:.65;transform:scale(.96)}
+.btn-primary{flex:1;background:var(--c-accent);color:#fff}
+.btn-fav{
+  flex:0 0 52px;
+  background:var(--c-pill-bg);
+  color:var(--c-red);
+  font-size:22px;
+  transition:background .2s,color .2s,opacity .12s,transform .1s;
+}
+.btn-fav.is-fav{background:var(--c-red);color:#fff}
+
+/* ── Favourites list ─────────────────────────────────────────────────────── */
+.fav-list{padding:8px 0 16px}
+.fav-item{
+  background:var(--c-card);
+  display:flex;align-items:center;gap:12px;
+  padding:12px 16px;
+  margin:0 0 1px;
+  cursor:pointer;
+  transition:background .15s;
+  position:relative;
+}
+.fav-item:first-child{border-radius:var(--radius-card) var(--radius-card) 0 0}
+.fav-item:last-child{border-radius:0 0 var(--radius-card) var(--radius-card);margin-bottom:0}
+.fav-item:only-child{border-radius:var(--radius-card)}
+.fav-item:active{background:var(--c-pill-bg)}
+.fav-thumb{
+  width:64px;height:64px;border-radius:8px;flex-shrink:0;
+  background:var(--c-skeleton);overflow:hidden;
+  display:flex;align-items:center;justify-content:center;
+  font-size:26px;color:var(--c-text-second);
+}
+.fav-thumb img{width:100%;height:100%;object-fit:cover}
+.fav-info{flex:1;min-width:0}
+.fav-price{font-size:17px;font-weight:700;margin-bottom:2px}
+.fav-title{font-size:14px;color:var(--c-text-second);
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.fav-city{font-size:12px;color:var(--c-text-second);margin-top:2px}
+.fav-del{
+  color:var(--c-text-second);font-size:20px;
+  padding:8px;margin:-8px;flex-shrink:0;
+  transition:color .15s;
+}
+.fav-del:active{color:var(--c-red)}
+
+.fav-sep{
+  padding:14px 16px 6px;
+  font-size:13px;font-weight:600;
+  color:var(--c-text-second);
+  text-transform:uppercase;letter-spacing:.5px;
+}
+.fav-empty{
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:80px 32px;text-align:center;gap:12px;
+}
+.fav-empty-icon{font-size:64px;line-height:1}
+.fav-empty-title{font-size:20px;font-weight:700}
+.fav-empty-text{font-size:15px;color:var(--c-text-second);line-height:1.5}
+
+/* ── Error / 404 ────────────────────────────────────────────────────────── */
+.error-screen{
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  min-height:50vh;padding:40px;text-align:center;gap:10px;
+}
+.error-icon{font-size:64px}
+.error-title{font-size:22px;font-weight:700}
+.error-text{font-size:15px;color:var(--c-text-second);line-height:1.5}
+
+/* ── Toast ───────────────────────────────────────────────────────────────── */
+#toast{
+  position:fixed;bottom:calc(var(--tab-h) + 12px);left:50%;
+  transform:translateX(-50%) translateY(20px);
+  background:rgba(0,0,0,.8);color:#fff;
+  padding:10px 18px;border-radius:24px;
+  font-size:14px;white-space:nowrap;
+  pointer-events:none;opacity:0;
+  transition:opacity .2s,transform .2s;
+  z-index:1000;
+  max-width:calc(100vw - 32px);
+  white-space:normal;text-align:center;
+}
+#toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+/* ── Misc ────────────────────────────────────────────────────────────────── */
+.divider{border:none;border-top:1px solid var(--c-divider);margin:0}
+.stats-row{
+  display:flex;gap:16px;font-size:13px;color:var(--c-text-second);
+  margin-top:6px;
+}
+.stats-row span{display:flex;align-items:center;gap:4px}
+.spinner{
+  display:flex;align-items:center;justify-content:center;
+  padding:40px;
+}
+.spin{
+  width:28px;height:28px;border-radius:50%;
+  border:3px solid var(--c-divider);
+  border-top-color:var(--c-accent);
+  animation:spin .7s linear infinite;
+}
+@keyframes spin{to{transform:rotate(360deg)}}
+</style>
 </head>
 <body>
-  <div id="app"></div>
+<div id="app">
 
-  <div class="modal-overlay" id="createModal">
-    <div class="modal-content">
-      <div class="modal-header">
-        <div class="modal-title">Новое объявление</div>
-        <div class="close-modal" onclick="toggleModal(false)">&times;</div>
-      </div>
-      <form onsubmit="handleCreateAd(event)">
-        <div class="form-group">
-          <label>Название товара</label>
-          <input type="text" id="adTitle" placeholder="Например, iPhone 13" required />
-        </div>
-        <div class="form-group">
-          <label>Описание</label>
-          <textarea id="adDesc" placeholder="Опишите состояние товара..." rows="2"></textarea>
-        </div>
-        <div class="form-group">
-          <label>Цена (₽)</label>
-          <input type="number" id="adPrice" placeholder="0" required />
-        </div>
-        <div class="form-group">
-          <label>Категория</label>
-          <select id="adCategory">
-            <option value="tech">Техника</option>
-            <option value="auto">Авто</option>
-            <option value="home">Жилье</option>
-            <option value="furniture">Мебель</option>
-            <option value="clothes">Одежда</option>
-            <option value="work">Работа</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label>Город Удмуртии</label>
-          <input type="text" id="adCity" placeholder="Ижевск, Воткинск, Глазов..." value="Ижевск" required />
-        </div>
-        <button type="submit" class="form-submit">Разместить на Полке</button>
-      </form>
+  <!-- ══ HEADER ══ -->
+  <div id="header">
+    <button class="header-back" id="btn-back" onclick="navigateBack()">
+      <svg viewBox="0 0 11 18"><polyline points="10,1 1,9 10,17"/></svg>
+      Назад
+    </button>
+    <div id="header-title">Полка</div>
+    <div class="header-right">
+      <button class="header-share-btn" id="btn-share" onclick="shareAd()">Поделиться</button>
     </div>
   </div>
 
-  <script>
-    // Вставь сюда актуальный адрес твоего URL ngrok
-    const API_URL = 'https://endorphin-trump-cavalier.ngrok-free.dev/api';
+  <!-- ══ VIEWS ══ -->
+  <div id="views">
 
-    const assets = {
-      logo: 'https://i.postimg.cc/5QSkYwbd/polka-logo-2-png.png',
-      user: 'https://i.postimg.cc/gLWT2MFG/icons8-user-64.png',
-      categories: {
-        auto: 'https://i.postimg.cc/sGrNgnFL/icons8-avtomobil-100.png',
-        home: 'https://i.postimg.cc/4HgSx8CD/icons8-zdanie-s-terrasoj-na-kryse-100.png',
-        furniture: 'https://i.postimg.cc/SYhvxZ0w/icons8-mebel-100.png',
-        clothes: 'https://i.postimg.cc/4HgSx8kZ/icons8-futbolka-100.png',
-        tech: 'https://i.postimg.cc/xN241sDQ/icons8-printer-100.png',
-        work: 'https://i.postimg.cc/xN241sD2/icons8-rabota-100.png',
-      }
-    };
-
-    const state = {
-      activeTab: 'home',
-      activeCategory: 'all',
-      ads: [],
-      searchQuery: '',
-      myUserId: 668567292, // Твой моковый или реальный VK ID
-      isLoading: true
-    };
-
-    const categories = [
-      { id: 'all', title: 'Все', icon: assets.logo },
-      { id: 'auto', title: 'Авто', icon: assets.categories.auto },
-      { id: 'tech', title: 'Техника', icon: assets.categories.tech },
-      { id: 'home', title: 'Жильё', icon: assets.categories.home },
-      { id: 'furniture', title: 'Мебель', icon: assets.categories.furniture },
-      { id: 'clothes', title: 'Одежда', icon: assets.categories.clothes },
-      { id: 'work', title: 'Работа', icon: assets.categories.work },
-    ];
-
-    async function initVK() {
-      try { await vkBridge.send('VKWebAppInit'); } catch (e) { console.log(e); }
-    }
-
-    // Загрузка объявлений из базы бэкенда
-    async function loadAds() {
-      try {
-        state.isLoading = true;
-        updateFeedContainer();
-        
-        let url = `${API_URL}/ads`;
-        if (state.activeTab === 'profile') {
-          url += `?user_id=${state.myUserId}`;
-        } else if (state.activeCategory !== 'all') {
-          url += `?category=${state.activeCategory}`;
-        }
-
-        const response = await fetch(url);
-        if (!response.ok) throw new Error();
-        state.ads = await response.json();
-      } catch (e) {
-        console.error("Ошибка сети бэкенда:", e);
-      } finally {
-        state.isLoading = false;
-        updateFeedContainer();
-      }
-    }
-
-    function toggleModal(show) {
-      document.getElementById('createModal').style.display = show ? 'flex' : 'none';
-    }
-
-    // Сохранение в базу через POST
-    async function handleCreateAd(event) {
-      event.preventDefault();
-      
-      const title = document.getElementById('adTitle').value;
-      const description = document.getElementById('adDesc').value;
-      const price = document.getElementById('adPrice').value;
-      const category = document.getElementById('adCategory').value;
-      const city = document.getElementById('adCity').value;
-
-      const newAd = {
-        user_id: state.myUserId,
-        title: title,
-        description: description,
-        price: Number(price),
-        category: category,
-        city: city || 'Ижевск',
-        photo: "https://i.ibb.co/cKQX5bpD/Frame-184.png"
-      };
-
-      toggleModal(false);
-
-      try {
-        const response = await fetch(`${API_URL}/ads`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(newAd)
-        });
-        if (response.ok) {
-          // Чистим форму
-          document.getElementById('adTitle').value = '';
-          document.getElementById('adDesc').value = '';
-          document.getElementById('adPrice').value = '';
-          // Перегружаем актуальные данные
-          await loadAds();
-        }
-      } catch (err) {
-        console.error("Не удалось отправить POST:", err);
-      }
-    }
-
-    // Умное переключение Избранного через localStorage
-    function toggleFavorite(adId, event) {
-      if(event) event.stopPropagation();
-      let favorites = JSON.parse(localStorage.getItem('fav_ads') || '[]');
-      if (favorites.includes(adId)) {
-        favorites = favorites.filter(id => id !== adId);
-      } else {
-        favorites.push(adId);
-      }
-      localStorage.setItem('fav_ads', JSON.stringify(favorites));
-      
-      if (state.activeTab === 'favorites') {
-        updateFeedContainer();
-      } else {
-        const btn = document.getElementById(`fav-btn-${adId}`);
-        if(btn) btn.innerHTML = favorites.includes(adId) ? '❤️' : '♡';
-      }
-    }
-
-    function isFavorite(adId) {
-      const favorites = JSON.parse(localStorage.getItem('fav_ads') || '[]');
-      return favorites.includes(adId);
-    }
-
-    // Поиск «на лету» без перезаписи инпута (фокус не пропадает!)
-    function handleSearchInput(value) {
-      state.searchQuery = value.toLowerCase().strip ? value.toLowerCase().trim() : value.toLowerCase();
-      const cards = document.querySelectorAll('.feed .card');
-      cards.forEach(card => {
-        const title = card.querySelector('.title').textContent.toLowerCase();
-        const city = card.querySelector('.meta').textContent.toLowerCase();
-        if (title.includes(state.searchQuery) || city.includes(state.searchQuery)) {
-          card.style.display = 'block';
-        } else {
-          card.style.display = 'none';
-        }
-      });
-    }
-
-    // Отрисовка только контента ленты (чтобы не перерисовывать верхний Поиск!)
-    function updateFeedContainer() {
-      const container = document.getElementById('main-tab-content');
-      if (!container) return;
-
-      if (state.activeTab === 'home' || state.activeTab === 'favorites' || state.activeTab === 'profile') {
-        let displayAds = state.ads;
-
-        // Фильтр Избранного
-        if (state.activeTab === 'favorites') {
-          const favorites = JSON.parse(localStorage.getItem('fav_ads') || '[]');
-          displayAds = state.ads.filter(ad => favorites.includes(ad.id));
-        }
-
-        if (state.isLoading) {
-          container.innerHTML = `<div class="empty-feed">🔄 Загрузка объявлений из базы...</div>`;
-          return;
-        }
-
-        if (displayAds.length === 0) {
-          container.innerHTML = `<div class="empty-feed">📦 Ничего не найдено. Нажмите «+», чтобы добавить объявление.</div>`;
-          return;
-        }
-
-        const feedHtml = displayAds.map(ad => `
-          <div class="card">
-            <div class="fav-badge" id="fav-btn-${ad.id}" onclick="toggleFavorite(${ad.id}, event)">
-              ${isFavorite(ad.id) ? '❤️' : '♡'}
-            </div>
-            <div class="card-photo">
-              <img src="${ad.photo}" />
-            </div>
-            <div class="card-body">
-              <div class="price">${Number(ad.price).toLocaleString('ru-RU')} ₽</div>
-              <div class="title">${ad.title}</div>
-              <div class="meta">
-                <div>📍 ${ad.city || 'Удмуртия'}</div>
-                <div class="seller"><img src="${assets.user}" /> ${ad.seller || 'Продавец'}</div>
-              </div>
-            </div>
-          </div>
-        `).join('');
-
-        container.innerHTML = `<div class="feed">${feedHtml}</div>`;
-        // Применяем текущий поисковый запрос, если он был введен
-        if(state.searchQuery) handleSearchInput(state.searchQuery);
-
-      } else if (state.activeTab === 'chats') {
-        container.innerHTML = `
-          <div class="tab-content">
-            <div class="chat-item">
-              <div class="chat-avatar">🚙</div>
-              <div>
-                <strong>Алексей (Ижевск)</strong>
-                <div style="color:var(--sub);font-size:14px;margin-top:4px;">Здравствуйте! Торг на ВАЗ уместен?</div>
-              </div>
-            </div>
-            <div class="chat-item">
-              <div class="chat-avatar">📱</div>
-              <div>
-                <strong>Мария (Воткинск)</strong>
-                <div style="color:var(--sub);font-size:14px;margin-top:4px;">Где можно забрать айфон?</div>
-              </div>
-            </div>
-          </div>
-        `;
-      }
-    }
-
-    function renderStructure() {
-      const app = document.getElementById('app');
-      
-      app.innerHTML = `
-        <div class="topbar">
-          <div class="topbar-row">
-            <div class="logo-wrap">
-              <img class="logo" src="${assets.logo}" />
-              <div class="brand">Полка</div>
-            </div>
-            <div class="top-actions">
-              <div class="user-btn" onclick="switchTab('profile')"><img src="${assets.user}" /></div>
-            </div>
-          </div>
-          ${state.activeTab === 'home' ? `
-            <div class="search">
-              🔍 <input id="searchBar" placeholder="Поиск объявлений..." oninput="handleSearchInput(this.value)" />
-            </div>
-          ` : ''}
-        </div>
-
-        ${state.activeTab === 'home' ? `
-          <div class="hero">
-            <h2>Маркетплейс<br />Удмуртии</h2>
-            <p>Покупай, продавай и находи всё рядом в общем каталоге.</p>
-          </div>
-          <div class="categories">
-            ${categories.map(cat => `
-              <div class="cat ${state.activeCategory === cat.id ? 'active' : ''}" onclick="selectCategory('${cat.id}')">
-                <img src="${cat.icon}" />
-                <div class="cat-title">${cat.title}</div>
-              </div>
-            `).join('')}
-          </div>
-          <div class="page-title">Рекомендации</div>
-        ` : `
-          <div class="page-title">${state.activeTab === 'favorites' ? '❤️ Избранное' : state.activeTab === 'chats' ? '💬 Чаты' : '👤 Мой профиль (id' + state.myUserId + ')'}</div>
-        `}
-
-        <div id="main-tab-content"></div>
-
-        <div class="bottom-nav">
-          <div class="nav-item ${state.activeTab === 'home' ? 'active' : ''}" onclick="switchTab('home')">
-            <div class="nav-icon">🏠</div>Главная
-          </div>
-          <div class="nav-item ${state.activeTab === 'favorites' ? 'active' : ''}" onclick="switchTab('favorites')">
-            <div class="nav-icon">♡</div>Избранное
-          </div>
-          <div class="create-btn" onclick="toggleModal(true)">+</div>
-          <div class="nav-item ${state.activeTab === 'chats' ? 'active' : ''}" onclick="switchTab('chats')">
-            <div class="nav-icon">💬</div>Чаты
-          </div>
-          <div class="nav-item ${state.activeTab === 'profile' ? 'active' : ''}" onclick="switchTab('profile')">
-            <div class="nav-icon">👤</div>Профиль
+    <!-- Вид: карточка объявления -->
+    <div class="view" id="view-ad">
+      <div id="ad-skeleton">
+        <div class="sk" style="width:100%;aspect-ratio:4/3;border-radius:0"></div>
+        <div class="card" style="margin-top:8px">
+          <div class="sk" style="height:32px;width:40%;margin-bottom:8px"></div>
+          <div class="sk" style="height:22px;width:75%;margin-bottom:12px"></div>
+          <div style="display:flex;gap:8px">
+            <div class="sk" style="height:26px;width:80px;border-radius:20px"></div>
+            <div class="sk" style="height:26px;width:60px;border-radius:20px"></div>
           </div>
         </div>
-      `;
+        <div class="card">
+          <div style="display:flex;gap:12px;align-items:center">
+            <div class="sk" style="width:42px;height:42px;border-radius:50%;flex-shrink:0"></div>
+            <div style="flex:1">
+              <div class="sk" style="height:16px;width:55%;margin-bottom:6px"></div>
+              <div class="sk" style="height:13px;width:40%"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div id="ad-content" style="display:none"></div>
+      <div id="ad-error"   style="display:none" class="error-screen">
+        <div class="error-icon">📭</div>
+        <div class="error-title">Объявление не найдено</div>
+        <div class="error-text">Возможно, оно снято с публикации.</div>
+      </div>
+    </div>
 
-      updateFeedContainer();
+    <!-- Вид: мои избранные -->
+    <div class="view hidden" id="view-favs">
+      <div id="favs-skeleton" class="fav-list">
+        <div class="fav-sep">Загружаем…</div>
+        <div class="spinner"><div class="spin"></div></div>
+      </div>
+      <div id="favs-content" style="display:none"></div>
+    </div>
+
+  </div>
+
+  <!-- ══ TABS ══ -->
+  <div id="tabs">
+    <button class="tab-btn active" id="tab-ad" onclick="switchTab('ad')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="3" y="3" width="18" height="18" rx="3"/>
+        <path d="M3 9h18M9 21V9"/>
+      </svg>
+      Объявление
+    </button>
+    <button class="tab-btn" id="tab-favs" onclick="switchTab('favs')">
+      <div class="tab-badge" id="tab-badge">0</div>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 1 0-7.78 7.78L12 21.23l8.84-8.84a5.5 5.5 0 0 0 0-7.78z"/>
+      </svg>
+      Избранное
+    </button>
+  </div>
+
+</div>
+
+<!-- Toast -->
+<div id="toast"></div>
+
+<script>
+// ═══════════════════════════════════════════════════════════════════════════
+//  КОНФИГУРАЦИЯ
+// ═══════════════════════════════════════════════════════════════════════════
+const CFG = {
+  API_BASE:   "https://ВАШ_ДОМЕН.ru",  // ← URL сервера с polka_api_server.py
+  BOT_GROUP:  "238149306",              // ← числовой ID группы (без минуса)
+  VK_APP_ID:  0,                        // ← app_id вашего Mini App
+};
+
+// ═══════════════════════════════════════════════════════════════════════════
+//  СОСТОЯНИЕ
+// ═══════════════════════════════════════════════════════════════════════════
+const STATE = {
+  vkUserId:     0,
+  vkUserPhoto:  "",
+  launchParams: "",
+  adData:       null,
+  adId:         0,
+  isFavorite:   false,
+  favsData:     null,       // null = не загружены
+  favsLoading:  false,
+  curPhoto:     0,
+  touchX0:      0,
+  touchY0:      0,
+  activeTab:    "ad",
+  descExpanded: false,
+};
+
+// ═══════════════════════════════════════════════════════════════════════════
+//  VK BRIDGE
+// ═══════════════════════════════════════════════════════════════════════════
+async function initVK() {
+  try { await vkBridge.send("VKWebAppInit"); } catch(_) {}
+
+  // Тема
+  try {
+    const cfg = await vkBridge.send("VKWebAppGetConfig");
+    if (cfg.appearance === "dark")
+      document.documentElement.setAttribute("data-theme","dark");
+  } catch(_) {}
+
+  // Пользователь
+  try {
+    const u = await vkBridge.send("VKWebAppGetUserInfo");
+    STATE.vkUserId    = u.id;
+    STATE.vkUserPhoto = u.photo_100 || "";
+  } catch(_) {}
+
+  STATE.launchParams = window.location.search.slice(1);
+
+  // Swipe back
+  try { await vkBridge.send("VKWebAppSetSwipeSettings", { history: true }); } catch(_) {}
+  try { await vkBridge.send("VKWebAppEnableSwipeBack"); } catch(_) {}
+}
+
+async function haptic(style="light") {
+  try { await vkBridge.send("VKWebAppTapticImpactOccurred", { style }); } catch(_) {}
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+//  API
+// ═══════════════════════════════════════════════════════════════════════════
+async function apiFetch(path, opts={}) {
+  const headers = {
+    "X-VK-Sign":   STATE.launchParams,
+    "Content-Type": "application/json",
+    ...(opts.headers||{}),
+  };
+  const res = await fetch(CFG.API_BASE + path, { ...opts, headers });
+  if (!res.ok) throw Object.assign(new Error("API error"), { status: res.status });
+  return res.json();
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+//  НАВИГАЦИЯ
+// ═══════════════════════════════════════════════════════════════════════════
+function switchTab(tab) {
+  if (STATE.activeTab === tab) return;
+  STATE.activeTab = tab;
+
+  document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
+  document.getElementById(`tab-${tab}`).classList.add("active");
+
+  document.querySelectorAll(".view").forEach(v => {
+    v.classList.remove("hidden","back-hidden");
+  });
+
+  if (tab === "favs") {
+    document.getElementById("view-ad").classList.add("back-hidden");
+    document.getElementById("view-favs").classList.remove("hidden");
+    setHeader("Избранное", false, false);
+    if (!STATE.favsData) loadFavs();
+  } else {
+    document.getElementById("view-favs").classList.add("hidden");
+    document.getElementById("view-ad").classList.remove("back-hidden");
+    const title = STATE.adData ? trimTitle(STATE.adData.title,28) : "Полка";
+    setHeader(title, false, !!STATE.adData);
+  }
+}
+
+function navigateBack() {
+  switchTab("ad");
+}
+
+function setHeader(title, backBtn, shareBtn) {
+  document.getElementById("header-title").textContent = title;
+  document.getElementById("btn-back").classList.toggle("visible", backBtn);
+  document.getElementById("btn-share").classList.toggle("visible", shareBtn);
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+//  ЗАГРУЗКА ОБЪЯВЛЕНИЯ
+// ═══════════════════════════════════════════════════════════════════════════
+async function loadAd(adId) {
+  STATE.adId = adId;
+  try {
+    const data = await apiFetch(`/api/ad/${adId}`);
+    STATE.adData    = data;
+    STATE.isFavorite = data.is_favorite;
+    renderAd(data);
+    setHeader(trimTitle(data.title,28), false, true);
+    updateFavBadge();
+  } catch(e) {
+    document.getElementById("ad-skeleton").style.display = "none";
+    document.getElementById("ad-error").style.display    = "";
+    setHeader("Объявление", false, false);
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+//  РЕНДЕР КАРТОЧКИ
+// ═══════════════════════════════════════════════════════════════════════════
+function renderAd(d) {
+  const photos = d.photos || [];
+  STATE.curPhoto = 0;
+
+  // Галерея
+  let galleryHtml = "";
+  if (photos.length > 0) {
+    const slides = photos.map(url =>
+      `<div class="gallery-slide"><img src="${esc(url)}" loading="lazy" decoding="async"></div>`
+    ).join("");
+    const dots = photos.length > 1
+      ? `<div class="gallery-dots">${photos.map((_,i)=>
+          `<span class="${i===0?'active':''}"></span>`).join("")}</div>`
+      : "";
+    galleryHtml = `
+      <div class="gallery" id="gallery"
+        ontouchstart="gtStart(event)" ontouchend="gtEnd(event)" onclick="galleryTap(event)">
+        <div class="gallery-slides" id="gallery-slides">${slides}</div>
+        ${dots}
+        <div class="gallery-counter" id="gallery-counter">${photos.length>1?`1 / ${photos.length}`:""}</div>
+      </div>`;
+    if (photos.length > 3) {
+      setTimeout(() => {
+        const gc = document.getElementById("gallery-counter");
+        if (gc) gc.style.display = "block";
+      }, 50);
     }
+  } else {
+    galleryHtml = `<div class="gallery-no-photo">📷</div>`;
+  }
 
-    function selectCategory(id) {
-      state.activeCategory = id;
-      renderStructure();
-      loadAds();
+  // Бейджи
+  const pills = [];
+  if (d.condition) {
+    const isNew = d.condition.toLowerCase().includes("нов");
+    pills.push(`<span class="pill ${isNew?'green':''}">${esc(d.condition)}</span>`);
+  }
+  if (d.category) pills.push(`<span class="pill">${esc(stripDot(d.category))}</span>`);
+  if (d.city)     pills.push(`<span class="pill">${esc(d.city)}</span>`);
+  if (d.size)     pills.push(`<span class="pill">Размер: ${esc(d.size)}</span>`);
+  if (d.gender)   pills.push(`<span class="pill">${esc(stripDot(d.gender))}</span>`);
+
+  // Продавец
+  const s = d.seller || {};
+  const avaHtml = STATE.vkUserPhoto && d.is_owner
+    ? `<img src="${esc(STATE.vkUserPhoto)}" alt="">`
+    : esc((s.name||"П")[0].toUpperCase());
+  const verBadge = s.is_verified ? `<span class="verified-badge">✅</span>` : "";
+
+  // Мета
+  const metaRows = [
+    d.rooms           && ["Комнат",    d.rooms],
+    d.area            && ["Площадь",   d.area],
+    d.address         && ["Адрес",     d.address],
+    d.employment_type && ["Занятость", d.employment_type],
+  ].filter(Boolean);
+
+  const metaHtml = metaRows.length ? `
+    <div class="card card-last">
+      ${metaRows.map(([k,v])=>`
+        <div class="meta-row">
+          <span class="meta-key">${esc(k)}</span>
+          <span class="meta-val">${esc(v)}</span>
+        </div>`).join("")}
+    </div>` : "";
+
+  // Описание
+  const descLong = (d.description||"").length > 200;
+  const descHtml = d.description ? `
+    <div class="card">
+      <div class="desc ${descLong?'desc-clamp':''}" id="desc-text">${esc(d.description)}</div>
+      <div class="desc-more ${descLong?'show':''}" id="desc-more" onclick="expandDesc()">Читать полностью</div>
+    </div>` : "";
+
+  // Контакт
+  const contactHtml = d.contact_info ? `
+    <div class="card">
+      <div class="meta-row" style="padding:0">
+        <span class="meta-key">Контакт</span>
+        <span class="meta-val" style="word-break:break-all">${esc(d.contact_info)}</span>
+      </div>
+    </div>` : "";
+
+  // Action bar
+  const actionBar = d.is_owner ? "" : `
+    <div class="action-bar">
+      <button class="btn btn-primary" onclick="contactSeller()">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+        </svg>
+        Написать продавцу
+      </button>
+      <button class="btn btn-fav ${STATE.isFavorite?'is-fav':''}" id="btn-fav" onclick="toggleFavorite()" title="${STATE.isFavorite?'Убрать из избранного':'В избранное'}">
+        ${STATE.isFavorite ? "♥" : "♡"}
+      </button>
+    </div>`;
+
+  // Статистика
+  const statsHtml = `
+    <div class="stats-row" style="margin-top:10px">
+      <span>👁 ${fmtNum(d.views)} просмотров</span>
+      ${d.created_at ? `<span>📅 ${fmtDate(d.created_at)}</span>` : ""}
+    </div>`;
+
+  document.getElementById("ad-skeleton").style.display = "none";
+  document.getElementById("ad-content").style.display  = "";
+  document.getElementById("ad-content").innerHTML = `
+    ${galleryHtml}
+    <div class="card" style="border-radius:0 0 ${metaRows.length||d.description||d.contact_info?'0 0':'12px 12px'}">
+      <div class="price">${fmtPrice(d.price)}</div>
+      <div class="ad-title">${esc(d.title)}</div>
+      <div class="pills">${pills.join("")}</div>
+      ${statsHtml}
+    </div>
+    <div class="card">
+      <div class="seller-row">
+        <div class="seller-ava">${avaHtml}</div>
+        <div>
+          <div class="seller-name">${esc(s.name||"Продавец")}${verBadge}</div>
+          <div class="seller-sub">Продавец${d.is_owner?" · Это вы":""}</div>
+        </div>
+      </div>
+    </div>
+    ${descHtml}
+    ${contactHtml}
+    ${metaHtml}
+    ${actionBar}
+    <div style="height:8px"></div>
+  `;
+}
+
+function expandDesc() {
+  const t = document.getElementById("desc-text");
+  const m = document.getElementById("desc-more");
+  if (t) t.classList.remove("desc-clamp");
+  if (m) m.style.display = "none";
+  STATE.descExpanded = true;
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+//  ГАЛЕРЕЯ
+// ═══════════════════════════════════════════════════════════════════════════
+function setSlide(idx) {
+  const photos = (STATE.adData||{}).photos||[];
+  if (!photos.length) return;
+  STATE.curPhoto = ((idx % photos.length) + photos.length) % photos.length;
+  const slides = document.getElementById("gallery-slides");
+  if (slides) slides.style.transform = `translateX(${-STATE.curPhoto*100}%)`;
+  document.querySelectorAll(".gallery-dots span").forEach((d,i)=>
+    d.classList.toggle("active", i===STATE.curPhoto));
+  const ctr = document.getElementById("gallery-counter");
+  if (ctr) ctr.textContent = `${STATE.curPhoto+1} / ${photos.length}`;
+}
+function gtStart(e) { STATE.touchX0 = e.touches[0].clientX; STATE.touchY0 = e.touches[0].clientY; }
+function gtEnd(e) {
+  const dx = e.changedTouches[0].clientX - STATE.touchX0;
+  const dy = e.changedTouches[0].clientY - STATE.touchY0;
+  if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 30)
+    dx < 0 ? setSlide(STATE.curPhoto+1) : setSlide(STATE.curPhoto-1);
+}
+function galleryTap(e) {
+  const photos = (STATE.adData||{}).photos||[];
+  if (photos.length <= 1) return;
+  const rect = e.currentTarget.getBoundingClientRect();
+  const x = e.clientX - rect.left;
+  x > rect.width/2 ? setSlide(STATE.curPhoto+1) : setSlide(STATE.curPhoto-1);
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+//  ИЗБРАННОЕ
+// ═══════════════════════════════════════════════════════════════════════════
+async function toggleFavorite() {
+  if (!STATE.vkUserId) { showToast("Войдите в VK"); return; }
+  haptic("light");
+  try {
+    const data = await apiFetch(`/api/ad/${STATE.adId}/favorite`, { method:"POST" });
+    STATE.isFavorite = data.is_favorite;
+    const btn = document.getElementById("btn-fav");
+    if (btn) {
+      btn.textContent = STATE.isFavorite ? "♥" : "♡";
+      btn.classList.toggle("is-fav", STATE.isFavorite);
+      btn.title = STATE.isFavorite ? "Убрать из избранного" : "В избранное";
     }
+    showToast(STATE.isFavorite ? "♥ Добавлено в избранное" : "Убрано из избранного");
+    haptic(STATE.isFavorite ? "medium" : "light");
+    STATE.favsData = null; // сбрасываем кэш
+    updateFavBadge();
+  } catch(e) {
+    showToast("Ошибка. Попробуйте ещё раз.");
+  }
+}
 
-    function switchTab(tabId) {
-      state.activeTab = tabId;
-      renderStructure();
-      loadAds();
+function updateFavBadge() {
+  // Показываем точку на табе если есть избранное
+  const badge = document.getElementById("tab-badge");
+  if (!badge) return;
+  if (STATE.isFavorite) {
+    badge.textContent = "●";
+    badge.classList.add("show");
+  }
+}
+
+async function loadFavs() {
+  if (STATE.favsLoading) return;
+  STATE.favsLoading = true;
+  try {
+    const data = await apiFetch("/api/favorites");
+    STATE.favsData = data.items || [];
+    renderFavs(STATE.favsData);
+  } catch(e) {
+    document.getElementById("favs-skeleton").innerHTML = `
+      <div class="error-screen">
+        <div class="error-icon">😕</div>
+        <div class="error-title">Не удалось загрузить</div>
+        <div class="error-text">Проверьте соединение и попробуйте снова.</div>
+      </div>`;
+  } finally {
+    STATE.favsLoading = false;
+  }
+}
+
+function renderFavs(items) {
+  document.getElementById("favs-skeleton").style.display = "none";
+  const wrap = document.getElementById("favs-content");
+  wrap.style.display = "";
+
+  if (!items.length) {
+    wrap.innerHTML = `
+      <div class="fav-empty">
+        <div class="fav-empty-icon">🤍</div>
+        <div class="fav-empty-title">Пока пусто</div>
+        <div class="fav-empty-text">Нажмите ♡ в понравившихся объявлениях,<br>и они появятся здесь.</div>
+      </div>`;
+    return;
+  }
+
+  const badge = document.getElementById("tab-badge");
+  if (badge && items.length > 0) {
+    badge.textContent = items.length > 9 ? "9+" : items.length;
+    badge.classList.add("show");
+  }
+
+  wrap.innerHTML = `
+    <div class="fav-sep">Сохранённые · ${items.length}</div>
+    <div class="fav-list" id="fav-list">
+      ${items.map(ad => `
+        <div class="fav-item" onclick="openAdFromFav(${ad.id})" data-id="${ad.id}">
+          <div class="fav-thumb">
+            ${ad.photos&&ad.photos[0]
+              ? `<img src="${esc(ad.photos[0])}" loading="lazy">`
+              : "📷"}
+          </div>
+          <div class="fav-info">
+            <div class="fav-price">${fmtPrice(ad.price)}</div>
+            <div class="fav-title">${esc(ad.title)}</div>
+            <div class="fav-city">${esc(ad.city||"")}</div>
+          </div>
+          <button class="fav-del" onclick="removeFav(event,${ad.id})" title="Убрать">✕</button>
+        </div>`).join("")}
+    </div>`;
+}
+
+async function removeFav(e, adId) {
+  e.stopPropagation();
+  haptic("light");
+  try {
+    await apiFetch(`/api/ad/${adId}/favorite`, { method:"POST" });
+    // Убираем из списка
+    const item = document.querySelector(`.fav-item[data-id="${adId}"]`);
+    if (item) {
+      item.style.transition = "opacity .2s,transform .2s";
+      item.style.opacity = "0";
+      item.style.transform = "translateX(40px)";
+      setTimeout(() => {
+        item.remove();
+        STATE.favsData = (STATE.favsData||[]).filter(a=>a.id!==adId);
+        if (!STATE.favsData.length) renderFavs([]);
+        // Обновляем счётчик
+        const badge = document.getElementById("tab-badge");
+        const list  = document.getElementById("fav-list");
+        if (badge && list) {
+          const cnt = list.querySelectorAll(".fav-item").length;
+          const sep = document.querySelector(".fav-sep");
+          if (sep) sep.textContent = `Сохранённые · ${cnt}`;
+          badge.textContent = cnt > 9 ? "9+" : cnt;
+          if (!cnt) badge.classList.remove("show");
+        }
+      }, 220);
     }
+    // Если это текущее объявление — обновить кнопку
+    if (adId === STATE.adId) {
+      STATE.isFavorite = false;
+      const btn = document.getElementById("btn-fav");
+      if (btn) { btn.textContent="♡"; btn.classList.remove("is-fav"); }
+    }
+    showToast("Убрано из избранного");
+  } catch(e) {
+    showToast("Ошибка. Попробуйте ещё раз.");
+  }
+}
 
-    initVK();
-    renderStructure();
-    loadAds();
-  </script>
+function openAdFromFav(adId) {
+  haptic("light");
+  // Если уже загружено это объявление — просто переключаем вкладку
+  if (adId === STATE.adId) {
+    switchTab("ad");
+    return;
+  }
+  // Иначе загружаем
+  STATE.adData = null;
+  document.getElementById("ad-skeleton").style.display = "";
+  document.getElementById("ad-content").style.display  = "none";
+  document.getElementById("ad-error").style.display    = "none";
+  switchTab("ad");
+  loadAd(adId);
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+//  ДЕЙСТВИЯ
+// ═══════════════════════════════════════════════════════════════════════════
+function contactSeller() {
+  haptic("medium");
+  const ref = `contact_${STATE.adId}`;
+  const url = `https://vk.com/im?sel=-${CFG.BOT_GROUP}&ref=${ref}`;
+  openVKLink(url);
+}
+
+async function shareAd() {
+  haptic("light");
+  const url = `https://vk.com/app${CFG.VK_APP_ID}#ad_${STATE.adId}`;
+  try {
+    await vkBridge.send("VKWebAppShare", { link: url });
+  } catch(_) {
+    // Fallback: копируем в буфер
+    try {
+      await navigator.clipboard.writeText(url);
+      showToast("Ссылка скопирована");
+    } catch(_) {
+      showToast("Поделитесь ссылкой: " + url);
+    }
+  }
+}
+
+function openVKLink(url) {
+  try {
+    vkBridge.send("VKWebAppOpenLink", { link: url });
+  } catch(_) {
+    window.open(url, "_blank");
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+//  УТИЛИТЫ
+// ═══════════════════════════════════════════════════════════════════════════
+function fmtPrice(p) {
+  if (!p) return "Цена не указана";
+  if (p === 1) return "Бесплатно";
+  return new Intl.NumberFormat("ru-RU").format(p) + " ₽";
+}
+function fmtNum(n) {
+  return new Intl.NumberFormat("ru-RU").format(n||0);
+}
+function fmtDate(iso) {
+  if (!iso) return "";
+  try {
+    const d = new Date(iso);
+    return d.toLocaleDateString("ru-RU", { day:"numeric", month:"long" });
+  } catch(_) { return ""; }
+}
+function esc(s) {
+  return String(s||"")
+    .replace(/&/g,"&amp;").replace(/</g,"&lt;")
+    .replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+}
+function stripDot(s) { return String(s||"").replace(/^[·•]\s*/,""); }
+function trimTitle(s,n) {
+  s = String(s||"");
+  return s.length > n ? s.slice(0,n)+"…" : s;
+}
+
+let _toastTimer;
+function showToast(msg) {
+  const t = document.getElementById("toast");
+  t.textContent = msg;
+  t.classList.add("show");
+  clearTimeout(_toastTimer);
+  _toastTimer = setTimeout(() => t.classList.remove("show"), 2500);
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+//  СТАРТ
+// ═══════════════════════════════════════════════════════════════════════════
+async function main() {
+  await initVK();
+
+  // Получаем ad_id из хэша: #ad_123 или #123
+  const hash = window.location.hash.replace("#","").replace("ad_","").trim();
+  const adId = parseInt(hash);
+
+  if (adId && adId > 0) {
+    await loadAd(adId);
+  } else {
+    // Нет ad_id — показываем избранное
+    document.getElementById("ad-skeleton").style.display = "none";
+    document.getElementById("ad-error").style.display    = "";
+    document.getElementById("ad-error").innerHTML = `
+      <div class="error-icon">🏷️</div>
+      <div class="error-title">Полка</div>
+      <div class="error-text">Откройте любое объявление из группы,<br>чтобы увидеть его здесь.</div>`;
+    switchTab("favs");
+  }
+}
+
+main();
+</script>
 </body>
 </html>
