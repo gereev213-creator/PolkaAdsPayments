@@ -417,7 +417,7 @@ a{color:inherit;text-decoration:none}
       <svg viewBox="0 0 11 18"><polyline points="10,1 1,9 10,17"/></svg>
       Назад
     </button>
-    <div id="header-title">Полка</div>
+    <div id="header-title"><img src="https://i.postimg.cc/QdyS22RQ/polka-logo-2-png.png" alt="Полка" style="height:32px;object-fit:contain;display:block"></div>
     <div class="header-right">
       <button class="header-share-btn" id="btn-share" onclick="shareAd()">Поделиться</button>
     </div>
@@ -495,7 +495,7 @@ a{color:inherit;text-decoration:none}
 //  КОНФИГУРАЦИЯ
 // ═══════════════════════════════════════════════════════════════════════════
 const CFG = {
-  API_BASE:   "https://ВАШ_ДОМЕН.ru",  // ← URL сервера с polka_api_server.py
+  API_BASE:   "https://endorphin-trump-cavalier.ngrok-free.dev",
   BOT_GROUP:  "238149306",              // ← числовой ID группы (без минуса)
   VK_APP_ID:  0,                        // ← app_id вашего Mini App
 };
@@ -581,13 +581,13 @@ function switchTab(tab) {
   if (tab === "favs") {
     document.getElementById("view-ad").classList.add("back-hidden");
     document.getElementById("view-favs").classList.remove("hidden");
-    setHeader("Избранное", false, false);
+    setHeader(false, false);
     if (!STATE.favsData) loadFavs();
   } else {
     document.getElementById("view-favs").classList.add("hidden");
     document.getElementById("view-ad").classList.remove("back-hidden");
     const title = STATE.adData ? trimTitle(STATE.adData.title,28) : "Полка";
-    setHeader(title, false, !!STATE.adData);
+    setHeader(false, !!STATE.adData);
   }
 }
 
@@ -595,8 +595,7 @@ function navigateBack() {
   switchTab("ad");
 }
 
-function setHeader(title, backBtn, shareBtn) {
-  document.getElementById("header-title").textContent = title;
+function setHeader(backBtn, shareBtn) {
   document.getElementById("btn-back").classList.toggle("visible", backBtn);
   document.getElementById("btn-share").classList.toggle("visible", shareBtn);
 }
@@ -611,12 +610,12 @@ async function loadAd(adId) {
     STATE.adData    = data;
     STATE.isFavorite = data.is_favorite;
     renderAd(data);
-    setHeader(trimTitle(data.title,28), false, true);
+    setHeader(false, true);
     updateFavBadge();
   } catch(e) {
     document.getElementById("ad-skeleton").style.display = "none";
     document.getElementById("ad-error").style.display    = "";
-    setHeader("Объявление", false, false);
+    setHeader(false, false);
   }
 }
 
