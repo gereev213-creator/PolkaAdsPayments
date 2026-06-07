@@ -555,8 +555,9 @@ async function haptic(style="light") {
 // ═══════════════════════════════════════════════════════════════════════════
 async function apiFetch(path, opts={}) {
   const headers = {
-    "X-VK-Sign":   STATE.launchParams,
-    "Content-Type": "application/json",
+    "X-VK-Sign":                STATE.launchParams,
+    "Content-Type":             "application/json",
+    "ngrok-skip-browser-warning": "true",
     ...(opts.headers||{}),
   };
   const res = await fetch(CFG.API_BASE + path, { ...opts, headers });
