@@ -101,33 +101,63 @@ a{color:inherit;text-decoration:none}
 .header-share-btn:active{opacity:.5}
 .header-share-btn.visible{display:block}
 
-/* ── Tabs ────────────────────────────────────────────────────────────────── */
 #tabs{
   grid-area:tabs;
-  display:grid;grid-template-columns:1fr 1fr;
+  display:grid;grid-template-columns:1fr 1fr 1fr 1fr;
   background:var(--c-card);
   border-top:1px solid var(--c-divider);
 }
 .tab-btn{
   display:flex;flex-direction:column;align-items:center;justify-content:center;
-  gap:3px;padding-bottom:var(--safe-b);
+  gap:2px;padding-bottom:var(--safe-b);
   color:var(--c-text-second);
-  font-size:10px;font-weight:500;
+  font-size:9px;font-weight:500;
   transition:color .15s;
   position:relative;
 }
-.tab-btn svg{width:24px;height:24px}
+.tab-btn svg{width:22px;height:22px}
 .tab-btn.active{color:var(--c-accent)}
 .tab-btn:active{opacity:.6}
 .tab-badge{
-  position:absolute;top:8px;right:calc(50% - 18px);
+  position:absolute;top:6px;right:calc(50% - 20px);
   background:var(--c-red);color:#fff;
-  font-size:10px;font-weight:700;line-height:1;
-  padding:2px 5px;border-radius:10px;
-  min-width:16px;text-align:center;
+  font-size:9px;font-weight:700;line-height:1;
+  padding:2px 4px;border-radius:10px;
+  min-width:14px;text-align:center;
   display:none;
 }
 .tab-badge.show{display:block}
+/* Карточки поиска/похожих */
+.ad-card{
+  background:var(--c-card);
+  display:flex;gap:10px;align-items:center;
+  padding:10px 12px;margin:0 0 1px;
+  cursor:pointer;transition:background .15s;
+}
+.ad-card:active{background:var(--c-pill-bg)}
+.ad-card-thumb{
+  width:56px;height:56px;border-radius:8px;flex-shrink:0;
+  background:var(--c-skeleton);overflow:hidden;
+  display:flex;align-items:center;justify-content:center;
+  font-size:22px;color:var(--c-text-second);
+}
+.ad-card-thumb img{width:100%;height:100%;object-fit:cover}
+.ad-card-info{flex:1;min-width:0}
+.ad-card-price{font-size:15px;font-weight:700}
+.ad-card-title{font-size:13px;color:var(--c-text-second);
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:1px}
+.ad-card-meta{font-size:12px;color:var(--c-text-second);margin-top:2px}
+/* Статистика */
+.stat-card{background:var(--c-card);border-radius:12px;padding:14px 16px;margin:8px 12px 0}
+.stat-row{display:flex;justify-content:space-between;align-items:center;
+  padding:10px 0;border-bottom:1px solid var(--c-divider)}
+.stat-row:last-child{border-bottom:none;padding-bottom:0}
+.stat-label{font-size:14px;color:var(--c-text-second)}
+.stat-val{font-size:15px;font-weight:600}
+.stat-num{display:flex;gap:16px}
+.stat-num span{display:flex;flex-direction:column;align-items:center;gap:2px;
+  font-size:22px;font-weight:700}
+.stat-num small{font-size:11px;font-weight:400;color:var(--c-text-second)}
 
 /* ── View container ─────────────────────────────────────────────────────── */
 #views{
@@ -418,7 +448,7 @@ a{color:inherit;text-decoration:none}
       Назад
     </button>
     <div id="header-title" style="display:flex;align-items:center;justify-content:center;flex:1">
-      <img src="https://i.postimg.cc/FzJSMZz1/polka-logo-2-png.png" alt="Полка" style="height:24px;object-fit:contain;image-rendering:auto">
+      <img src="https://i.postimg.cc/FzJSMZz1/polka-logo-2-png.png" alt="Полка" style="height:20px;object-fit:contain;image-rendering:auto">
     </div>
     <div class="header-right">
       <button class="header-share-btn" id="btn-share" onclick="shareAd()">Поделиться</button>
@@ -467,6 +497,59 @@ a{color:inherit;text-decoration:none}
       <div id="favs-content" style="display:none"></div>
     </div>
 
+    <!-- Вид: поиск -->
+    <div class="view hidden" id="view-search">
+      <div style="padding:12px 12px 0">
+        <div style="display:flex;gap:8px;margin-bottom:8px">
+          <input id="search-input" type="search" placeholder="Поиск объявлений…"
+            style="flex:1;height:40px;border-radius:10px;border:1.5px solid var(--c-divider);
+                   padding:0 12px;font-size:15px;background:var(--c-card);color:var(--c-text-primary);outline:none"
+            oninput="onSearchInput()" onkeydown="if(event.key==='Enter')doSearch()">
+          <button onclick="doSearch()" style="height:40px;padding:0 14px;background:var(--c-accent);
+            color:#fff;border:none;border-radius:10px;font-size:15px;font-weight:600;cursor:pointer">
+            Найти
+          </button>
+        </div>
+        <div id="filter-chips" style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px"></div>
+        <div id="filter-panel" style="display:none;background:var(--c-card);border-radius:12px;padding:12px;margin-bottom:8px">
+          <div style="display:flex;gap:8px;margin-bottom:8px">
+            <select id="f-city" style="flex:1;height:36px;border-radius:8px;border:1px solid var(--c-divider);
+              padding:0 8px;font-size:14px;background:var(--c-card);color:var(--c-text-primary)">
+              <option value="">Все города</option>
+            </select>
+            <select id="f-cat" style="flex:1;height:36px;border-radius:8px;border:1px solid var(--c-divider);
+              padding:0 8px;font-size:14px;background:var(--c-card);color:var(--c-text-primary)">
+              <option value="">Все категории</option>
+            </select>
+          </div>
+          <div style="display:flex;gap:8px;align-items:center">
+            <input id="f-min" type="number" placeholder="Цена от" style="flex:1;height:36px;border-radius:8px;
+              border:1px solid var(--c-divider);padding:0 8px;font-size:14px;background:var(--c-card);color:var(--c-text-primary)">
+            <span style="color:var(--c-text-second)">—</span>
+            <input id="f-max" type="number" placeholder="до" style="flex:1;height:36px;border-radius:8px;
+              border:1px solid var(--c-divider);padding:0 8px;font-size:14px;background:var(--c-card);color:var(--c-text-primary)">
+            <button onclick="doSearch()" style="height:36px;padding:0 12px;background:var(--c-accent);
+              color:#fff;border:none;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer">
+              ОК
+            </button>
+          </div>
+        </div>
+        <button onclick="toggleFilters()" style="background:none;border:none;color:var(--c-accent);
+          font-size:13px;cursor:pointer;padding:0;margin-bottom:4px">
+          ⚙️ Фильтры
+        </button>
+      </div>
+      <div id="search-results"></div>
+    </div>
+
+    <!-- Вид: моя статистика -->
+    <div class="view hidden" id="view-stats">
+      <div id="stats-skeleton" style="padding:16px">
+        <div class="spinner"><div class="spin"></div></div>
+      </div>
+      <div id="stats-content" style="display:none"></div>
+    </div>
+
   </div>
 
   <!-- ══ TABS ══ -->
@@ -478,12 +561,25 @@ a{color:inherit;text-decoration:none}
       </svg>
       Объявление
     </button>
+    <button class="tab-btn" id="tab-search" onclick="switchTab('search')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+      </svg>
+      Поиск
+    </button>
     <button class="tab-btn" id="tab-favs" onclick="switchTab('favs')">
       <div class="tab-badge" id="tab-badge">0</div>
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
         <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 1 0-7.78 7.78L12 21.23l8.84-8.84a5.5 5.5 0 0 0 0-7.78z"/>
       </svg>
       Избранное
+    </button>
+    <button class="tab-btn" id="tab-stats" onclick="switchTab('stats')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/>
+        <line x1="6" y1="20" x2="6" y2="14"/>
+      </svg>
+      Мои
     </button>
   </div>
 
@@ -574,25 +670,181 @@ async function apiFetch(path, opts={}) {
 function switchTab(tab) {
   if (STATE.activeTab === tab) return;
   STATE.activeTab = tab;
-
   document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
   document.getElementById(`tab-${tab}`).classList.add("active");
-
-  document.querySelectorAll(".view").forEach(v => {
-    v.classList.remove("hidden","back-hidden");
+  ["ad","favs","search","stats"].forEach(v => {
+    const el = document.getElementById(`view-${v}`);
+    if (el) el.classList.toggle("hidden", v !== tab);
   });
-
   if (tab === "favs") {
-    document.getElementById("view-ad").classList.add("back-hidden");
-    document.getElementById("view-favs").classList.remove("hidden");
     setHeader(false, false);
     if (!STATE.favsData) loadFavs();
+  } else if (tab === "search") {
+    setHeader(false, false);
+    if (!STATE.filtersLoaded) loadFilters();
+    document.getElementById("search-input")?.focus();
+  } else if (tab === "stats") {
+    setHeader(false, false);
+    if (!STATE.statsLoaded) loadStats();
   } else {
-    document.getElementById("view-favs").classList.add("hidden");
-    document.getElementById("view-ad").classList.remove("back-hidden");
-    const title = STATE.adData ? trimTitle(STATE.adData.title,28) : "Полка";
     setHeader(false, !!STATE.adData);
   }
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+//  ПОИСК
+// ═══════════════════════════════════════════════════════════════════════════
+let _searchTimer = null;
+function onSearchInput() {
+  clearTimeout(_searchTimer);
+  _searchTimer = setTimeout(doSearch, 500);
+}
+
+function toggleFilters() {
+  const p = document.getElementById("filter-panel");
+  p.style.display = p.style.display === "none" ? "" : "none";
+}
+
+async function loadFilters() {
+  try {
+    const data = await apiFetch("/api/filters");
+    const cityEl = document.getElementById("f-city");
+    const catEl  = document.getElementById("f-cat");
+    (data.cities||[]).forEach(c => {
+      cityEl.innerHTML += `<option value="${esc(c)}">${esc(c)}</option>`;
+    });
+    (data.categories||[]).forEach(c => {
+      catEl.innerHTML += `<option value="${esc(c)}">${esc(c)}</option>`;
+    });
+    STATE.filtersLoaded = true;
+  } catch(_) {}
+}
+
+async function doSearch() {
+  const q    = document.getElementById("search-input")?.value.trim() || "";
+  const city = document.getElementById("f-city")?.value || "";
+  const cat  = document.getElementById("f-cat")?.value || "";
+  const minP = document.getElementById("f-min")?.value || "";
+  const maxP = document.getElementById("f-max")?.value || "";
+
+  const wrap = document.getElementById("search-results");
+  wrap.innerHTML = `<div class="spinner" style="padding:32px"><div class="spin"></div></div>`;
+
+  // Показываем активные фильтры
+  const chips = [];
+  if (city) chips.push(`<span class="pill" onclick="clearFilter('city')" style="cursor:pointer">${esc(city)} ✕</span>`);
+  if (cat)  chips.push(`<span class="pill" onclick="clearFilter('cat')"  style="cursor:pointer">${esc(cat)} ✕</span>`);
+  if (minP||maxP) chips.push(`<span class="pill" onclick="clearFilter('price')" style="cursor:pointer">${minP||'0'} — ${maxP||'∞'} ₽ ✕</span>`);
+  document.getElementById("filter-chips").innerHTML = chips.join("");
+
+  try {
+    const params = new URLSearchParams();
+    if (q)    params.set("q", q);
+    if (city) params.set("city", city);
+    if (cat)  params.set("category", cat);
+    if (minP) params.set("min_price", minP);
+    if (maxP) params.set("max_price", maxP);
+    const data = await apiFetch(`/api/search?${params}`);
+    renderAdList(wrap, data.items, data.total, q||"объявления");
+  } catch(_) {
+    wrap.innerHTML = `<div class="error-screen"><div class="error-icon">😕</div><div class="error-title">Ошибка загрузки</div></div>`;
+  }
+}
+
+function clearFilter(type) {
+  if (type==="city")  document.getElementById("f-city").value = "";
+  if (type==="cat")   document.getElementById("f-cat").value = "";
+  if (type==="price") { document.getElementById("f-min").value=""; document.getElementById("f-max").value=""; }
+  doSearch();
+}
+
+function renderAdList(wrap, items, total, label) {
+  if (!items || !items.length) {
+    wrap.innerHTML = `<div class="fav-empty"><div class="fav-empty-icon">🔍</div>
+      <div class="fav-empty-title">Ничего не найдено</div>
+      <div class="fav-empty-text">Попробуйте изменить запрос или фильтры</div></div>`;
+    return;
+  }
+  wrap.innerHTML = `
+    <div class="fav-sep">${esc(label)} · ${total}</div>
+    ${items.map(ad => adCardHtml(ad)).join("")}`;
+}
+
+function adCardHtml(ad) {
+  const photos = ad.photos || [];
+  const thumb = photos[0]
+    ? `<img src="${esc(photos[0])}" loading="lazy">`
+    : "📷";
+  return `<div class="ad-card" onclick="openAdFromFav(${ad.id})">
+    <div class="ad-card-thumb">${thumb}</div>
+    <div class="ad-card-info">
+      <div class="ad-card-price">${fmtPrice(ad.price)}</div>
+      <div class="ad-card-title">${esc(ad.title)}</div>
+      <div class="ad-card-meta">${esc(ad.city||"")}${ad.category?" · "+esc(ad.category.replace(/^·\s*/,""))":""}</div>
+    </div>
+  </div>`;
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+//  СТАТИСТИКА
+// ═══════════════════════════════════════════════════════════════════════════
+async function loadStats() {
+  try {
+    const data = await apiFetch("/api/my/stats");
+    STATE.statsLoaded = true;
+    renderStats(data.items || []);
+  } catch(e) {
+    document.getElementById("stats-skeleton").innerHTML =
+      `<div class="error-screen"><div class="error-icon">😕</div><div class="error-title">Не удалось загрузить</div></div>`;
+  }
+}
+
+function renderStats(items) {
+  document.getElementById("stats-skeleton").style.display = "none";
+  const wrap = document.getElementById("stats-content");
+  wrap.style.display = "";
+
+  if (!items.length) {
+    wrap.innerHTML = `<div class="fav-empty">
+      <div class="fav-empty-icon">📊</div>
+      <div class="fav-empty-title">Нет объявлений</div>
+      <div class="fav-empty-text">Разместите первое объявление через бота</div></div>`;
+    return;
+  }
+
+  const totalViews = items.reduce((s,a) => s + (a.views||0), 0);
+  const totalFavs  = items.reduce((s,a) => s + (a.fav_count||0), 0);
+  const active     = items.filter(a => a.status==="active").length;
+
+  wrap.innerHTML = `
+    <div class="stat-card" style="margin-top:12px">
+      <div class="stat-num">
+        <span>${active}<small>активных</small></span>
+        <span>${fmtNum(totalViews)}<small>просмотров</small></span>
+        <span>${fmtNum(totalFavs)}<small>в избранном</small></span>
+      </div>
+    </div>
+    <div style="padding:12px 12px 4px;font-size:13px;font-weight:600;color:var(--c-text-second);text-transform:uppercase;letter-spacing:.5px">
+      Мои объявления
+    </div>
+    ${items.map(ad => `
+      <div class="stat-card" style="margin-top:4px;cursor:pointer" onclick="openAdFromFav(${ad.id})">
+        <div style="display:flex;gap:10px;align-items:center">
+          <div style="width:48px;height:48px;border-radius:8px;overflow:hidden;flex-shrink:0;background:var(--c-skeleton)">
+            ${ad.photo ? `<img src="${esc(ad.photo)}" style="width:100%;height:100%;object-fit:cover">` : "📷"}
+          </div>
+          <div style="flex:1;min-width:0">
+            <div style="font-size:14px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(ad.title)}</div>
+            <div style="font-size:13px;color:var(--c-text-second)">${fmtPrice(ad.price)}</div>
+          </div>
+          <div style="text-align:right;flex-shrink:0">
+            <div style="font-size:13px;color:var(--c-text-second)">👁 ${fmtNum(ad.views||0)}</div>
+            <div style="font-size:13px;color:var(--c-text-second)">♡ ${ad.fav_count||0}</div>
+          </div>
+        </div>
+        ${ad.status!=="active" ? `<div style="margin-top:6px;font-size:12px;color:var(--c-red)">Снято с публикации</div>` : ""}
+      </div>`).join("")}
+    <div style="height:16px"></div>`;
 }
 
 function navigateBack() {
@@ -668,19 +920,29 @@ function renderAd(d) {
   if (d.size)     pills.push(`<span class="pill">Размер: ${esc(d.size)}</span>`);
   if (d.gender)   pills.push(`<span class="pill">${esc(stripDot(d.gender))}</span>`);
 
-  // Продавец
+  // Продавец — аватар грузим из VK по user_id
   const s = d.seller || {};
-  const avaHtml = STATE.vkUserPhoto && d.is_owner
-    ? `<img src="${esc(STATE.vkUserPhoto)}" alt="">`
-    : esc((s.name||"П")[0].toUpperCase());
+  const sellerId = s.id || 0;
+  const avaImgUrl = `https://avatars.mds.yandex.net/get-vk-profiles/${sellerId}/1`;
+  const avaHtml = `<img src="https://vk.com/images/camera_200.png" alt=""
+    onerror="this.style.display='none';this.parentNode.textContent='${esc((s.name||"П")[0].toUpperCase())}'"
+    onload="this.style.display='block'"
+    style="display:none"
+    data-uid="${sellerId}">`;
   const verBadge = s.is_verified ? `<span class="verified-badge">✅</span>` : "";
 
-  // Мета
+  // Мета — адрес как ссылка на Яндекс.Карты
+  const addrVal = d.address
+    ? `<a href="https://yandex.ru/maps/?text=${encodeURIComponent((d.city||'')+' '+d.address)}" 
+         onclick="openVKLink(this.href);return false;"
+         style="color:var(--c-accent);text-decoration:none">${esc(d.address)}</a>`
+    : "";
+
   const metaRows = [
-    d.rooms           && ["Комнат",    d.rooms],
-    d.area            && ["Площадь",   d.area],
-    d.address         && ["Адрес",     d.address],
-    d.employment_type && ["Занятость", d.employment_type],
+    d.rooms           && ["Комнат",    `<span class="meta-val">${esc(d.rooms)}</span>`],
+    d.area            && ["Площадь",   `<span class="meta-val">${esc(d.area)}</span>`],
+    d.address         && ["Адрес",     `<span class="meta-val">${addrVal}</span>`],
+    d.employment_type && ["Занятость", `<span class="meta-val">${esc(d.employment_type)}</span>`],
   ].filter(Boolean);
 
   const metaHtml = metaRows.length ? `
@@ -688,12 +950,48 @@ function renderAd(d) {
       ${metaRows.map(([k,v])=>`
         <div class="meta-row">
           <span class="meta-key">${esc(k)}</span>
-          <span class="meta-val">${esc(v)}</span>
+          ${v}
         </div>`).join("")}
     </div>` : "";
 
-  // Описание
-  const descLong = (d.description||"").length > 200;
+  // Статистика для продавца
+  const statsOwnerHtml = (d.is_owner && d.seller_stats) ? `
+    <div class="card">
+      <div style="font-size:13px;font-weight:600;color:var(--c-text-second);margin-bottom:10px;text-transform:uppercase;letter-spacing:.5px">Статистика</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;text-align:center">
+        <div style="background:var(--c-pill-bg);border-radius:10px;padding:10px 4px">
+          <div style="font-size:20px;font-weight:700">${fmtNum(d.views)}</div>
+          <div style="font-size:11px;color:var(--c-text-second);margin-top:2px">просмотров</div>
+        </div>
+        <div style="background:var(--c-pill-bg);border-radius:10px;padding:10px 4px">
+          <div style="font-size:20px;font-weight:700">${fmtNum(d.favorites_count||0)}</div>
+          <div style="font-size:11px;color:var(--c-text-second);margin-top:2px">в избранном</div>
+        </div>
+        <div style="background:var(--c-pill-bg);border-radius:10px;padding:10px 4px">
+          <div style="font-size:20px;font-weight:700">${fmtNum(d.seller_stats.ads_count||0)}</div>
+          <div style="font-size:11px;color:var(--c-text-second);margin-top:2px">объявлений</div>
+        </div>
+      </div>
+    </div>` : "";
+
+  // Похожие объявления
+  const similarHtml = (d.similar && d.similar.length > 0) ? `
+    <div style="padding:14px 16px 6px;font-size:13px;font-weight:600;color:var(--c-text-second);text-transform:uppercase;letter-spacing:.5px">Похожие</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:0 12px 16px">
+      ${d.similar.map(s => `
+        <div onclick="openAdFromFav(${s.id})" style="background:var(--c-card);border-radius:12px;overflow:hidden;cursor:pointer;transition:opacity .15s" 
+             onmousedown="this.style.opacity='.7'" onmouseup="this.style.opacity='1'">
+          <div style="aspect-ratio:1;background:var(--c-skeleton);overflow:hidden">
+            ${s.photos&&s.photos[0]
+              ? `<img src="${esc(s.photos[0])}" style="width:100%;height:100%;object-fit:cover" loading="lazy">`
+              : `<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:28px;color:var(--c-text-second)">📷</div>`}
+          </div>
+          <div style="padding:8px">
+            <div style="font-size:14px;font-weight:700">${fmtPrice(s.price)}</div>
+            <div style="font-size:12px;color:var(--c-text-second);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(s.title)}</div>
+          </div>
+        </div>`).join("")}
+    </div>` : "";
   const descHtml = d.description ? `
     <div class="card">
       <div class="desc ${descLong?'desc-clamp':''}" id="desc-text">${esc(d.description)}</div>
@@ -752,9 +1050,28 @@ function renderAd(d) {
     ${descHtml}
     ${contactHtml}
     ${metaHtml}
+    ${statsOwnerHtml}
+    ${similarHtml}
     ${actionBar}
     <div style="height:8px"></div>
   `;
+
+  // Загружаем аватар продавца через VK Bridge
+  setTimeout(async () => {
+    const img = document.querySelector(`[data-uid="${sellerId}"]`);
+    if (!img) return;
+    try {
+      const res = await vkBridge.send("VKWebAppCallAPIMethod", {
+        method: "users.get",
+        params: { user_ids: String(sellerId), fields: "photo_100", v: "5.131" }
+      });
+      const photo = res?.response?.[0]?.photo_100;
+      if (photo) { img.src = photo; img.style.display = "block"; }
+      else if (img.parentNode) img.parentNode.textContent = (s.name||"П")[0].toUpperCase();
+    } catch(_) {
+      if (img.parentNode) img.parentNode.textContent = (s.name||"П")[0].toUpperCase();
+    }
+  }, 50);
 }
 
 function expandDesc() {
@@ -819,13 +1136,18 @@ async function toggleFavorite() {
 }
 
 function updateFavBadge() {
-  // Показываем точку на табе если есть избранное
   const badge = document.getElementById("tab-badge");
   if (!badge) return;
-  if (STATE.isFavorite) {
-    badge.textContent = "●";
+  const cnt = (STATE.favsData || []).length;
+  if (cnt > 0) {
+    badge.textContent = cnt > 9 ? "9+" : cnt;
     badge.classList.add("show");
+  } else {
+    badge.classList.remove("show");
   }
+  // Обновляем заголовок в списке если открыт
+  const sep = document.querySelector(".fav-sep");
+  if (sep && cnt > 0) sep.textContent = `Сохранённые · ${cnt}`;
 }
 
 async function loadFavs() {
@@ -903,16 +1225,7 @@ async function removeFav(e, adId) {
         item.remove();
         STATE.favsData = (STATE.favsData||[]).filter(a=>a.id!==adId);
         if (!STATE.favsData.length) renderFavs([]);
-        // Обновляем счётчик
-        const badge = document.getElementById("tab-badge");
-        const list  = document.getElementById("fav-list");
-        if (badge && list) {
-          const cnt = list.querySelectorAll(".fav-item").length;
-          const sep = document.querySelector(".fav-sep");
-          if (sep) sep.textContent = `Сохранённые · ${cnt}`;
-          badge.textContent = cnt > 9 ? "9+" : cnt;
-          if (!cnt) badge.classList.remove("show");
-        }
+        updateFavBadge();
       }, 220);
     }
     // Если это текущее объявление — обновить кнопку
@@ -949,9 +1262,15 @@ function openAdFromFav(adId) {
 function contactSeller() {
   haptic("medium");
   const sellerId = STATE.adData.seller.id;
-  // Открываем профиль продавца в VK
-  const url = `https://vk.com/id${sellerId}`;
-  openVKLink(url);
+  // Открываем диалог с продавцом
+  try {
+    vkBridge.send("VKWebAppOpenApp", {
+      app_id: 6146827, // VK Мессенджер
+      hash: `im?sel=${sellerId}`
+    });
+  } catch(_) {}
+  // Надёжный fallback
+  openVKLink(`https://vk.com/im?sel=${sellerId}`);
 }
 
 async function shareAd() {
