@@ -417,7 +417,9 @@ a{color:inherit;text-decoration:none}
       <svg viewBox="0 0 11 18"><polyline points="10,1 1,9 10,17"/></svg>
       Назад
     </button>
-    <div id="header-title" style="font-size:13px;font-weight:700;letter-spacing:.3px;text-align:center;line-height:1.2">ПОЛКА — ДОСКА ОБЪЯВЛЕНИЙ<br>ПО УДМУРТИИ</div>
+    <div id="header-title" style="display:flex;align-items:center;justify-content:center;flex:1">
+      <img src="https://i.postimg.cc/FzJSMZz1/polka-logo-2-png.png" alt="Полка" style="height:24px;object-fit:contain;image-rendering:auto">
+    </div>
     <div class="header-right">
       <button class="header-share-btn" id="btn-share" onclick="shareAd()">Поделиться</button>
     </div>
@@ -556,6 +558,7 @@ async function haptic(style="light") {
 async function apiFetch(path, opts={}) {
   const headers = {
     "X-VK-Sign":                STATE.launchParams,
+    "X-VK-User-Id":             String(STATE.vkUserId),
     "Content-Type":             "application/json",
     "ngrok-skip-browser-warning": "true",
     ...(opts.headers||{}),
@@ -945,8 +948,9 @@ function openAdFromFav(adId) {
 // ═══════════════════════════════════════════════════════════════════════════
 function contactSeller() {
   haptic("medium");
-  const ref = `contact_${STATE.adId}`;
-  const url = `https://vk.com/im?sel=-${CFG.BOT_GROUP}&ref=${ref}`;
+  const sellerId = STATE.adData.seller.id;
+  // Открываем профиль продавца в VK
+  const url = `https://vk.com/id${sellerId}`;
   openVKLink(url);
 }
 
