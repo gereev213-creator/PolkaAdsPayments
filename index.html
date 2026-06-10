@@ -26,7 +26,7 @@
   --safe-b: env(safe-area-inset-bottom, 0px);
   --safe-l: env(safe-area-inset-left,   0px);
   --safe-r: env(safe-area-inset-right,  0px);
-  --bar-h:  56px;
+  --bar-h:  calc(56px + var(--safe-t));
   --tab-h:  calc(52px + var(--safe-b));
   --font:   -apple-system,"SF Pro Text","Helvetica Neue",Arial,sans-serif;
 }
@@ -76,7 +76,7 @@ a{color:inherit;text-decoration:none}
   z-index:10;
 }
 .header-back{
-  display:none;align-items:center;gap:2px;
+  display:none;align-items:center;gap:4px;
   color:var(--c-accent);font-size:17px;font-weight:400;
   padding:8px 8px 8px 0;margin-right:4px;
   transition:opacity .15s;
@@ -127,6 +127,7 @@ a{color:inherit;text-decoration:none}
   display:none;
 }
 .tab-badge.show{display:block}
+
 /* Карточки поиска/похожих */
 .ad-card{
   background:var(--c-card);
@@ -147,6 +148,7 @@ a{color:inherit;text-decoration:none}
 .ad-card-title{font-size:13px;color:var(--c-text-second);
   white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:1px}
 .ad-card-meta{font-size:12px;color:var(--c-text-second);margin-top:2px}
+
 /* Статистика */
 .stat-card{background:var(--c-card);border-radius:12px;padding:14px 16px;margin:8px 12px 0}
 .stat-row{display:flex;justify-content:space-between;align-items:center;
@@ -154,9 +156,9 @@ a{color:inherit;text-decoration:none}
 .stat-row:last-child{border-bottom:none;padding-bottom:0}
 .stat-label{font-size:14px;color:var(--c-text-second)}
 .stat-val{font-size:15px;font-weight:600}
-.stat-num{display:flex;gap:16px}
+.stat-num{display:flex;gap:16px;justify-content:space-around}
 .stat-num span{display:flex;flex-direction:column;align-items:center;gap:2px;
-  font-size:22px;font-weight:700}
+  font-size:20px;font-weight:700}
 .stat-num small{font-size:11px;font-weight:400;color:var(--c-text-second)}
 
 /* ── View container ─────────────────────────────────────────────────────── */
@@ -271,7 +273,7 @@ a{color:inherit;text-decoration:none}
   font-size:13px;color:var(--c-text-second);
 }
 .pill.green{background:#ebf8eb;color:var(--c-green)}
-.pill.orange{background:#fff3e0;color:var(--c-orange)}
+.pill.orange{background:#fff3e0;color:var(--orange)}
 
 /* ── Seller ──────────────────────────────────────────────────────────────── */
 .seller-row{display:flex;align-items:center;gap:12px}
@@ -409,8 +411,7 @@ a{color:inherit;text-decoration:none}
   transform:translateX(-50%) translateY(20px);
   background:rgba(0,0,0,.8);color:#fff;
   padding:10px 18px;border-radius:24px;
-  font-size:14px;white-space:nowrap;
-  pointer-events:none;opacity:0;
+  font-size:14px;pointer-events:none;opacity:0;
   transition:opacity .2s,transform .2s;
   z-index:1000;
   max-width:calc(100vw - 32px);
@@ -594,7 +595,7 @@ a{color:inherit;text-decoration:none}
 // ═══════════════════════════════════════════════════════════════════════════
 const CFG = {
   API_BASE:   "https://endorphin-trump-cavalier.ngrok-free.dev",
-  BOT_GROUP:  "238149306",              // ← числовой ID группы (без минуса)
+  BOT_GROUP:  "238149306",              // ID группы (без минуса)
   VK_APP_ID:  54623990,
 };
 
@@ -710,6 +711,11 @@ async function loadFilters() {
     const data = await apiFetch("/api/filters");
     const cityEl = document.getElementById("f-city");
     const catEl  = document.getElementById("f-cat");
+    
+    // Очищаем перед заполнением
+    cityEl.innerHTML = '<option value="">Все города</option>';
+    catEl.innerHTML = '<option value="">Все категории</option>';
+
     (data.cities||[]).forEach(c => {
       cityEl.innerHTML += `<option value="${esc(c)}">${esc(c)}</option>`;
     });
@@ -775,12 +781,13 @@ function adCardHtml(ad) {
   const thumb = photos[0]
     ? `<img src="${esc(photos[0])}" loading="lazy">`
     : "📷";
+  const categoryStr = ad.category ? " · " + esc(ad.category.replace(/^·\s*/,"")) : "";
   return `<div class="ad-card" onclick="openAdFromFav(${ad.id})">
     <div class="ad-card-thumb">${thumb}</div>
     <div class="ad-card-info">
       <div class="ad-card-price">${fmtPrice(ad.price)}</div>
       <div class="ad-card-title">${esc(ad.title)}</div>
-      <div class="ad-card-meta">${esc(ad.city||"")}${ad.category?" · "+esc(ad.category.replace(/^·\s*/,""))":""}</div>
+      <div class="ad-card-meta">${esc(ad.city||"")}${categoryStr}</div>
     </div>
   </div>`;
 }
@@ -899,7 +906,7 @@ function renderAd(d) {
         ${dots}
         <div class="gallery-counter" id="gallery-counter">${photos.length>1?`1 / ${photos.length}`:""}</div>
       </div>`;
-    if (photos.length > 3) {
+    if (photos.length > 1) {
       setTimeout(() => {
         const gc = document.getElementById("gallery-counter");
         if (gc) gc.style.display = "block";
@@ -923,7 +930,6 @@ function renderAd(d) {
   // Продавец — аватар грузим из VK по user_id
   const s = d.seller || {};
   const sellerId = s.id || 0;
-  const avaImgUrl = `https://avatars.mds.yandex.net/get-vk-profiles/${sellerId}/1`;
   const avaHtml = `<img src="https://vk.com/images/camera_200.png" alt=""
     onerror="this.style.display='none';this.parentNode.textContent='${esc((s.name||"П")[0].toUpperCase())}'"
     onload="this.style.display='block'"
@@ -992,6 +998,8 @@ function renderAd(d) {
           </div>
         </div>`).join("")}
     </div>` : "";
+
+  const descLong = d.description && d.description.length > 280;
   const descHtml = d.description ? `
     <div class="card">
       <div class="desc ${descLong?'desc-clamp':''}" id="desc-text">${esc(d.description)}</div>
@@ -1260,6 +1268,7 @@ function openAdFromFav(adId) {
 //  ДЕЙСТВИЯ
 // ═══════════════════════════════════════════════════════════════════════════
 function contactSeller() {
+  if (!STATE.adData || !STATE.adData.seller || !STATE.adData.seller.id) return;
   haptic("medium");
   const sellerId = STATE.adData.seller.id;
   // Открываем диалог с продавцом
@@ -1348,14 +1357,14 @@ async function main() {
   if (adId && adId > 0) {
     await loadAd(adId);
   } else {
-    // Нет ad_id — показываем избранное
+    // Нет ad_id — показываем заглушку
     document.getElementById("ad-skeleton").style.display = "none";
     document.getElementById("ad-error").style.display    = "";
     document.getElementById("ad-error").innerHTML = `
       <div class="error-icon">🏷️</div>
       <div class="error-title">Полка</div>
       <div class="error-text">Откройте любое объявление из группы,<br>чтобы увидеть его здесь.</div>`;
-    switchTab("favs");
+    switchTab("search"); // Переключаем на поиск, так как объявления по дефолту нет
   }
 }
 
