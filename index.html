@@ -59,14 +59,15 @@ a{color:inherit;text-decoration:none}
 /* ── Layout ─────────────────────────────────────────────────────────────── */
 #app{
   position:fixed;inset:0;
-  display:grid;
-  grid-template-rows:var(--bar-h) 1fr var(--tab-h);
-  grid-template-areas:"header" "view" "tabs";
+  display:flex;
+  flex-direction:column;
+  background:var(--c-bg);
 }
 
 /* ── Header ─────────────────────────────────────────────────────────────── */
 #header{
-  grid-area:header;
+  flex-shrink:0;
+  height: var(--bar-h);
   display:flex;align-items:center;
   padding:0 16px;
   padding-top:var(--safe-t);
@@ -80,17 +81,29 @@ a{color:inherit;text-decoration:none}
   color:var(--c-accent);font-size:17px;font-weight:400;
   padding:8px 8px 8px 0;margin-right:4px;
   transition:opacity .15s;
+  position: relative;
+  z-index: 2;
 }
 .header-back svg{width:11px;height:18px;fill:none;stroke:currentColor;stroke-width:2.5;stroke-linecap:round}
 .header-back.visible{display:flex}
 .header-back:active{opacity:.5}
 #header-title{
-  font-size:17px;font-weight:600;
-  flex:1;text-align:center;
+  position: absolute;
+  left: 50%;
+  top: var(--safe-t);
+  bottom: 0;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1;
 }
 .header-right{
   display:flex;align-items:center;
   min-width:60px;justify-content:flex-end;
+  position: relative;
+  z-index: 2;
+  margin-left: auto;
 }
 .header-share-btn{
   color:var(--c-accent);
@@ -101,11 +114,14 @@ a{color:inherit;text-decoration:none}
 .header-share-btn:active{opacity:.5}
 .header-share-btn.visible{display:block}
 
+/* ── Tabs (Нижняя навигация) ────────────────────────────────────────────── */
 #tabs{
-  grid-area:tabs;
+  flex-shrink:0;
+  height: var(--tab-h);
   display:grid;grid-template-columns:1fr 1fr 1fr 1fr;
   background:var(--c-card);
   border-top:1px solid var(--c-divider);
+  z-index:10;
 }
 .tab-btn{
   display:flex;flex-direction:column;align-items:center;justify-content:center;
@@ -163,8 +179,10 @@ a{color:inherit;text-decoration:none}
 
 /* ── View container ─────────────────────────────────────────────────────── */
 #views{
-  grid-area:view;
-  position:relative;overflow:hidden;
+  flex:1;
+  position:relative;
+  overflow:hidden;
+  background:var(--c-bg);
 }
 .view{
   position:absolute;inset:0;
@@ -172,16 +190,10 @@ a{color:inherit;text-decoration:none}
   -webkit-overflow-scrolling:touch;
   overscroll-behavior:contain;
   background:var(--c-bg);
-  transition:transform .3s cubic-bezier(.4,0,.2,1),opacity .3s;
 }
+/* Полное скрытие неактивных экранов для избежания артефактов на десктопе */
 .view.hidden{
-  transform:translateX(100%);
-  pointer-events:none;
-}
-.view.back-hidden{
-  transform:translateX(-30%);
-  opacity:.5;
-  pointer-events:none;
+  display:none !important;
 }
 
 /* ── Skeleton ────────────────────────────────────────────────────────────── */
@@ -337,7 +349,6 @@ a{color:inherit;text-decoration:none}
   user-select:none;
   -webkit-user-select:none;
 }
-.btn:active{opacity:.65;transform:scale(.96)}
 .btn-primary{flex:1;background:var(--c-accent);color:#fff}
 .btn-fav{
   flex:0 0 52px;
@@ -448,8 +459,8 @@ a{color:inherit;text-decoration:none}
       <svg viewBox="0 0 11 18"><polyline points="10,1 1,9 10,17"/></svg>
       Назад
     </button>
-    <div id="header-title" style="display:flex;align-items:center;justify-content:center;flex:1">
-      <img src="https://i.postimg.cc/FzJSMZz1/polka-logo-2-png.png" alt="Полка" style="height:20px;object-fit:contain;image-rendering:auto">
+    <div id="header-title">
+      <img src="https://i.postimg.cc/FzJSMZz1/polka-logo-2-png.png" alt="Полка" style="height:15px;object-fit:contain;image-rendering:auto">
     </div>
     <div class="header-right">
       <button class="header-share-btn" id="btn-share" onclick="shareAd()">Поделиться</button>
@@ -555,14 +566,14 @@ a{color:inherit;text-decoration:none}
 
   <!-- ══ TABS ══ -->
   <div id="tabs">
-    <button class="tab-btn active" id="tab-ad" onclick="switchTab('ad')">
+    <button class="tab-btn" id="tab-ad" onclick="switchTab('ad')">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
         <rect x="3" y="3" width="18" height="18" rx="3"/>
         <path d="M3 9h18M9 21V9"/>
       </svg>
       Объявление
     </button>
-    <button class="tab-btn" id="tab-search" onclick="switchTab('search')">
+    <button class="tab-btn active" id="tab-search" onclick="switchTab('search')">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
         <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
       </svg>
@@ -590,18 +601,12 @@ a{color:inherit;text-decoration:none}
 <div id="toast"></div>
 
 <script>
-// ═══════════════════════════════════════════════════════════════════════════
-//  КОНФИГУРАЦИЯ
-// ═══════════════════════════════════════════════════════════════════════════
 const CFG = {
   API_BASE:   "https://endorphin-trump-cavalier.ngrok-free.dev",
   BOT_GROUP:  "238149306",              // ID группы (без минуса)
   VK_APP_ID:  54623990,
 };
 
-// ═══════════════════════════════════════════════════════════════════════════
-//  СОСТОЯНИЕ
-// ═══════════════════════════════════════════════════════════════════════════
 const STATE = {
   vkUserId:     0,
   vkUserPhoto:  "",
@@ -614,33 +619,41 @@ const STATE = {
   curPhoto:     0,
   touchX0:      0,
   touchY0:      0,
-  activeTab:    "ad",
+  activeTab:    "",         // Пустая строка при инициализации позволяет switchTab() сработать корректно на старте
   descExpanded: false,
+  filtersLoaded: false,
+  initialSearchDone: false,
 };
 
-// ═══════════════════════════════════════════════════════════════════════════
-//  VK BRIDGE
-// ═══════════════════════════════════════════════════════════════════════════
 async function initVK() {
   try { await vkBridge.send("VKWebAppInit"); } catch(_) {}
 
-  // Тема
+  // Определение темы оформления
   try {
     const cfg = await vkBridge.send("VKWebAppGetConfig");
     if (cfg.appearance === "dark")
       document.documentElement.setAttribute("data-theme","dark");
   } catch(_) {}
 
-  // Пользователь
+  // Извлекаем vk_user_id напрямую из launch params как самый надёжный фоллбек
+  const params = new URLSearchParams(window.location.search);
+  const paramUid = parseInt(params.get("vk_user_id"));
+  if (paramUid) {
+    STATE.vkUserId = paramUid;
+  }
+
+  // Запрашиваем информацию о пользователе
   try {
     const u = await vkBridge.send("VKWebAppGetUserInfo");
-    STATE.vkUserId    = u.id;
-    STATE.vkUserPhoto = u.photo_100 || "";
+    if (u && u.id) {
+      STATE.vkUserId    = u.id;
+      STATE.vkUserPhoto = u.photo_100 || "";
+    }
   } catch(_) {}
 
   STATE.launchParams = window.location.search.slice(1);
 
-  // Swipe back
+  // Подключение свайпов возврата в мобильных клиентах VK
   try { await vkBridge.send("VKWebAppSetSwipeSettings", { history: true }); } catch(_) {}
   try { await vkBridge.send("VKWebAppEnableSwipeBack"); } catch(_) {}
 }
@@ -649,9 +662,6 @@ async function haptic(style="light") {
   try { await vkBridge.send("VKWebAppTapticImpactOccurred", { style }); } catch(_) {}
 }
 
-// ═══════════════════════════════════════════════════════════════════════════
-//  API
-// ═══════════════════════════════════════════════════════════════════════════
 async function apiFetch(path, opts={}) {
   const headers = {
     "X-VK-Sign":                STATE.launchParams,
@@ -665,36 +675,37 @@ async function apiFetch(path, opts={}) {
   return res.json();
 }
 
-// ═══════════════════════════════════════════════════════════════════════════
-//  НАВИГАЦИЯ
-// ═══════════════════════════════════════════════════════════════════════════
 function switchTab(tab) {
-  if (STATE.activeTab === tab) return;
+  // Убран early return STATE.activeTab === tab, чтобы вкладка ВСЕГДА гарантированно обновлялась при рендере!
   STATE.activeTab = tab;
+  
   document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
-  document.getElementById(`tab-${tab}`).classList.add("active");
+  const currentTabBtn = document.getElementById(`tab-${tab}`);
+  if (currentTabBtn) currentTabBtn.classList.add("active");
+  
   ["ad","favs","search","stats"].forEach(v => {
     const el = document.getElementById(`view-${v}`);
     if (el) el.classList.toggle("hidden", v !== tab);
   });
+  
   if (tab === "favs") {
     setHeader(false, false);
     if (!STATE.favsData) loadFavs();
   } else if (tab === "search") {
     setHeader(false, false);
     if (!STATE.filtersLoaded) loadFilters();
-    document.getElementById("search-input")?.focus();
+    if (!STATE.initialSearchDone) {
+      doSearch();
+      STATE.initialSearchDone = true;
+    }
   } else if (tab === "stats") {
     setHeader(false, false);
-    if (!STATE.statsLoaded) loadStats();
+    loadStats(); // Загружаем статистику заново для обновления просмотров
   } else {
     setHeader(false, !!STATE.adData);
   }
 }
 
-// ═══════════════════════════════════════════════════════════════════════════
-//  ПОИСК
-// ═══════════════════════════════════════════════════════════════════════════
 let _searchTimer = null;
 function onSearchInput() {
   clearTimeout(_searchTimer);
@@ -712,7 +723,6 @@ async function loadFilters() {
     const cityEl = document.getElementById("f-city");
     const catEl  = document.getElementById("f-cat");
     
-    // Очищаем перед заполнением
     cityEl.innerHTML = '<option value="">Все города</option>';
     catEl.innerHTML = '<option value="">Все категории</option>';
 
@@ -736,7 +746,6 @@ async function doSearch() {
   const wrap = document.getElementById("search-results");
   wrap.innerHTML = `<div class="spinner" style="padding:32px"><div class="spin"></div></div>`;
 
-  // Показываем активные фильтры
   const chips = [];
   if (city) chips.push(`<span class="pill" onclick="clearFilter('city')" style="cursor:pointer">${esc(city)} ✕</span>`);
   if (cat)  chips.push(`<span class="pill" onclick="clearFilter('cat')"  style="cursor:pointer">${esc(cat)} ✕</span>`);
@@ -786,15 +795,12 @@ function adCardHtml(ad) {
     <div class="ad-card-thumb">${thumb}</div>
     <div class="ad-card-info">
       <div class="ad-card-price">${fmtPrice(ad.price)}</div>
-      <div class="ad-card-title">${esc(ad.title)}</div>
+      <div class="ad-card-title">${esc(ad.title || "Без названия")}</div>
       <div class="ad-card-meta">${esc(ad.city||"")}${categoryStr}</div>
     </div>
   </div>`;
 }
 
-// ═══════════════════════════════════════════════════════════════════════════
-//  СТАТИСТИКА
-// ═══════════════════════════════════════════════════════════════════════════
 async function loadStats() {
   try {
     const data = await apiFetch("/api/my/stats");
@@ -834,14 +840,17 @@ function renderStats(items) {
     <div style="padding:12px 12px 4px;font-size:13px;font-weight:600;color:var(--c-text-second);text-transform:uppercase;letter-spacing:.5px">
       Мои объявления
     </div>
-    ${items.map(ad => `
+    ${items.map(ad => {
+      // Защитный фоллбек: если title пустой, используем обрезку описания
+      const safeTitle = ad.title ? ad.title : (ad.description ? trimTitle(ad.description, 35) : "Объявление без названия");
+      return `
       <div class="stat-card" style="margin-top:4px;cursor:pointer" onclick="openAdFromFav(${ad.id})">
         <div style="display:flex;gap:10px;align-items:center">
-          <div style="width:48px;height:48px;border-radius:8px;overflow:hidden;flex-shrink:0;background:var(--c-skeleton)">
+          <div style="width:48px;height:48px;border-radius:8px;overflow:hidden;flex-shrink:0;background:var(--c-skeleton);display:flex;align-items:center;justify-content:center;font-size:20px;">
             ${ad.photo ? `<img src="${esc(ad.photo)}" style="width:100%;height:100%;object-fit:cover">` : "📷"}
           </div>
           <div style="flex:1;min-width:0">
-            <div style="font-size:14px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(ad.title)}</div>
+            <div style="font-size:14px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--c-text-primary);">${esc(safeTitle)}</div>
             <div style="font-size:13px;color:var(--c-text-second)">${fmtPrice(ad.price)}</div>
           </div>
           <div style="text-align:right;flex-shrink:0">
@@ -849,13 +858,14 @@ function renderStats(items) {
             <div style="font-size:13px;color:var(--c-text-second)">♡ ${ad.fav_count||0}</div>
           </div>
         </div>
-        ${ad.status!=="active" ? `<div style="margin-top:6px;font-size:12px;color:var(--c-red)">Снято с публикации</div>` : ""}
-      </div>`).join("")}
+        ${ad.status!=="active" ? `<div style="margin-top:6px;font-size:12px;color:var(--c-red)">Снято с публикации (${ad.status})</div>` : ""}
+      </div>`;
+    }).join("")}
     <div style="height:16px"></div>`;
 }
 
 function navigateBack() {
-  switchTab("ad");
+  switchTab("search");
 }
 
 function setHeader(backBtn, shareBtn) {
@@ -863,9 +873,6 @@ function setHeader(backBtn, shareBtn) {
   document.getElementById("btn-share").classList.toggle("visible", shareBtn);
 }
 
-// ═══════════════════════════════════════════════════════════════════════════
-//  ЗАГРУЗКА ОБЪЯВЛЕНИЯ
-// ═══════════════════════════════════════════════════════════════════════════
 async function loadAd(adId) {
   STATE.adId = adId;
   try {
@@ -873,23 +880,19 @@ async function loadAd(adId) {
     STATE.adData    = data;
     STATE.isFavorite = data.is_favorite;
     renderAd(data);
-    setHeader(false, true);
+    setHeader(true, true);
     updateFavBadge();
   } catch(e) {
     document.getElementById("ad-skeleton").style.display = "none";
     document.getElementById("ad-error").style.display    = "";
-    setHeader(false, false);
+    setHeader(true, false);
   }
 }
 
-// ═══════════════════════════════════════════════════════════════════════════
-//  РЕНДЕР КАРТОЧКИ
-// ═══════════════════════════════════════════════════════════════════════════
 function renderAd(d) {
   const photos = d.photos || [];
   STATE.curPhoto = 0;
 
-  // Галерея
   let galleryHtml = "";
   if (photos.length > 0) {
     const slides = photos.map(url =>
@@ -916,7 +919,6 @@ function renderAd(d) {
     galleryHtml = `<div class="gallery-no-photo">📷</div>`;
   }
 
-  // Бейджи
   const pills = [];
   if (d.condition) {
     const isNew = d.condition.toLowerCase().includes("нов");
@@ -927,7 +929,6 @@ function renderAd(d) {
   if (d.size)     pills.push(`<span class="pill">Размер: ${esc(d.size)}</span>`);
   if (d.gender)   pills.push(`<span class="pill">${esc(stripDot(d.gender))}</span>`);
 
-  // Продавец — аватар грузим из VK по user_id
   const s = d.seller || {};
   const sellerId = s.id || 0;
   const avaHtml = `<img src="https://vk.com/images/camera_200.png" alt=""
@@ -937,7 +938,6 @@ function renderAd(d) {
     data-uid="${sellerId}">`;
   const verBadge = s.is_verified ? `<span class="verified-badge">✅</span>` : "";
 
-  // Мета — адрес как ссылка на Яндекс.Карты
   const addrVal = d.address
     ? `<a href="https://yandex.ru/maps/?text=${encodeURIComponent((d.city||'')+' '+d.address)}" 
          onclick="openVKLink(this.href);return false;"
@@ -960,7 +960,6 @@ function renderAd(d) {
         </div>`).join("")}
     </div>` : "";
 
-  // Статистика для продавца
   const statsOwnerHtml = (d.is_owner && d.seller_stats) ? `
     <div class="card">
       <div style="font-size:13px;font-weight:600;color:var(--c-text-second);margin-bottom:10px;text-transform:uppercase;letter-spacing:.5px">Статистика</div>
@@ -980,7 +979,6 @@ function renderAd(d) {
       </div>
     </div>` : "";
 
-  // Похожие объявления
   const similarHtml = (d.similar && d.similar.length > 0) ? `
     <div style="padding:14px 16px 6px;font-size:13px;font-weight:600;color:var(--c-text-second);text-transform:uppercase;letter-spacing:.5px">Похожие</div>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:0 12px 16px">
@@ -994,7 +992,7 @@ function renderAd(d) {
           </div>
           <div style="padding:8px">
             <div style="font-size:14px;font-weight:700">${fmtPrice(s.price)}</div>
-            <div style="font-size:12px;color:var(--c-text-second);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(s.title)}</div>
+            <div style="font-size:12px;color:var(--c-text-second);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(s.title || "Без названия")}</div>
           </div>
         </div>`).join("")}
     </div>` : "";
@@ -1006,7 +1004,6 @@ function renderAd(d) {
       <div class="desc-more ${descLong?'show':''}" id="desc-more" onclick="expandDesc()">Читать полностью</div>
     </div>` : "";
 
-  // Контакт
   const contactHtml = d.contact_info ? `
     <div class="card">
       <div class="meta-row" style="padding:0">
@@ -1015,7 +1012,6 @@ function renderAd(d) {
       </div>
     </div>` : "";
 
-  // Action bar
   const actionBar = d.is_owner ? "" : `
     <div class="action-bar">
       <button class="btn btn-primary" onclick="contactSeller()">
@@ -1029,7 +1025,6 @@ function renderAd(d) {
       </button>
     </div>`;
 
-  // Статистика
   const statsHtml = `
     <div class="stats-row" style="margin-top:10px">
       <span>👁 ${fmtNum(d.views)} просмотров</span>
@@ -1042,7 +1037,7 @@ function renderAd(d) {
     ${galleryHtml}
     <div class="card" style="border-radius:0 0 ${metaRows.length||d.description||d.contact_info?'0 0':'12px 12px'}">
       <div class="price">${fmtPrice(d.price)}</div>
-      <div class="ad-title">${esc(d.title)}</div>
+      <div class="ad-title">${esc(d.title || "Без названия")}</div>
       <div class="pills">${pills.join("")}</div>
       ${statsHtml}
     </div>
@@ -1064,7 +1059,6 @@ function renderAd(d) {
     <div style="height:8px"></div>
   `;
 
-  // Загружаем аватар продавца через VK Bridge
   setTimeout(async () => {
     const img = document.querySelector(`[data-uid="${sellerId}"]`);
     if (!img) return;
@@ -1090,9 +1084,6 @@ function expandDesc() {
   STATE.descExpanded = true;
 }
 
-// ═══════════════════════════════════════════════════════════════════════════
-//  ГАЛЕРЕЯ
-// ═══════════════════════════════════════════════════════════════════════════
 function setSlide(idx) {
   const photos = (STATE.adData||{}).photos||[];
   if (!photos.length) return;
@@ -1119,9 +1110,6 @@ function galleryTap(e) {
   x > rect.width/2 ? setSlide(STATE.curPhoto+1) : setSlide(STATE.curPhoto-1);
 }
 
-// ═══════════════════════════════════════════════════════════════════════════
-//  ИЗБРАННОЕ
-// ═══════════════════════════════════════════════════════════════════════════
 async function toggleFavorite() {
   if (!STATE.vkUserId) { showToast("Войдите в VK"); return; }
   haptic("light");
@@ -1136,7 +1124,7 @@ async function toggleFavorite() {
     }
     showToast(STATE.isFavorite ? "♥ Добавлено в избранное" : "Убрано из избранного");
     haptic(STATE.isFavorite ? "medium" : "light");
-    STATE.favsData = null; // сбрасываем кэш
+    STATE.favsData = null; // Сбрасываем кэш избранного для принудительного обновления
     updateFavBadge();
   } catch(e) {
     showToast("Ошибка. Попробуйте ещё раз.");
@@ -1153,7 +1141,6 @@ function updateFavBadge() {
   } else {
     badge.classList.remove("show");
   }
-  // Обновляем заголовок в списке если открыт
   const sep = document.querySelector(".fav-sep");
   if (sep && cnt > 0) sep.textContent = `Сохранённые · ${cnt}`;
 }
@@ -1210,7 +1197,7 @@ function renderFavs(items) {
           </div>
           <div class="fav-info">
             <div class="fav-price">${fmtPrice(ad.price)}</div>
-            <div class="fav-title">${esc(ad.title)}</div>
+            <div class="fav-title">${esc(ad.title || "Без названия")}</div>
             <div class="fav-city">${esc(ad.city||"")}</div>
           </div>
           <button class="fav-del" onclick="removeFav(event,${ad.id})" title="Убрать">✕</button>
@@ -1223,7 +1210,6 @@ async function removeFav(e, adId) {
   haptic("light");
   try {
     await apiFetch(`/api/ad/${adId}/favorite`, { method:"POST" });
-    // Убираем из списка
     const item = document.querySelector(`.fav-item[data-id="${adId}"]`);
     if (item) {
       item.style.transition = "opacity .2s,transform .2s";
@@ -1236,7 +1222,6 @@ async function removeFav(e, adId) {
         updateFavBadge();
       }, 220);
     }
-    // Если это текущее объявление — обновить кнопку
     if (adId === STATE.adId) {
       STATE.isFavorite = false;
       const btn = document.getElementById("btn-fav");
@@ -1250,12 +1235,10 @@ async function removeFav(e, adId) {
 
 function openAdFromFav(adId) {
   haptic("light");
-  // Если уже загружено это объявление — просто переключаем вкладку
   if (adId === STATE.adId) {
     switchTab("ad");
     return;
   }
-  // Иначе загружаем
   STATE.adData = null;
   document.getElementById("ad-skeleton").style.display = "";
   document.getElementById("ad-content").style.display  = "none";
@@ -1264,21 +1247,16 @@ function openAdFromFav(adId) {
   loadAd(adId);
 }
 
-// ═══════════════════════════════════════════════════════════════════════════
-//  ДЕЙСТВИЯ
-// ═══════════════════════════════════════════════════════════════════════════
 function contactSeller() {
   if (!STATE.adData || !STATE.adData.seller || !STATE.adData.seller.id) return;
   haptic("medium");
   const sellerId = STATE.adData.seller.id;
-  // Открываем диалог с продавцом
   try {
     vkBridge.send("VKWebAppOpenApp", {
-      app_id: 6146827, // VK Мессенджер
+      app_id: 6146827,
       hash: `im?sel=${sellerId}`
     });
   } catch(_) {}
-  // Надёжный fallback
   openVKLink(`https://vk.com/im?sel=${sellerId}`);
 }
 
@@ -1288,7 +1266,6 @@ async function shareAd() {
   try {
     await vkBridge.send("VKWebAppShare", { link: url });
   } catch(_) {
-    // Fallback: копируем в буфер
     try {
       await navigator.clipboard.writeText(url);
       showToast("Ссылка скопирована");
@@ -1306,9 +1283,6 @@ function openVKLink(url) {
   }
 }
 
-// ═══════════════════════════════════════════════════════════════════════════
-//  УТИЛИТЫ
-// ═══════════════════════════════════════════════════════════════════════════
 function fmtPrice(p) {
   if (!p) return "Цена не указана";
   if (p === 1) return "Бесплатно";
@@ -1344,27 +1318,37 @@ function showToast(msg) {
   _toastTimer = setTimeout(() => t.classList.remove("show"), 2500);
 }
 
-// ═══════════════════════════════════════════════════════════════════════════
-//  СТАРТ
-// ═══════════════════════════════════════════════════════════════════════════
+function getAdIdFromUrl() {
+  let hash = window.location.hash.replace("#", "").replace("ad_", "").trim();
+  let adId = parseInt(hash);
+  if (adId && adId > 0) return adId;
+
+  const params = new URLSearchParams(window.location.search);
+  const queryHash = params.get("hash") || "";
+  hash = queryHash.replace("ad_", "").trim();
+  adId = parseInt(hash);
+  if (adId && adId > 0) return adId;
+
+  return 0;
+}
+
 async function main() {
   await initVK();
 
-  // Получаем ad_id из хэша: #ad_123 или #123
-  const hash = window.location.hash.replace("#","").replace("ad_","").trim();
-  const adId = parseInt(hash);
+  const adId = getAdIdFromUrl();
 
   if (adId && adId > 0) {
     await loadAd(adId);
+    switchTab("ad");
   } else {
-    // Нет ad_id — показываем заглушку
     document.getElementById("ad-skeleton").style.display = "none";
     document.getElementById("ad-error").style.display    = "";
     document.getElementById("ad-error").innerHTML = `
       <div class="error-icon">🏷️</div>
       <div class="error-title">Полка</div>
       <div class="error-text">Откройте любое объявление из группы,<br>чтобы увидеть его здесь.</div>`;
-    switchTab("search"); // Переключаем на поиск, так как объявления по дефолту нет
+    
+    switchTab("search");
   }
 }
 
