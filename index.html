@@ -18,7 +18,7 @@
   --c-red:          #e64646;
   --c-green:        #4bb34b;
   --c-orange:       #ffa000;
-  --c-pill-bg:      #f0f2f5;
+  --c-pill-bg: #f0f2f5;
   --c-skeleton:     #e8eaf0;
   --radius-card:    12px;
   --radius-btn:     10px;
@@ -448,6 +448,13 @@ a{color:inherit;text-decoration:none}
   animation:spin .7s linear infinite;
 }
 @keyframes spin{to{transform:rotate(360deg)}}
+
+/* Анимация сканирования фото */
+@keyframes scan-laser {
+  0% { top: 0%; }
+  50% { top: 100%; }
+  100% { top: 0%; }
+}
 </style>
 </head>
 <body>
@@ -513,10 +520,19 @@ a{color:inherit;text-decoration:none}
     <div class="view hidden" id="view-search">
       <div style="padding:12px 12px 0">
         <div style="display:flex;gap:8px;margin-bottom:8px">
-          <input id="search-input" type="search" placeholder="Поиск объявлений…"
-            style="flex:1;height:40px;border-radius:10px;border:1.5px solid var(--c-divider);
-                   padding:0 12px;font-size:15px;background:var(--c-card);color:var(--c-text-primary);outline:none"
-            oninput="onSearchInput()" onkeydown="if(event.key==='Enter')doSearch()">
+          <div style="position:relative;flex:1">
+            <input id="search-input" type="search" placeholder="Поиск объявлений…"
+              style="width:100%;height:40px;border-radius:10px;border:1.5px solid var(--c-divider);
+                     padding:0 40px 0 12px;font-size:15px;background:var(--c-card);color:var(--c-text-primary);outline:none"
+              oninput="onSearchInput()" onkeydown="if(event.key==='Enter')doSearch()">
+            <label for="photo-search-input" style="position:absolute;right:10px;top:50%;transform:translateY(-50%);cursor:pointer;padding:4px;display:flex;align-items:center;color:var(--c-text-second)">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/>
+                <circle cx="12" cy="13" r="4"/>
+              </svg>
+            </label>
+            <input id="photo-search-input" type="file" accept="image/*" style="display:none" onchange="doPhotoSearch(event)">
+          </div>
           <button onclick="doSearch()" style="height:40px;padding:0 14px;background:var(--c-accent);
             color:#fff;border:none;border-radius:10px;font-size:15px;font-weight:600;cursor:pointer">
             Найти
@@ -595,6 +611,16 @@ a{color:inherit;text-decoration:none}
     </button>
   </div>
 
+</div>
+
+<!-- Модальное окно сканирования фото -->
+<div id="scan-overlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:2000;flex-direction:column;align-items:center;justify-content:center;color:#fff;padding:20px">
+  <div style="position:relative;width:240px;aspect-ratio:1;border-radius:16px;overflow:hidden;background:#222;box-shadow:0 0 25px rgba(63,138,224,0.5);margin-bottom:24px">
+    <img id="scan-preview" style="width:100%;height:100%;object-fit:cover" src="">
+    <div style="position:absolute;left:0;right:0;height:4px;background:linear-gradient(to bottom, transparent, var(--c-accent), #fff, var(--c-accent), transparent);box-shadow:0 0 12px var(--c-accent);animation:scan-laser 2s ease-in-out infinite"></div>
+  </div>
+  <div style="font-size:18px;font-weight:700;margin-bottom:8px">Анализ изображения...</div>
+  <div style="font-size:14px;color:rgba(255,255,255,0.6);text-align:center">Ищем похожие товары на Полке</div>
 </div>
 
 <!-- Toast -->
@@ -710,6 +736,47 @@ let _searchTimer = null;
 function onSearchInput() {
   clearTimeout(_searchTimer);
   _searchTimer = setTimeout(doSearch, 500);
+}
+
+async function doPhotoSearch(e) {
+  const file = e.target.files?.[0];
+  if (!file) return;
+  haptic("medium");
+
+  const overlay = document.getElementById("scan-overlay");
+  const preview = document.getElementById("scan-preview");
+  if (overlay && preview) {
+    preview.src = URL.createObjectURL(file);
+    overlay.style.display = "flex";
+  }
+
+  const fd = new FormData();
+  fd.append("photo", file);
+
+  try {
+    const res = await fetch(CFG.API_BASE + "/api/search-by-photo", {
+      method: "POST",
+      headers: {
+        "X-VK-Sign": STATE.launchParams,
+        "X-VK-User-Id": String(STATE.vkUserId),
+        "ngrok-skip-browser-warning": "true"
+      },
+      body: fd
+    });
+
+    if (!res.ok) throw new Error("API error");
+    const data = await res.json();
+
+    if (overlay) overlay.style.display = "none";
+
+    const wrap = document.getElementById("search-results");
+    renderAdList(wrap, data.items, data.total, "Найдено по фото");
+    
+    e.target.value = "";
+  } catch(err) {
+    if (overlay) overlay.style.display = "none";
+    showToast("Не удалось распознать фото");
+  }
 }
 
 function toggleFilters() {
