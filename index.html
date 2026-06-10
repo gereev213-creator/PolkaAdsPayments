@@ -455,44 +455,6 @@ a{color:inherit;text-decoration:none}
   50% { top: 100%; }
   100% { top: 0%; }
 }
-
-/* Стилизация графика в окне детальной статистики */
-.stat-chart-container {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-end;
-  height: 140px;
-  padding: 16px 8px 4px;
-  border-bottom: 1.5px solid var(--c-divider);
-  margin-bottom: 8px;
-}
-.stat-chart-column {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  flex: 1;
-}
-.stat-chart-bar {
-  width: 18px;
-  background: var(--c-accent);
-  border-radius: 4px 4px 0 0;
-  position: relative;
-  transition: height 0.4s ease;
-}
-.stat-chart-bar-value {
-  position: absolute;
-  top: -18px;
-  left: 50%;
-  transform: translateX(-50%);
-  font-size: 10px;
-  font-weight: 700;
-  color: var(--c-text-primary);
-}
-.stat-chart-label {
-  font-size: 11px;
-  color: var(--c-text-second);
-  margin-top: 6px;
-}
 </style>
 </head>
 <body>
@@ -613,31 +575,6 @@ a{color:inherit;text-decoration:none}
       <div id="stats-skeleton" style="padding:16px">
         <div class="spinner"><div class="spin"></div></div>
       </div>
-      <!-- Экран детальной статистики и ИИ-советов продавца -->
-      <div id="stats-detailed" style="display:none">
-        <div style="padding:12px 12px 4px">
-          <button onclick="backToStatsList()" style="background:none;border:none;color:var(--c-accent);font-size:14px;cursor:pointer;font-weight:600;display:flex;align-items:center;gap:4px">
-            ‹ К списку моих объявлений
-          </button>
-        </div>
-        <div class="card" style="margin-top:8px">
-          <div id="detailed-ad-status-badge" style="float:right"></div>
-          <h2 id="detailed-ad-title" style="font-size:18px;font-weight:700;margin-bottom:6px">Название объявления</h2>
-          <div id="detailed-ad-price" style="font-size:15px;color:var(--c-text-second);font-weight:600">Цена лота</div>
-        </div>
-        <div class="card">
-          <h3 style="font-size:14px;font-weight:700;color:var(--c-text-second);text-transform:uppercase;letter-spacing:.5px;margin-bottom:12px">Просмотры по дням недели</h3>
-          <div class="stat-chart-container" id="stats-chart-wrap">
-            <!-- Колонки графика -->
-          </div>
-        </div>
-        <div class="card" style="border-radius:12px;border:1.5px solid var(--c-accent);background:color-mix(in srgb, var(--c-accent) 4%, var(--c-card))">
-          <h3 style="font-size:14px;font-weight:700;color:var(--c-accent);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px">✨ ИИ-Советник Полки</h3>
-          <p id="detailed-ad-advice" style="font-size:14px;line-height:1.5;color:var(--c-text-primary)">Генерируем интеллектуальные рекомендации...</p>
-        </div>
-        <div style="height:20px"></div>
-      </div>
-      <!-- Главный список моих товаров -->
       <div id="stats-content" style="display:none"></div>
     </div>
 
@@ -683,7 +620,8 @@ a{color:inherit;text-decoration:none}
     <div style="position:absolute;left:0;right:0;height:4px;background:linear-gradient(to bottom, transparent, var(--c-accent), #fff, var(--c-accent), transparent);box-shadow:0 0 12px var(--c-accent);animation:scan-laser 2s ease-in-out infinite"></div>
   </div>
   <div style="font-size:18px;font-weight:700;margin-bottom:8px">Анализ изображения...</div>
-  <div style="font-size:14px;color:rgba(255,255,255,0.6);text-align:center">Ищем похожие товары на Полке</div>
+  <div style="font-size:14px;color:rgba(255,255,255,0.6);text-align:center;margin-bottom:20px">Ищем похожие товары на Полке</div>
+  <button onclick="document.getElementById('scan-overlay').style.display='none'" style="background:rgba(255,255,255,0.15);border:none;color:#fff;padding:10px 24px;border-radius:24px;font-size:14px;cursor:pointer">Отмена</button>
 </div>
 
 <!-- Toast -->
@@ -712,7 +650,7 @@ const STATE = {
   descExpanded: false,
   filtersLoaded: false,
   initialSearchDone: false,
-  myAdsList:    [],         // Список объявлений пользователя для локальной статистики
+  chartPeriod: "30d",
 };
 
 async function initVK() {
@@ -766,6 +704,7 @@ async function apiFetch(path, opts={}) {
 }
 
 function switchTab(tab) {
+  // Убран early return STATE.activeTab === tab, чтобы вкладка ВСЕГДА гарантированно обновлялась при рендере!
   STATE.activeTab = tab;
   
   document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
@@ -789,8 +728,6 @@ function switchTab(tab) {
     }
   } else if (tab === "stats") {
     setHeader(false, false);
-    // Возвращаем из режима детального просмотра к списку
-    document.getElementById("stats-detailed").style.display = "none";
     loadStats(); // Загружаем статистику заново для обновления просмотров
   } else {
     setHeader(false, !!STATE.adData);
@@ -819,7 +756,6 @@ async function doPhotoSearch(e) {
   fd.append("photo", file);
 
   try {
-    // Исправлен Баг: добавлен X-VK-Sign в fetch запроса к фото-поиску
     const res = await fetch(CFG.API_BASE + "/api/search-by-photo", {
       method: "POST",
       headers: {
@@ -893,9 +829,15 @@ async function doSearch() {
     if (minP) params.set("min_price", minP);
     if (maxP) params.set("max_price", maxP);
     const data = await apiFetch(`/api/search?${params}`);
-    renderAdList(wrap, data.items, data.total, q||"объявления");
-  } catch(_) {
-    wrap.innerHTML = `<div class="error-screen"><div class="error-icon">😕</div><div class="error-title">Ошибка загрузки</div></div>`;
+    renderAdList(wrap, data.items, data.total, q ? `По запросу «${q}»` : "Все объявления");
+  } catch(err) {
+    wrap.innerHTML = `
+      <div class="error-screen">
+        <div class="error-icon">😕</div>
+        <div class="error-title">Ошибка загрузки</div>
+        <div class="error-text">Проверьте соединение</div>
+        <button onclick="doSearch()" style="margin-top:12px;padding:10px 24px;background:var(--c-accent);color:#fff;border:none;border-radius:10px;font-size:15px;font-weight:600;cursor:pointer">Повторить</button>
+      </div>`;
   }
 }
 
@@ -935,18 +877,82 @@ function adCardHtml(ad) {
 }
 
 async function loadStats() {
+  document.getElementById("stats-skeleton").style.display = "";
+  document.getElementById("stats-skeleton").innerHTML = `<div class="spinner"><div class="spin"></div></div>`;
+  document.getElementById("stats-content").style.display = "none";
   try {
-    const data = await apiFetch("/api/my/stats");
-    STATE.statsLoaded = true;
-    STATE.myAdsList = data.items || [];
-    renderStats(STATE.myAdsList);
+    const [listData, chartData] = await Promise.all([
+      apiFetch("/api/my/stats"),
+      apiFetch("/api/my/stats/chart?period=" + STATE.chartPeriod)
+    ]);
+    renderStats(listData.items || [], chartData);
   } catch(e) {
     document.getElementById("stats-skeleton").innerHTML =
       `<div class="error-screen"><div class="error-icon">😕</div><div class="error-title">Не удалось загрузить</div></div>`;
   }
 }
 
-function renderStats(items) {
+function renderMiniChart(points, containerId) {
+  const container = document.getElementById(containerId);
+  if (!container || !points || !points.length) return;
+  const max = Math.max(...points.map(p => p.value), 1);
+  const w = container.offsetWidth || 300;
+  const h = 80;
+  const barW = Math.floor((w - points.length * 2) / points.length);
+  
+  container.innerHTML = `<svg width="100%" height="${h}" viewBox="0 0 ${w} ${h}" preserveAspectRatio="none">
+    <defs>
+      <linearGradient id="barGrad" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="var(--c-accent)" stop-opacity="0.9"/>
+        <stop offset="100%" stop-color="var(--c-accent)" stop-opacity="0.3"/>
+      </linearGradient>
+    </defs>
+    ${points.map((p, i) => {
+      const barH = Math.max(2, Math.round((p.value / max) * (h - 16)));
+      const x = i * (barW + 2);
+      const y = h - barH - 8;
+      return `<rect x="${x}" y="${y}" width="${barW}" height="${barH}" rx="3" fill="url(#barGrad)" opacity="${p.value > 0 ? 1 : 0.25}"/>`;
+    }).join("")}
+  </svg>
+  <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--c-text-second);margin-top:2px;overflow:hidden">
+    ${points.filter((_,i) => i === 0 || i === Math.floor(points.length/2) || i === points.length-1).map(p => `<span>${p.label}</span>`).join("")}
+  </div>`;
+}
+
+function getAiTip(items, summary) {
+  if (!items || !items.length) return null;
+  const active = items.filter(a => a.status === "active");
+  const inactive = items.filter(a => a.status !== "active");
+  const totalViews = summary?.total_views || 0;
+  const totalFavs = summary?.total_favs || 0;
+  
+  const tips = [];
+  
+  if (inactive.length > 0 && active.length === 0) {
+    tips.push({ icon: "📢", text: "Все ваши объявления сняты с публикации. Разместите новое через бота — покупатели уже ждут!" });
+  }
+  if (active.length > 0 && totalViews === 0) {
+    tips.push({ icon: "📸", text: "Объявления без просмотров? Добавьте больше качественных фото — это увеличивает просмотры в 3–4 раза." });
+  }
+  if (totalViews > 10 && totalFavs === 0) {
+    tips.push({ icon: "💰", text: "Много просмотров, но никто не добавляет в избранное. Попробуйте снизить цену или добавить подробное описание." });
+  }
+  if (totalFavs > 0 && active.length > 0) {
+    const ratio = totalViews / Math.max(totalFavs, 1);
+    if (ratio > 50) {
+      tips.push({ icon: "🏷️", text: `${totalFavs} человек сохранили ваши товары — напомните о себе, обновив описание объявления.` });
+    }
+  }
+  if (active.length >= 3) {
+    tips.push({ icon: "⭐", text: "Чем больше объявлений — тем выше шанс продажи. Регулярно обновляйте описания для лучшего ранжирования." });
+  }
+  if (!tips.length && active.length > 0) {
+    tips.push({ icon: "✅", text: `${active.length} активных объявлений. Отвечайте на сообщения быстро — покупатели ценят оперативность!` });
+  }
+  return tips[0] || null;
+}
+
+function renderStats(items, chartData) {
   document.getElementById("stats-skeleton").style.display = "none";
   const wrap = document.getElementById("stats-content");
   wrap.style.display = "";
@@ -959,139 +965,87 @@ function renderStats(items) {
     return;
   }
 
-  const totalViews = items.reduce((s,a) => s + (a.views||0), 0);
-  const totalFavs  = items.reduce((s,a) => s + (a.fav_count||0), 0);
-  const active     = items.filter(a => a.status==="active").length;
+  const summary = chartData?.summary || {};
+  const chartPoints = chartData?.chart || [];
+  const active = items.filter(a => a.status === "active").length;
+  const inactive = items.filter(a => a.status !== "active").length;
+  const tip = getAiTip(items, summary);
+
+  const tipHtml = tip ? `
+    <div style="margin:12px 12px 0;background:linear-gradient(135deg,#e8f0fe,#f0f7ff);border-radius:14px;padding:14px 16px;display:flex;gap:10px;align-items:flex-start;border:1px solid rgba(63,138,224,0.15)">
+      <span style="font-size:22px;line-height:1.2">${tip.icon}</span>
+      <div>
+        <div style="font-size:12px;font-weight:700;color:var(--c-accent);margin-bottom:3px;text-transform:uppercase;letter-spacing:.5px">Совет</div>
+        <div style="font-size:14px;color:var(--c-text-primary);line-height:1.5">${esc(tip.text)}</div>
+      </div>
+    </div>` : "";
 
   wrap.innerHTML = `
+    ${tipHtml}
     <div class="stat-card" style="margin-top:12px">
       <div class="stat-num">
         <span>${active}<small>активных</small></span>
-        <span>${fmtNum(totalViews)}<small>просмотров</small></span>
-        <span>${fmtNum(totalFavs)}<small>в избранном</small></span>
+        <span>${fmtNum(summary.total_views||0)}<small>просмотров</small></span>
+        <span>${fmtNum(summary.total_favs||0)}<small>в избранном</small></span>
       </div>
     </div>
-    <div style="padding:12px 12px 4px;font-size:13px;font-weight:600;color:var(--c-text-second);text-transform:uppercase;letter-spacing:.5px">
+
+    <div class="stat-card" style="margin-top:8px">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+        <div style="font-size:13px;font-weight:600;color:var(--c-text-second);text-transform:uppercase;letter-spacing:.5px">Просмотры</div>
+        <div style="display:flex;gap:4px">
+          <button onclick="switchChartPeriod('30d')" id="chart-btn-30d" style="font-size:12px;padding:3px 10px;border-radius:20px;border:none;cursor:pointer;font-weight:600;background:${(STATE.chartPeriod||'30d')==='30d'?'var(--c-accent)':'var(--c-pill-bg)'};color:${(STATE.chartPeriod||'30d')==='30d'?'#fff':'var(--c-text-second)'}">30 дней</button>
+          <button onclick="switchChartPeriod('12m')" id="chart-btn-12m" style="font-size:12px;padding:3px 10px;border-radius:20px;border:none;cursor:pointer;font-weight:600;background:${STATE.chartPeriod==='12m'?'var(--c-accent)':'var(--c-pill-bg)'};color:${STATE.chartPeriod==='12m'?'#fff':'var(--c-text-second)'}">12 мес.</button>
+        </div>
+      </div>
+      <div id="stats-chart-container" style="padding:0 0 4px"></div>
+    </div>
+
+    <div style="padding:12px 12px 4px;font-size:13px;font-weight:600;color:var(--c-text-second);text-transform:uppercase;letter-spacing:.5px;display:flex;align-items:center;gap:8px">
       Мои объявления
+      ${inactive > 0 ? `<span style="background:var(--c-red);color:#fff;font-size:10px;padding:2px 7px;border-radius:20px">${inactive} снято</span>` : ""}
     </div>
     ${items.map(ad => {
       const safeTitle = ad.title ? ad.title : (ad.description ? trimTitle(ad.description, 35) : "Объявление без названия");
-      
-      // ИСПРАВЛЕН Баг отображения статуса в "Моих объявлениях"
-      let statusColor = "var(--c-text-second)";
-      let statusText = "В обработке";
-      if (ad.status === "active") {
-        statusColor = "var(--c-green)";
-        statusText = "Активно";
-      } else if (ad.status === "inactive" || ad.status === "expired" || ad.status === "sold") {
-        statusColor = "var(--c-red)";
-        statusText = "Снято с публикации (архив)";
-      } else if (ad.status === "moderation") {
-        statusColor = "var(--c-orange)";
-        statusText = "На модерации";
-      } else if (ad.status === "rejected") {
-        statusColor = "var(--c-red)";
-        statusText = "Отклонено модератором";
-      }
-
-      // Нажатие теперь ведет на Экран Детальной Статистики, а не открывает обычную карточку!
+      const isActive = ad.status === "active";
       return `
-      <div class="stat-card" style="margin-top:4px;cursor:pointer" onclick="showDetailedAdStats(${ad.id})">
+      <div class="stat-card" style="margin-top:4px;opacity:${isActive?1:0.7}">
         <div style="display:flex;gap:10px;align-items:center">
-          <div style="width:48px;height:48px;border-radius:8px;overflow:hidden;flex-shrink:0;background:var(--c-skeleton);display:flex;align-items:center;justify-content:center;font-size:20px;">
+          <div style="position:relative;width:52px;height:52px;border-radius:10px;overflow:hidden;flex-shrink:0;background:var(--c-skeleton);display:flex;align-items:center;justify-content:center;font-size:20px;">
             ${ad.photo ? `<img src="${esc(ad.photo)}" style="width:100%;height:100%;object-fit:cover">` : "📷"}
+            ${!isActive ? `<div style="position:absolute;inset:0;background:rgba(0,0,0,0.4);display:flex;align-items:center;justify-content:center"><span style="font-size:10px;color:#fff;font-weight:700">СНЯТО</span></div>` : ""}
           </div>
           <div style="flex:1;min-width:0">
-            <div style="font-size:14px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--c-text-primary);">${esc(safeTitle)}</div>
+            <div style="display:flex;align-items:center;gap:6px;margin-bottom:2px">
+              <div style="font-size:14px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:${isActive?'var(--c-text-primary)':'var(--c-text-second)'};">${esc(safeTitle)}</div>
+            </div>
             <div style="font-size:13px;color:var(--c-text-second)">${fmtPrice(ad.price)}</div>
+            <div style="display:flex;gap:10px;margin-top:4px">
+              <span style="font-size:12px;color:var(--c-text-second)">👁 ${fmtNum(ad.views||0)}</span>
+              <span style="font-size:12px;color:var(--c-text-second)">♡ ${ad.fav_count||0}</span>
+              ${isActive 
+                ? `<span style="font-size:11px;font-weight:700;color:var(--c-green);background:#ebf8eb;padding:1px 7px;border-radius:10px">Активно</span>`
+                : `<span style="font-size:11px;font-weight:700;color:var(--c-red);background:#fdeaea;padding:1px 7px;border-radius:10px">Снято</span>`}
+            </div>
           </div>
-          <div style="text-align:right;flex-shrink:0">
-            <div style="font-size:13px;color:var(--c-text-second)">👁 ${fmtNum(ad.views||0)}</div>
-            <div style="font-size:13px;color:var(--c-text-second)">♡ ${ad.fav_count||0}</div>
-          </div>
-        </div>
-        <div style="margin-top:6px;font-size:12px;color:${statusColor};display:flex;align-items:center;gap:4px">
-          <span style="display:inline-block;width:6px;height:6px;border-radius:50%;background:currentcolor"></span>
-          ${statusText}
+          ${isActive ? `<button onclick="openAdFromFav(${ad.id})" style="flex-shrink:0;padding:6px 12px;border-radius:8px;background:var(--c-pill-bg);border:none;font-size:13px;color:var(--c-accent);font-weight:600;cursor:pointer">Открыть</button>` : ""}
         </div>
       </div>`;
     }).join("")}
     <div style="height:16px"></div>`;
-}
 
-// Отображение детальной статистики для объявления
-function showDetailedAdStats(adId) {
-  haptic("light");
-  const ad = STATE.myAdsList.find(a => a.id === adId);
-  if (!ad) return;
-
-  document.getElementById("stats-content").style.display = "none";
-  const detailedView = document.getElementById("stats-detailed");
-  detailedView.style.display = "block";
-
-  document.getElementById("detailed-ad-title").textContent = ad.title || "Без названия";
-  document.getElementById("detailed-ad-price").textContent = fmtPrice(ad.price);
-
-  const badge = document.getElementById("detailed-ad-status-badge");
-  if (ad.status === "active") {
-    badge.innerHTML = `<span class="pill green" style="font-size:11px;padding:3px 8px">Активно</span>`;
-  } else {
-    badge.innerHTML = `<span class="pill" style="font-size:11px;padding:3px 8px">В архиве</span>`;
-  }
-
-  // Генерация псевдо-динамического распределения просмотров по дням недели
-  const weekDays = ["Пн", "Вт", "Ср", "Чт", "Пт", "Сб", "Вс"];
-  const totalViews = ad.views || 0;
-  let distribution = [0.1, 0.15, 0.25, 0.2, 0.18, 0.08, 0.04]; // примерные доли по дням
-
-  const chartWrap = document.getElementById("stats-chart-wrap");
-  chartWrap.innerHTML = "";
-
-  const values = distribution.map(fraction => Math.round(totalViews * fraction));
-  const maxDayVal = Math.max(...values, 1);
-
-  weekDays.forEach((day, index) => {
-    const val = values[index];
-    const heightPercent = Math.max(10, Math.round((val / maxDayVal) * 100)); // минимум 10% для красивого отображения нулевого графика
-    
-    chartWrap.innerHTML += `
-      <div class="stat-chart-column">
-        <div class="stat-chart-bar" style="height:${heightPercent}%">
-          <div class="stat-chart-bar-value">${val}</div>
-        </div>
-        <div class="stat-chart-label">${day}</div>
-      </div>`;
-  });
-
-  // Логика умного ИИ-советника на основе статистики просмотров и избранного
-  const adviceTextEl = document.getElementById("detailed-ad-advice");
-  const favCount = ad.fav_count || 0;
-
-  let advice = "";
-  if (ad.status !== "active") {
-    advice = "Это объявление перемещено в архив и скрыто от покупателей. Если вещь ещё не продана, вы можете скопировать её или активировать заново через чат-бота «Полки».";
-  } else if (totalViews === 0) {
-    advice = "Товар только что опубликован на Полке! Для привлечения первых покупателей рекомендуем опубликовать ссылку на лот на своей личной стене ВКонтакте.";
-  } else if (totalViews > 40 && favCount === 0) {
-    advice = "Ваше объявление набрало хорошую базу просмотров, но его никто не добавил в избранное. Похоже, цена немного завышена по сравнению с аналогичными предложениями на рынке. Попробуйте снизить цену на 10-15%.";
-  } else if (favCount > 0 && favCount < 3) {
-    advice = "Покупатели добавили ваш товар в Избранное! Рекомендуем зайти в чат-бот и обновить описание лота, добавив замеры и информацию о готовности быстро отправить товар (например, через Боксберри/Почту России).";
-  } else if (favCount >= 3) {
-    advice = "🔥 Высокий спрос! Сразу несколько человек сохранили товар. Отправьте им дополнительный триггер в чат-боте, снизив цену лота всего на 50–100 рублей. Все подписчики получат об этом моментальное уведомление!";
-  } else {
-    advice = "Ваше объявление стабильно показывается покупателям в ленте. Для увеличения конверсии в продажу убедитесь, что первое фото лота сделано при хорошем дневном свете на однотонном фоне.";
-  }
-
-  adviceTextEl.textContent = advice;
-}
-
-function backToStatsList() {
-  document.getElementById("stats-detailed").style.display = "none";
-  document.getElementById("stats-content").style.display = "";
+  // Рендерим график после вставки в DOM
+  setTimeout(() => renderMiniChart(chartPoints, "stats-chart-container"), 50);
 }
 
 function navigateBack() {
   switchTab("search");
+}
+
+function switchChartPeriod(period) {
+  STATE.chartPeriod = period;
+  haptic("light");
+  loadStats();
 }
 
 function setHeader(backBtn, shareBtn) {
@@ -1157,11 +1111,12 @@ function renderAd(d) {
 
   const s = d.seller || {};
   const sellerId = s.id || 0;
-  const avaHtml = `<img src="https://vk.com/images/camera_200.png" alt=""
-    onerror="this.style.display='none';this.parentNode.textContent='${esc((s.name||"П")[0].toUpperCase())}'"
-    onload="this.style.display='block'"
-    style="display:none"
-    data-uid="${sellerId}">`;
+  // Используем фото из API (photo_100), fallback на VK Bridge
+  const sellerPhotoUrl = s.photo_100 || STATE.vkUserPhoto || "";
+  const initials = (s.name || "П")[0].toUpperCase();
+  const avaHtml = sellerPhotoUrl
+    ? `<img src="${esc(sellerPhotoUrl)}" alt="" style="width:100%;height:100%;object-fit:cover;border-radius:50%">`
+    : `<span data-uid="${sellerId}" class="ava-initials">${initials}</span>`;
   const verBadge = s.is_verified ? `<span class="verified-badge">✅</span>` : "";
 
   const addrVal = d.address
@@ -1251,6 +1206,13 @@ function renderAd(d) {
       </button>
     </div>`;
 
+  // Баннер для снятых объявлений
+  const inactiveBanner = (d.status && d.status !== "active") ? `
+    <div style="background:#fdeaea;border-left:4px solid var(--c-red);padding:12px 16px;font-size:14px;color:var(--c-red);display:flex;align-items:center;gap:8px;margin-bottom:0">
+      <span>⚠️</span>
+      <span>Это объявление снято с публикации</span>
+    </div>` : "";
+
   const statsHtml = `
     <div class="stats-row" style="margin-top:10px">
       <span>👁 ${fmtNum(d.views)} просмотров</span>
@@ -1260,6 +1222,7 @@ function renderAd(d) {
   document.getElementById("ad-skeleton").style.display = "none";
   document.getElementById("ad-content").style.display  = "";
   document.getElementById("ad-content").innerHTML = `
+    ${inactiveBanner}
     ${galleryHtml}
     <div class="card" style="border-radius:0 0 ${metaRows.length||d.description||d.contact_info?'0 0':'12px 12px'}">
       <div class="price">${fmtPrice(d.price)}</div>
@@ -1268,12 +1231,13 @@ function renderAd(d) {
       ${statsHtml}
     </div>
     <div class="card">
-      <div class="seller-row">
+      <div class="seller-row" onclick="${sellerId && !d.is_owner ? `openVKLink('https://vk.com/id${sellerId}')` : ''}" style="${sellerId && !d.is_owner ? 'cursor:pointer' : ''}">
         <div class="seller-ava">${avaHtml}</div>
-        <div>
+        <div style="flex:1">
           <div class="seller-name">${esc(s.name||"Продавец")}${verBadge}</div>
           <div class="seller-sub">Продавец${d.is_owner?" · Это вы":""}</div>
         </div>
+        ${!d.is_owner && sellerId ? `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--c-text-second)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>` : ""}
       </div>
     </div>
     ${descHtml}
@@ -1285,21 +1249,23 @@ function renderAd(d) {
     <div style="height:8px"></div>
   `;
 
-  setTimeout(async () => {
-    const img = document.querySelector(`[data-uid="${sellerId}"]`);
-    if (!img) return;
-    try {
-      const res = await vkBridge.send("VKWebAppCallAPIMethod", {
-        method: "users.get",
-        params: { user_ids: String(sellerId), fields: "photo_100", v: "5.131" }
-      });
-      const photo = res?.response?.[0]?.photo_100;
-      if (photo) { img.src = photo; img.style.display = "block"; }
-      else if (img.parentNode) img.parentNode.textContent = (s.name||"П")[0].toUpperCase();
-    } catch(_) {
-      if (img.parentNode) img.parentNode.textContent = (s.name||"П")[0].toUpperCase();
-    }
-  }, 50);
+  // Если фото продавца не пришло из API, пробуем через VK Bridge
+  if (!s.photo_100 && sellerId) {
+    setTimeout(async () => {
+      const initEl = document.querySelector(`.ava-initials[data-uid="${sellerId}"]`);
+      if (!initEl) return;
+      try {
+        const res = await vkBridge.send("VKWebAppCallAPIMethod", {
+          method: "users.get",
+          params: { user_ids: String(sellerId), fields: "photo_100", v: "5.131" }
+        });
+        const photo = res?.response?.[0]?.photo_100;
+        if (photo && initEl.parentNode) {
+          initEl.parentNode.innerHTML = `<img src="${photo}" style="width:100%;height:100%;object-fit:cover;border-radius:50%">`;
+        }
+      } catch(_) {}
+    }, 100);
+  }
 }
 
 function expandDesc() {
