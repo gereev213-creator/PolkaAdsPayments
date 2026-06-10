@@ -539,7 +539,7 @@ a{color:inherit;text-decoration:none}
       </div>
       <div id="ad-content" style="display:none"></div>
       <div id="ad-error"   style="display:none" class="error-screen">
-        <div class="error-icon">✉</div>
+        <div class="error-icon">📭</div>
         <div class="error-title">Объявление не найдено</div>
         <div class="error-text">Возможно, оно снято с публикации.</div>
       </div>
@@ -602,7 +602,7 @@ a{color:inherit;text-decoration:none}
         </div>
         <button onclick="toggleFilters()" style="background:none;border:none;color:var(--c-accent);
           font-size:13px;cursor:pointer;padding:0;margin-bottom:4px">
-          ✦ Фильтры
+          ⚙️ Фильтры
         </button>
       </div>
       <div id="search-results"></div>
@@ -895,7 +895,7 @@ async function doSearch() {
     const data = await apiFetch(`/api/search?${params}`);
     renderAdList(wrap, data.items, data.total, q||"объявления");
   } catch(_) {
-    wrap.innerHTML = `<div class="error-screen"><div class="error-icon">☹</div><div class="error-title">Ошибка загрузки</div></div>`;
+    wrap.innerHTML = `<div class="error-screen"><div class="error-icon">😕</div><div class="error-title">Ошибка загрузки</div></div>`;
   }
 }
 
@@ -942,7 +942,7 @@ async function loadStats() {
     renderStats(STATE.myAdsList);
   } catch(e) {
     document.getElementById("stats-skeleton").innerHTML =
-      `<div class="error-screen"><div class="error-icon">☹</div><div class="error-title">Не удалось загрузить</div></div>`;
+      `<div class="error-screen"><div class="error-icon">😕</div><div class="error-title">Не удалось загрузить</div></div>`;
   }
 }
 
