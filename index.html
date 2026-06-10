@@ -1511,35 +1511,62 @@ function showToast(msg) {
 }
 
 function getAdIdFromUrl() {
-  let hash = window.location.hash.replace("#", "").replace("ad_", "").trim();
-  let adId = parseInt(hash);
-  if (adId && adId > 0) return adId;
+  // 1. window.location.hash (стандартный браузер / тест в dev)
+  let hash = window.location.hash.replace(/^#/, "").trim();
+  let adId = _parseAdHash(hash);
+  if (adId > 0) return adId;
 
+  // 2. ?hash= параметр в URL (VK иногда передаёт так)
   const params = new URLSearchParams(window.location.search);
-  const queryHash = params.get("hash") || "";
-  hash = queryHash.replace("ad_", "").trim();
-  adId = parseInt(hash);
-  if (adId && adId > 0) return adId;
+  const qHash = (params.get("hash") || "").trim();
+  adId = _parseAdHash(qHash);
+  if (adId > 0) return adId;
 
+  // 3. vk_ref / ref из launch params (VK Mini App при открытии через кнопку в посте)
+  const vkRef = (params.get("vk_ref") || params.get("ref") || "").trim();
+  adId = _parseAdHash(vkRef);
+  if (adId > 0) return adId;
+
+  // 4. Ищем ad_\d+ в любом параметре URL (на случай нестандартной передачи)
+  const fullSearch = window.location.search + window.location.hash;
+  const m = fullSearch.match(/ad_(\d+)/i);
+  if (m) return parseInt(m[1]);
+
+  return 0;
+}
+
+function _parseAdHash(s) {
+  if (!s) return 0;
+  // Форматы: "ad_123", "123", "ad123"
+  const m = s.match(/(?:ad_?)?(\d+)/i);
+  if (m) {
+    const n = parseInt(m[1]);
+    if (n > 0) return n;
+  }
   return 0;
 }
 
 async function main() {
   await initVK();
 
-  const adId = getAdIdFromUrl();
+  // Пробуем получить hash через VK Bridge (надёжнее всего при открытии из поста)
+  let adId = getAdIdFromUrl();
 
-  if (adId && adId > 0) {
-    await loadAd(adId);
+  if (!adId) {
+    try {
+      const lp = await vkBridge.send("VKWebAppGetLaunchParams");
+      const vkHash = (lp?.hash || lp?.vk_ref || "").trim();
+      adId = _parseAdHash(vkHash);
+    } catch(_) {}
+  }
+
+  if (adId > 0) {
     switchTab("ad");
+    await loadAd(adId);
   } else {
+    // Нет ID объявления — открываем поиск как главный экран
     document.getElementById("ad-skeleton").style.display = "none";
-    document.getElementById("ad-error").style.display    = "";
-    document.getElementById("ad-error").innerHTML = `
-      <div class="error-icon">🏷️</div>
-      <div class="error-title">Полка</div>
-      <div class="error-text">Откройте любое объявление из группы,<br>чтобы увидеть его здесь.</div>`;
-    
+    document.getElementById("ad-error").style.display    = "none";
     switchTab("search");
   }
 }
