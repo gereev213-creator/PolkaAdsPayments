@@ -1055,6 +1055,9 @@ function setHeader(backBtn, shareBtn) {
 
 async function loadAd(adId) {
   STATE.adId = adId;
+  document.getElementById("ad-skeleton").style.display = "";
+  document.getElementById("ad-error").style.display    = "none";
+  document.getElementById("ad-content").style.display  = "none";
   try {
     const data = await apiFetch(`/api/ad/${adId}`);
     STATE.adData    = data;
@@ -1064,7 +1067,20 @@ async function loadAd(adId) {
     updateFavBadge();
   } catch(e) {
     document.getElementById("ad-skeleton").style.display = "none";
-    document.getElementById("ad-error").style.display    = "";
+    const errEl = document.getElementById("ad-error");
+    errEl.style.display = "";
+    // Определяем тип ошибки
+    const isNetwork = e instanceof TypeError || String(e).includes("fetch") || String(e).includes("network");
+    const errMsg = isNetwork
+      ? "Нет соединения с сервером.<br>Проверьте интернет или попробуйте позже."
+      : (String(e).includes("404") ? "Объявление не найдено или снято с публикации." : "Не удалось загрузить объявление.");
+    errEl.innerHTML = `
+      <div class="error-icon">📭</div>
+      <div class="error-title" style="font-size:18px">Ошибка загрузки</div>
+      <div class="error-text" style="margin:8px 0 16px">${errMsg}</div>
+      <button onclick="loadAd(${adId})" style="padding:10px 24px;background:var(--c-accent);color:#fff;border:none;border-radius:10px;font-size:15px;font-weight:600;cursor:pointer;margin-bottom:10px">Повторить</button>
+      <br>
+      <button onclick="switchTab('search')" style="padding:8px 20px;background:var(--c-pill-bg);color:var(--c-text-second);border:none;border-radius:10px;font-size:14px;cursor:pointer">Перейти в поиск</button>`;
     setHeader(true, false);
   }
 }
@@ -1549,43 +1565,25 @@ function _parseAdHash(s) {
 async function main() {
   await initVK();
 
-  // ── Отладка: показываем все параметры запуска ──────────────────────────
-  let debugLines = [];
-  debugLines.push("location.href: " + location.href);
-  debugLines.push("location.hash: " + location.hash);
-  debugLines.push("location.search: " + location.search);
-
-  let bridgeHash = "";
-  try {
-    const lp = await vkBridge.send("VKWebAppGetLaunchParams");
-    bridgeHash = lp?.hash || lp?.vk_ref || "";
-    debugLines.push("Bridge LP: " + JSON.stringify(lp));
-  } catch(e) {
-    debugLines.push("Bridge error: " + e);
-  }
-
-  // Показываем отладку поверх всего
-  const dbgDiv = document.createElement("div");
-  dbgDiv.id = "debug-overlay";
-  dbgDiv.style.cssText = "position:fixed;inset:0;background:#111;color:#0f0;font-family:monospace;font-size:11px;padding:12px;overflow:auto;z-index:9999;white-space:pre-wrap;word-break:break-all";
-  dbgDiv.textContent = debugLines.join("\n\n");
-  const closeBtn = document.createElement("button");
-  closeBtn.textContent = "✕ Закрыть и перейти в поиск";
-  closeBtn.style.cssText = "display:block;margin:12px 0;padding:10px 16px;background:#3f8ae0;color:#fff;border:none;border-radius:8px;font-size:14px;cursor:pointer";
-  closeBtn.onclick = () => { dbgDiv.remove(); switchTab("search"); };
-  dbgDiv.prepend(closeBtn);
-  document.body.appendChild(dbgDiv);
-
-  // Всё равно пробуем открыть объявление
+  // VK Mini App: хэш передаётся через window.location.hash
+  // (подтверждено: location.hash = #ad_14 приходит правильно)
   let adId = getAdIdFromUrl();
-  if (!adId && bridgeHash) adId = _parseAdHash(bridgeHash);
+
+  // Запасной вариант — через Bridge launch params
+  if (!adId) {
+    try {
+      const lp = await vkBridge.send("VKWebAppGetLaunchParams");
+      const vkHash = (lp?.hash || lp?.vk_ref || "").trim();
+      adId = _parseAdHash(vkHash);
+    } catch(_) {}
+  }
 
   if (adId > 0) {
     switchTab("ad");
     await loadAd(adId);
   } else {
     document.getElementById("ad-skeleton").style.display = "none";
-    document.getElementById("ad-error").style.display = "none";
+    document.getElementById("ad-error").style.display    = "none";
     switchTab("search");
   }
 }
