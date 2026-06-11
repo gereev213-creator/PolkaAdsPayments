@@ -1549,24 +1549,43 @@ function _parseAdHash(s) {
 async function main() {
   await initVK();
 
-  // Пробуем получить hash через VK Bridge (надёжнее всего при открытии из поста)
-  let adId = getAdIdFromUrl();
+  // ── Отладка: показываем все параметры запуска ──────────────────────────
+  let debugLines = [];
+  debugLines.push("location.href: " + location.href);
+  debugLines.push("location.hash: " + location.hash);
+  debugLines.push("location.search: " + location.search);
 
-  if (!adId) {
-    try {
-      const lp = await vkBridge.send("VKWebAppGetLaunchParams");
-      const vkHash = (lp?.hash || lp?.vk_ref || "").trim();
-      adId = _parseAdHash(vkHash);
-    } catch(_) {}
+  let bridgeHash = "";
+  try {
+    const lp = await vkBridge.send("VKWebAppGetLaunchParams");
+    bridgeHash = lp?.hash || lp?.vk_ref || "";
+    debugLines.push("Bridge LP: " + JSON.stringify(lp));
+  } catch(e) {
+    debugLines.push("Bridge error: " + e);
   }
+
+  // Показываем отладку поверх всего
+  const dbgDiv = document.createElement("div");
+  dbgDiv.id = "debug-overlay";
+  dbgDiv.style.cssText = "position:fixed;inset:0;background:#111;color:#0f0;font-family:monospace;font-size:11px;padding:12px;overflow:auto;z-index:9999;white-space:pre-wrap;word-break:break-all";
+  dbgDiv.textContent = debugLines.join("\n\n");
+  const closeBtn = document.createElement("button");
+  closeBtn.textContent = "✕ Закрыть и перейти в поиск";
+  closeBtn.style.cssText = "display:block;margin:12px 0;padding:10px 16px;background:#3f8ae0;color:#fff;border:none;border-radius:8px;font-size:14px;cursor:pointer";
+  closeBtn.onclick = () => { dbgDiv.remove(); switchTab("search"); };
+  dbgDiv.prepend(closeBtn);
+  document.body.appendChild(dbgDiv);
+
+  // Всё равно пробуем открыть объявление
+  let adId = getAdIdFromUrl();
+  if (!adId && bridgeHash) adId = _parseAdHash(bridgeHash);
 
   if (adId > 0) {
     switchTab("ad");
     await loadAd(adId);
   } else {
-    // Нет ID объявления — открываем поиск как главный экран
     document.getElementById("ad-skeleton").style.display = "none";
-    document.getElementById("ad-error").style.display    = "none";
+    document.getElementById("ad-error").style.display = "none";
     switchTab("search");
   }
 }
