@@ -946,18 +946,38 @@ function setHeader(backBtn, shareBtn) {
 
 async function loadAd(adId) {
   STATE.adId = adId;
-  try {
-    const data = await apiFetch(`/api/ad/${adId}`);
-    STATE.adData    = data;
-    STATE.isFavorite = data.is_favorite;
-    renderAd(data);
-    setHeader(true, true);
-    updateFavBadge();
-  } catch(e) {
-    document.getElementById("ad-skeleton").style.display = "none";
-    document.getElementById("ad-error").style.display    = "";
-    setHeader(true, false);
+  let lastErr = null;
+  for (let attempt = 0; attempt < 3; attempt++) {
+    try {
+      const data = await apiFetch(`/api/ad/${adId}`);
+      STATE.adData    = data;
+      STATE.isFavorite = data.is_favorite;
+      renderAd(data);
+      setHeader(true, true);
+      updateFavBadge();
+      return;
+    } catch(e) {
+      lastErr = e;
+      if (e.status === 404) break; // реально не найдено — не повторяем
+      // Сервер на Render просыпается — подождём и попробуем снова
+      await new Promise(r => setTimeout(r, 4000));
+    }
   }
+  document.getElementById("ad-skeleton").style.display = "none";
+  document.getElementById("ad-error").style.display    = "";
+  const errBox = document.getElementById("ad-error");
+  if (lastErr && lastErr.status !== 404) {
+    errBox.innerHTML = `
+      <div class="error-icon">⏳</div>
+      <div class="error-title">Сервер запускается</div>
+      <div class="error-text">Это может занять до минуты при первом запросе.<br>Попробуйте открыть объявление снова.</div>`;
+  } else {
+    errBox.innerHTML = `
+      <div class="error-icon">📭</div>
+      <div class="error-title">Объявление не найдено</div>
+      <div class="error-text">Возможно, оно снято с публикации.</div>`;
+  }
+  setHeader(true, false);
 }
 
 function renderAd(d) {
