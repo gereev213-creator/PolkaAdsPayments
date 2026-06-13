@@ -1051,11 +1051,11 @@ function renderAd(d) {
   const s = d.seller || {};
   const sellerId = s.id || 0;
 
-  // Улучшенный блок с аватаркой
+  const sellerInitial = (s.name||"П")[0].toUpperCase();
   const avaHtml = `
     <img src="${s.photo_100 || 'https://vk.com/images/camera_200.png'}" alt=""
-         onerror="this.style.display='none'; this.parentNode.textContent='${esc((s.name||'П')[0].toUpperCase())}'"
-         onload="this.style.display='block'"
+         onerror="this.style.display=&quot;none&quot;;this.parentNode.textContent=&quot;${sellerInitial}&quot;"
+         onload="this.style.display=&quot;block&quot;"
          style="width:100%;height:100%;object-fit:cover;display:none"
          data-uid="${sellerId}">`;
 
