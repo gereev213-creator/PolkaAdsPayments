@@ -4,12 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
 <title>Полка</title>
-<script>
-// Загружаем VK Bridge синхронно перед всем остальным
-window.vkBridge = window.vkBridge || null;
-</script>
 <script src="https://unpkg.com/@vkontakte/vk-bridge/dist/browser.min.js"></script>
-<script src="https://vk.com/js/api/mobile_bridge.js"></script>
 <style>
 /* ── VK Human Interface tokens ─────────────────────────────────────────── */
 :root {
@@ -657,44 +652,29 @@ const STATE = {
 };
 
 async function initVK() {
-  // Ждём загрузки VK Bridge до 5 секунд
-  for (let i = 0; i < 50; i++) {
-    if (typeof vkBridge !== "undefined" && vkBridge) break;
-    await new Promise(r => setTimeout(r, 100));
+  const hasBridge = typeof vkBridge !== "undefined" && vkBridge && typeof vkBridge.send === "function";
+
+  if (hasBridge) {
+    try { await vkBridge.send("VKWebAppInit"); } catch(_) {}
+    try {
+      const cfg = await vkBridge.send("VKWebAppGetConfig");
+      if (cfg.appearance === "dark")
+        document.documentElement.setAttribute("data-theme","dark");
+    } catch(_) {}
+    try {
+      const u = await vkBridge.send("VKWebAppGetUserInfo");
+      if (u && u.id) { STATE.vkUserId = u.id; STATE.vkUserPhoto = u.photo_100 || ""; }
+    } catch(_) {}
+    try { await vkBridge.send("VKWebAppSetSwipeSettings", { history: true }); } catch(_) {}
+    try { await vkBridge.send("VKWebAppEnableSwipeBack"); } catch(_) {}
   }
 
-  try { await vkBridge.send("VKWebAppInit"); } catch(e) {
-    console.warn("VKWebAppInit failed:", e);
-  }
-
-  // Определение темы оформления
-  try {
-    const cfg = await vkBridge.send("VKWebAppGetConfig");
-    if (cfg.appearance === "dark")
-      document.documentElement.setAttribute("data-theme","dark");
-  } catch(_) {}
-
-  // Извлекаем vk_user_id напрямую из launch params как самый надёжный фоллбек
-  const params = new URLSearchParams(window.location.search);
-  const paramUid = parseInt(params.get("vk_user_id"));
-  if (paramUid) {
-    STATE.vkUserId = paramUid;
-  }
-
-  // Запрашиваем информацию о пользователе
-  try {
-    const u = await vkBridge.send("VKWebAppGetUserInfo");
-    if (u && u.id) {
-      STATE.vkUserId    = u.id;
-      STATE.vkUserPhoto = u.photo_100 || "";
-    }
-  } catch(_) {}
-
+  // Всегда читаем user_id из URL launch_params — работает даже без Bridge
   STATE.launchParams = window.location.search.slice(1);
-
-  // Подключение свайпов возврата в мобильных клиентах VK
-  try { await vkBridge.send("VKWebAppSetSwipeSettings", { history: true }); } catch(_) {}
-  try { await vkBridge.send("VKWebAppEnableSwipeBack"); } catch(_) {}
+  if (!STATE.vkUserId) {
+    const uid = parseInt(new URLSearchParams(window.location.search).get("vk_user_id"));
+    if (uid) STATE.vkUserId = uid;
+  }
 }
 
 async function haptic(style="light") {
