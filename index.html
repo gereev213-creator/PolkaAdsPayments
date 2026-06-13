@@ -896,6 +896,9 @@ function renderStats(items) {
   const totalFavs  = items.reduce((s,a) => s + (a.fav_count||0), 0);
   const active     = items.filter(a => a.status==="active").length;
 
+  const maxViews = Math.max(1, ...items.map(a => a.views||0));
+  const maxFavs  = Math.max(1, ...items.map(a => a.fav_count||0));
+
   wrap.innerHTML = `
     <div class="stat-card" style="margin-top:12px">
       <div class="stat-num">
@@ -907,11 +910,12 @@ function renderStats(items) {
     <div style="padding:12px 12px 4px;font-size:13px;font-weight:600;color:var(--c-text-second);text-transform:uppercase;letter-spacing:.5px">
       Мои объявления
     </div>
-    ${items.map(ad => {
-      // Защитный фоллбек: если title пустой, используем обрезку описания
+    ${items.map((ad,idx) => {
       const safeTitle = ad.title ? ad.title : (ad.description ? trimTitle(ad.description, 35) : "Объявление без названия");
+      const viewsPct = Math.round((ad.views||0) / maxViews * 100);
+      const favsPct  = Math.round((ad.fav_count||0) / maxFavs * 100);
       return `
-      <div class="stat-card" style="margin-top:4px">
+      <div class="stat-card" style="margin-top:4px;cursor:pointer" onclick="toggleStatChart(${idx})">
         <div style="display:flex;gap:10px;align-items:center">
           <div style="width:48px;height:48px;border-radius:8px;overflow:hidden;flex-shrink:0;background:var(--c-skeleton);display:flex;align-items:center;justify-content:center;font-size:20px;">
             ${ad.photo ? `<img src="${esc(ad.photo)}" style="width:100%;height:100%;object-fit:cover">` : "📷"}
@@ -924,15 +928,43 @@ function renderStats(items) {
             <div style="font-size:13px;color:var(--c-text-second)">👁 ${fmtNum(ad.views||0)}</div>
             <div style="font-size:13px;color:var(--c-text-second)">♡ ${ad.fav_count||0}</div>
           </div>
+          <div style="color:var(--c-text-second);font-size:18px;transform:rotate(0deg);transition:transform .2s" id="stat-chevron-${idx}">›</div>
         </div>
         <div style="margin-top:6px;font-size:12px;${ad.status==='active'
           ? 'color:var(--c-green)'
           : 'color:var(--c-text-second)'}">
           ${ad.status==='active' ? '● Активно' : ad.status==='moderation' ? '○ На модерации' : '○ Снято с публикации'}
         </div>
+        <div id="stat-chart-${idx}" style="display:none;margin-top:14px;padding-top:14px;border-top:1px solid var(--c-divider)">
+          <div style="font-size:12px;color:var(--c-text-second);margin-bottom:6px;display:flex;justify-content:space-between">
+            <span>👁 Просмотры</span><span>${fmtNum(ad.views||0)}</span>
+          </div>
+          <div style="height:8px;background:var(--c-pill-bg);border-radius:4px;overflow:hidden;margin-bottom:12px">
+            <div style="height:100%;width:${viewsPct}%;background:var(--c-accent);border-radius:4px;transition:width .6s ease"></div>
+          </div>
+          <div style="font-size:12px;color:var(--c-text-second);margin-bottom:6px;display:flex;justify-content:space-between">
+            <span>♡ В избранном</span><span>${ad.fav_count||0}</span>
+          </div>
+          <div style="height:8px;background:var(--c-pill-bg);border-radius:4px;overflow:hidden">
+            <div style="height:100%;width:${favsPct}%;background:var(--c-red);border-radius:4px;transition:width .6s ease"></div>
+          </div>
+          <div style="font-size:11px;color:var(--c-text-second);margin-top:10px;text-align:center">
+            Относительно вашего самого популярного объявления
+          </div>
+        </div>
       </div>`;
     }).join("")}
     <div style="height:16px"></div>`;
+}
+
+function toggleStatChart(idx) {
+  const chart = document.getElementById(`stat-chart-${idx}`);
+  const chevron = document.getElementById(`stat-chevron-${idx}`);
+  if (!chart) return;
+  const isOpen = chart.style.display !== "none";
+  chart.style.display = isOpen ? "none" : "block";
+  if (chevron) chevron.style.transform = isOpen ? "rotate(0deg)" : "rotate(90deg)";
+  haptic("light");
 }
 
 function navigateBack() {
