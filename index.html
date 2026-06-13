@@ -1233,22 +1233,37 @@ function galleryTap(e) {
 }
 
 async function toggleFavorite() {
-  if (!STATE.vkUserId) { showToast("Войдите в VK"); return; }
+  if (!STATE.vkUserId) { 
+    showToast("Войдите в VK"); 
+    return; 
+  }
+  
   haptic("light");
+  
   try {
     const data = await apiFetch(`/api/ad/${STATE.adId}/favorite`, { method:"POST" });
     STATE.isFavorite = data.is_favorite;
+    
+    // Обновляем кнопку
     const btn = document.getElementById("btn-fav");
     if (btn) {
       btn.textContent = STATE.isFavorite ? "♥" : "♡";
       btn.classList.toggle("is-fav", STATE.isFavorite);
-      btn.title = STATE.isFavorite ? "Убрать из избранного" : "В избранное";
     }
+
     showToast(STATE.isFavorite ? "♥ Добавлено в избранное" : "Убрано из избранного");
-    haptic(STATE.isFavorite ? "medium" : "light");
-    STATE.favsData = null; // Сбрасываем кэш избранного для принудительного обновления
+    
+    // Сбрасываем кэш и сразу обновляем список
+    STATE.favsData = null;
     updateFavBadge();
+
+    // Если сейчас открыта вкладка Избранное — обновляем её
+    if (STATE.activeTab === "favs") {
+      loadFavs();
+    }
+
   } catch(e) {
+    console.error(e);
     showToast("Ошибка. Попробуйте ещё раз.");
   }
 }
@@ -1370,15 +1385,25 @@ function openAdFromFav(adId) {
 }
 
 function contactSeller() {
-  if (!STATE.adData || !STATE.adData.seller || !STATE.adData.seller.id) return;
+  if (!STATE.adData || !STATE.adData.seller || !STATE.adData.seller.id) {
+    showToast("Ошибка: продавец не найден");
+    return;
+  }
+  
   haptic("medium");
   const sellerId = STATE.adData.seller.id;
+  
+  // Правильное открытие личных сообщений
   try {
     vkBridge.send("VKWebAppOpenApp", {
-      app_id: 6146827,
+      app_id: 6146827,           // VK Мессенджер
       hash: `im?sel=${sellerId}`
     });
-  } catch(_) {}
+  } catch(e) {
+    console.error(e);
+  }
+  
+  // Запасной вариант
   openVKLink(`https://vk.com/im?sel=${sellerId}`);
 }
 
