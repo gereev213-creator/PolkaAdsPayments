@@ -983,18 +983,24 @@ async function loadAd(adId) {
   document.getElementById("ad-error").style.display    = "none";
 
   try {
+    console.log("Загружаем объявление", adId);
     const data = await apiFetch(`/api/ad/${adId}`);
+    
+    console.log("Данные получены:", data); // для отладки
+    
     STATE.adData    = data;
     STATE.isFavorite = data.is_favorite || false;
+
     renderAd(data);
     setHeader(true, true);
     updateFavBadge();
     return;
+
   } catch(e) {
-    console.error("Ошибка загрузки объявления:", e);
+    console.error("Ошибка загрузки:", e);
     document.getElementById("ad-skeleton").style.display = "none";
     document.getElementById("ad-error").style.display = "";
-    
+
     const errBox = document.getElementById("ad-error");
     if (e.status === 404) {
       errBox.innerHTML = `
@@ -1005,7 +1011,7 @@ async function loadAd(adId) {
       errBox.innerHTML = `
         <div class="error-icon">⏳</div>
         <div class="error-title">Ошибка соединения</div>
-        <div class="error-text">Попробуйте обновить страницу.</div>`;
+        <div class="error-text">Сервер ответил, но приложение не смогло обработать данные.<br>Попробуйте перезагрузить.</div>`;
     }
   }
   setHeader(true, false);
