@@ -1020,7 +1020,7 @@ function renderAd(d) {
       `<div class="gallery-slide"><img src="${esc(url)}" loading="lazy" decoding="async"></div>`
     ).join("");
     const dots = photos.length > 1
-      ? `<div class="gallery-dots">${photos.map((_,i)=>`<span class="${i===0?'active':''}"></span>`).join("")}</div>`
+      ? `<div class="gallery-dots">${photos.map((_,i)=>`<span class="${i===0?"active":""}"></span>`).join("")}</div>`
       : "";
     galleryHtml = `
       <div class="gallery" id="gallery" ontouchstart="gtStart(event)" ontouchend="gtEnd(event)" onclick="galleryTap(event)">
@@ -1041,7 +1041,7 @@ function renderAd(d) {
   const pills = [];
   if (d.condition) {
     const isNew = d.condition.toLowerCase().includes("нов");
-    pills.push(`<span class="pill ${isNew?'green':''}">${esc(d.condition)}</span>`);
+    pills.push(`<span class="pill ${isNew?"green":""}">${esc(d.condition)}</span>`);
   }
   if (d.category) pills.push(`<span class="pill">${esc(stripDot(d.category))}</span>`);
   if (d.city)     pills.push(`<span class="pill">${esc(d.city)}</span>`);
@@ -1092,7 +1092,7 @@ function renderAd(d) {
         </svg>
         Написать продавцу
       </button>
-      <button class="btn btn-fav ${STATE.isFavorite?'is-fav':''}" id="btn-fav" onclick="toggleFavorite()" title="${STATE.isFavorite?'Убрать из избранного':'В избранное'}">
+      <button class="btn btn-fav ${STATE.isFavorite?"is-fav":""}" id="btn-fav" onclick="toggleFavorite()" title="${STATE.isFavorite?'Убрать из избранного':'В избранное'}">
         ${STATE.isFavorite ? "♥" : "♡"}
       </button>
     </div>`;
@@ -1103,7 +1103,7 @@ function renderAd(d) {
   document.getElementById("ad-content").style.display  = "";
   document.getElementById("ad-content").innerHTML = `
     ${galleryHtml}
-    <div class="card" style="border-radius:0 0 ${metaRows.length||d.description||d.contact_info?'0 0':'12px 12px'}">
+    <div class="card" style="border-radius:0 0 ${(metaRows.length||d.description||d.contact_info) ? `0 0` : `12px 12px`}">
       <div class="price">${fmtPrice(d.price)}</div>
       <div class="ad-title">${esc(d.title || "Без названия")}</div>
       <div class="pills">${pills.join("")}</div>
@@ -1168,8 +1168,8 @@ function renderAd(d) {
   const descLong = d.description && d.description.length > 280;
   const descHtml = d.description ? `
     <div class="card">
-      <div class="desc ${descLong?'desc-clamp':''}" id="desc-text">${esc(d.description)}</div>
-      <div class="desc-more ${descLong?'show':''}" id="desc-more" onclick="expandDesc()">Читать полностью</div>
+      <div class="desc ${descLong?"desc-clamp":""}" id="desc-text">${esc(d.description)}</div>
+      <div class="desc-more ${descLong?"show":""}" id="desc-more" onclick="expandDesc()">Читать полностью</div>
     </div>` : "";
 
   const contactHtml = d.contact_info ? `
@@ -1188,7 +1188,7 @@ function renderAd(d) {
         </svg>
         Написать продавцу
       </button>
-      <button class="btn btn-fav ${STATE.isFavorite?'is-fav':''}" id="btn-fav" onclick="toggleFavorite()" title="${STATE.isFavorite?'Убрать из избранного':'В избранное'}">
+      <button class="btn btn-fav ${STATE.isFavorite?"is-fav":""}" id="btn-fav" onclick="toggleFavorite()" title="${STATE.isFavorite?'Убрать из избранного':'В избранное'}">
         ${STATE.isFavorite ? "♥" : "♡"}
       </button>
     </div>`;
@@ -1203,7 +1203,7 @@ function renderAd(d) {
   document.getElementById("ad-content").style.display  = "";
   document.getElementById("ad-content").innerHTML = `
     ${galleryHtml}
-    <div class="card" style="border-radius:0 0 ${metaRows.length||d.description||d.contact_info?'0 0':'12px 12px'}">
+    <div class="card" style="border-radius:0 0 ${(metaRows.length||d.description||d.contact_info) ? `0 0` : `12px 12px`}">
       <div class="price">${fmtPrice(d.price)}</div>
       <div class="ad-title">${esc(d.title || "Без названия")}</div>
       <div class="pills">${pills.join("")}</div>
