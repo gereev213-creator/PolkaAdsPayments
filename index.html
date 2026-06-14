@@ -4,11 +4,13 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
 <title>Полка</title>
-<!-- VK Bridge загружаем асинхронно - приложение работает и без него -->
+<!-- VK Bridge должен загрузиться до вызова VKWebAppInit -->
+<script src="https://unpkg.com/@vkontakte/vk-bridge/dist/browser.min.js"></script>
 <script>
-window.vkBridge = { send: () => Promise.resolve({}) };
+if (!window.vkBridge) {
+  window.vkBridge = { send: () => Promise.resolve({}) };
+}
 </script>
-<script src="https://unpkg.com/@vkontakte/vk-bridge/dist/browser.min.js" async></script>
 <style>
 /* ── VK Human Interface tokens ─────────────────────────────────────────── */
 :root {
@@ -1032,12 +1034,6 @@ function renderAd(d) {
         ${dots}
         <div class="gallery-counter" id="gallery-counter">${photos.length>1?`1 / ${photos.length}`:""}</div>
       </div>`;
-    if (photos.length > 1) {
-      setTimeout(() => {
-        const gc = document.getElementById("gallery-counter");
-        if (gc) gc.style.display = "block";
-      }, 50);
-    }
   } else {
     galleryHtml = `<div class="gallery-no-photo">📷</div>`;
   }
@@ -1054,8 +1050,7 @@ function renderAd(d) {
 
   const s = d.seller || {};
   const sellerId = s.id || 0;
-
-  const sellerInitial = (s.name||"П")[0].toUpperCase();
+  const sellerInitial = (s.name || "П")[0].toUpperCase();
   const avaHtml = `
     <img src="${s.photo_100 || 'https://vk.com/images/camera_200.png'}" alt=""
          onerror="this.style.display=&quot;none&quot;;this.parentNode.textContent=&quot;${sellerInitial}&quot;"
@@ -1066,7 +1061,7 @@ function renderAd(d) {
   const verBadge = s.is_verified ? `<span class="verified-badge">✅</span>` : "";
 
   const addrVal = d.address
-    ? `<a href="https://yandex.ru/maps/?text=${encodeURIComponent((d.city||'')+' '+d.address)}" 
+    ? `<a href="https://yandex.ru/maps/?text=${encodeURIComponent((d.city||'')+' '+d.address)}"
          onclick="openVKLink(this.href);return false;" style="color:var(--c-accent);text-decoration:none">${esc(d.address)}</a>`
     : "";
 
@@ -1086,51 +1081,26 @@ function renderAd(d) {
         </div>`).join("")}
     </div>` : "";
 
-  // ... (остальная часть renderAd остаётся как была) ...
-
-  const actionBar = d.is_owner ? "" : `
-    <div class="action-bar">
-      <button class="btn btn-primary" onclick="contactSeller()">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
-        </svg>
-        Написать продавцу
-      </button>
-      <button class="btn btn-fav ${STATE.isFavorite?"is-fav":""}" id="btn-fav" onclick="toggleFavorite()" title="${STATE.isFavorite?"Убрать из избранного":"В избранное"}">
-        ${STATE.isFavorite ? "♥" : "♡"}
-      </button>
+  const statsHtml = `
+    <div class="stats-row" style="margin-top:10px">
+      <span>👁 ${fmtNum(d.views)} просмотров</span>
+      ${d.created_at ? `<span>📅 ${fmtDate(d.created_at)}</span>` : ""}
     </div>`;
 
-  // ... (весь остальной HTML карточки) ...
-
-  document.getElementById("ad-skeleton").style.display = "none";
-  document.getElementById("ad-content").style.display  = "";
-  document.getElementById("ad-content").innerHTML = `
-    ${galleryHtml}
-    <div class="card" style="border-radius:0 0 ${(metaRows.length||d.description||d.contact_info) ? `0 0` : `12px 12px`}">
-      <div class="price">${fmtPrice(d.price)}</div>
-      <div class="ad-title">${esc(d.title || "Без названия")}</div>
-      <div class="pills">${pills.join("")}</div>
-      ${statsHtml}
-    </div>
+  const descLong = d.description && d.description.length > 280;
+  const descHtml = d.description ? `
     <div class="card">
-      <div class="seller-row">
-        <div class="seller-ava">${avaHtml}</div>
-        <div>
-          <div class="seller-name">${esc(s.name||"Продавец")}${verBadge}</div>
-          <div class="seller-sub">Продавец${d.is_owner?" · Это вы":""}</div>
-        </div>
+      <div class="desc ${descLong?"desc-clamp":""}" id="desc-text">${esc(d.description)}</div>
+      <div class="desc-more ${descLong?"show":""}" id="desc-more" onclick="expandDesc()">Читать полностью</div>
+    </div>` : "";
+
+  const contactHtml = d.contact_info ? `
+    <div class="card">
+      <div class="meta-row" style="padding:0">
+        <span class="meta-key">Контакт</span>
+        <span class="meta-val" style="word-break:break-all">${esc(d.contact_info)}</span>
       </div>
-    </div>
-    ${descHtml}
-    ${contactHtml}
-    ${metaHtml}
-    ${statsOwnerHtml}
-    ${similarHtml}
-    ${actionBar}
-    <div style="height:8px"></div>
-  `;
-}
+    </div>` : "";
 
   const statsOwnerHtml = (d.is_owner && d.seller_stats) ? `
     <div class="card">
@@ -1155,7 +1125,7 @@ function renderAd(d) {
     <div style="padding:14px 16px 6px;font-size:13px;font-weight:600;color:var(--c-text-second);text-transform:uppercase;letter-spacing:.5px">Похожие</div>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:0 12px 16px">
       ${d.similar.map(s => `
-        <div onclick="openAdFromFav(${s.id})" style="background:var(--c-card);border-radius:12px;overflow:hidden;cursor:pointer;transition:opacity .15s" 
+        <div onclick="openAdFromFav(${s.id})" style="background:var(--c-card);border-radius:12px;overflow:hidden;cursor:pointer;transition:opacity .15s"
              onmousedown="this.style.opacity='.7'" onmouseup="this.style.opacity='1'">
           <div style="aspect-ratio:1;background:var(--c-skeleton);overflow:hidden">
             ${s.photos&&s.photos[0]
@@ -1169,21 +1139,6 @@ function renderAd(d) {
         </div>`).join("")}
     </div>` : "";
 
-  const descLong = d.description && d.description.length > 280;
-  const descHtml = d.description ? `
-    <div class="card">
-      <div class="desc ${descLong?"desc-clamp":""}" id="desc-text">${esc(d.description)}</div>
-      <div class="desc-more ${descLong?"show":""}" id="desc-more" onclick="expandDesc()">Читать полностью</div>
-    </div>` : "";
-
-  const contactHtml = d.contact_info ? `
-    <div class="card">
-      <div class="meta-row" style="padding:0">
-        <span class="meta-key">Контакт</span>
-        <span class="meta-val" style="word-break:break-all">${esc(d.contact_info)}</span>
-      </div>
-    </div>` : "";
-
   const actionBar = d.is_owner ? "" : `
     <div class="action-bar">
       <button class="btn btn-primary" onclick="contactSeller()">
@@ -1195,12 +1150,6 @@ function renderAd(d) {
       <button class="btn btn-fav ${STATE.isFavorite?"is-fav":""}" id="btn-fav" onclick="toggleFavorite()" title="${STATE.isFavorite?"Убрать из избранного":"В избранное"}">
         ${STATE.isFavorite ? "♥" : "♡"}
       </button>
-    </div>`;
-
-  const statsHtml = `
-    <div class="stats-row" style="margin-top:10px">
-      <span>👁 ${fmtNum(d.views)} просмотров</span>
-      ${d.created_at ? `<span>📅 ${fmtDate(d.created_at)}</span>` : ""}
     </div>`;
 
   document.getElementById("ad-skeleton").style.display = "none";
@@ -1230,6 +1179,11 @@ function renderAd(d) {
     ${actionBar}
     <div style="height:8px"></div>
   `;
+
+  if (photos.length > 1) {
+    const gc = document.getElementById("gallery-counter");
+    if (gc) gc.style.display = "block";
+  }
 
   setTimeout(async () => {
     const img = document.querySelector(`[data-uid="${sellerId}"]`);
