@@ -14,18 +14,18 @@ if (!window.vkBridge) {
 <style>
 /* ── VK Human Interface tokens ─────────────────────────────────────────── */
 :root {
-  --c-bg:           #f2f3f5;
+  --c-bg:           #f6f3ec;
   --c-card:         #ffffff;
-  --c-divider:      rgba(0,0,0,.12);
-  --c-text-primary: #000000;
-  --c-text-second:  #818c99;
-  --c-accent:       #3f8ae0;
-  --c-accent-2:     #2a5885;
-  --c-red:          #e64646;
+  --c-divider:      rgba(42,88,133,.14);
+  --c-text-primary: #1f2933;
+  --c-text-second:  #687684;
+  --c-accent:       #2a5885;
+  --c-accent-2:     #3f6f9f;
+  --c-red:          #d84f4f;
   --c-green:        #4bb34b;
-  --c-orange:       #ffa000;
-  --c-pill-bg: #f0f2f5;
-  --c-skeleton:     #e8eaf0;
+  --c-orange:       #d9922e;
+  --c-pill-bg:      #eef3f7;
+  --c-skeleton:     #e7edf2;
   --radius-card:    12px;
   --radius-btn:     10px;
   --safe-t: env(safe-area-inset-top,    0px);
@@ -37,13 +37,15 @@ if (!window.vkBridge) {
   --font:   -apple-system,"SF Pro Text","Helvetica Neue",Arial,sans-serif;
 }
 [data-theme="dark"] {
-  --c-bg:           #19191a;
-  --c-card:         #232324;
+  --c-bg:           #151b22;
+  --c-card:         #1f2933;
   --c-divider:      rgba(255,255,255,.12);
-  --c-text-primary: #e1e3e6;
-  --c-text-second:  #76787a;
-  --c-pill-bg:      #2c2d2e;
-  --c-skeleton:     #2c2d2e;
+  --c-text-primary: #edf2f7;
+  --c-text-second:  #9aa8b5;
+  --c-accent:       #7fb0dd;
+  --c-accent-2:     #9ec6e8;
+  --c-pill-bg:      #2a3542;
+  --c-skeleton:     #2a3542;
 }
 
 /* ── Reset ──────────────────────────────────────────────────────────────── */
@@ -424,8 +426,8 @@ a{color:inherit;text-decoration:none}
   border-radius:18px;
   padding:18px;
   color:#fff;
-  background:linear-gradient(135deg,#3f8ae0 0%,#735ce6 55%,#ff7a59 100%);
-  box-shadow:0 10px 28px rgba(63,138,224,.24);
+  background:linear-gradient(135deg,var(--c-accent) 0%,var(--c-accent-2) 100%);
+  box-shadow:0 10px 28px rgba(42,88,133,.22);
 }
 .stats-hero::after{
   content:"";
@@ -513,6 +515,21 @@ a{color:inherit;text-decoration:none}
 .stats-progress-fill.views{background:linear-gradient(90deg,var(--c-accent),#7aa7ff)}
 .stats-progress-fill.favs{background:linear-gradient(90deg,var(--c-red),#ff8a8a)}
 .stats-hint{font-size:11px;color:var(--c-text-second);line-height:1.4;margin-top:10px;text-align:center}
+
+
+/* ── Однотонные статичные иконки вместо системных эмодзи ───────────────── */
+.mono-icon{
+  width:1.15em;height:1.15em;display:inline-block;vertical-align:-.18em;
+  color:currentColor;flex-shrink:0;
+}
+.empty-icon{width:64px;height:64px;color:var(--c-accent);opacity:.82}
+.chart-icon{width:24px;height:24px;color:var(--c-accent)}
+.placeholder-icon{width:24px;height:24px;color:var(--c-text-second)}
+.stat-line-head-icon{display:inline-flex;align-items:center;gap:5px}
+.search-empty-state{padding:72px 28px;text-align:center;color:var(--c-text-second)}
+.search-empty-state .empty-icon{margin:0 auto 14px;display:block}
+.search-empty-title{font-size:18px;font-weight:700;color:var(--c-text-primary);margin-bottom:6px}
+.search-empty-text{font-size:14px;line-height:1.45}
 
 /* ── Error / 404 ────────────────────────────────────────────────────────── */
 .error-screen{
@@ -608,7 +625,7 @@ a{color:inherit;text-decoration:none}
       </div>
       <div id="ad-content" style="display:none"></div>
       <div id="ad-error"   style="display:none" class="error-screen">
-        <div class="error-icon">📭</div>
+        <div class="error-icon"><svg class="empty-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16v11a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2z"/><path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><path d="M9 13h6"/></svg></div>
         <div class="error-title">Объявление не найдено</div>
         <div class="error-text">Возможно, оно снято с публикации.</div>
       </div>
@@ -670,8 +687,8 @@ a{color:inherit;text-decoration:none}
           </div>
         </div>
         <button onclick="toggleFilters()" style="background:none;border:none;color:var(--c-accent);
-          font-size:13px;cursor:pointer;padding:0;margin-bottom:4px">
-          ⚙️ Фильтры
+          font-size:13px;cursor:pointer;padding:0;margin-bottom:4px;display:inline-flex;align-items:center;gap:5px">
+          <svg class="mono-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M7 12h10M10 17h4"/></svg> Фильтры
         </button>
       </div>
       <div id="search-results"></div>
@@ -820,10 +837,7 @@ function switchTab(tab) {
   } else if (tab === "search") {
     setHeader(false, false);
     if (!STATE.filtersLoaded) loadFilters();
-    if (!STATE.initialSearchDone) {
-      doSearch();
-      STATE.initialSearchDone = true;
-    }
+    showSearchEmptyState();
   } else if (tab === "stats") {
     setHeader(false, false);
     loadStats(); // Загружаем статистику заново для обновления просмотров
@@ -835,7 +849,40 @@ function switchTab(tab) {
 let _searchTimer = null;
 function onSearchInput() {
   clearTimeout(_searchTimer);
-  _searchTimer = setTimeout(doSearch, 500);
+  const q = document.getElementById("search-input")?.value.trim() || "";
+  if (!q) {
+    showSearchEmptyState();
+    return;
+  }
+  if (q.length < 2) return;
+  _searchTimer = setTimeout(doSearch, 420);
+}
+
+function monoIcon(name, cls="mono-icon") {
+  const icons = {
+    photo: '<svg class="'+cls+'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="3"/><circle cx="9" cy="11" r="2"/><path d="M21 16l-5-5-4 4-2-2-5 5"/></svg>',
+    search: '<svg class="'+cls+'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg>',
+    empty: '<svg class="'+cls+'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16v11a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2z"/><path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><path d="M9 13h6"/></svg>',
+    chart: '<svg class="'+cls+'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19V5"/><path d="M4 19h16"/><path d="M8 16v-4"/><path d="M12 16V8"/><path d="M16 16v-6"/></svg>',
+    view: '<svg class="'+cls+'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 12s3.5-6 9.5-6 9.5 6 9.5 6-3.5 6-9.5 6-9.5-6-9.5-6z"/><circle cx="12" cy="12" r="3"/></svg>',
+    calendar: '<svg class="'+cls+'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M8 3v4M16 3v4M4 10h16"/></svg>',
+    fav: '<svg class="'+cls+'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20.8 4.6a5.4 5.4 0 0 0-7.7 0L12 5.7l-1.1-1.1a5.4 5.4 0 0 0-7.7 7.7L12 21l8.8-8.7a5.4 5.4 0 0 0 0-7.7z"/></svg>',
+    ok: '<svg class="'+cls+'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>',
+    wait: '<svg class="'+cls+'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8"/><path d="M12 8v5l3 2"/></svg>'
+  };
+  return icons[name] || icons.empty;
+}
+
+function showSearchEmptyState() {
+  const q    = document.getElementById("search-input")?.value.trim() || "";
+  const city = document.getElementById("f-city")?.value || "";
+  const cat  = document.getElementById("f-cat")?.value || "";
+  const minP = document.getElementById("f-min")?.value || "";
+  const maxP = document.getElementById("f-max")?.value || "";
+  const wrap = document.getElementById("search-results");
+  if (!wrap || q || city || cat || minP || maxP) return;
+  document.getElementById("filter-chips").innerHTML = "";
+  wrap.innerHTML = `<div class="search-empty-state">${monoIcon("search","empty-icon")}<div class="search-empty-title">Начните поиск</div><div class="search-empty-text">Введите запрос, выберите фильтры или загрузите фото товара.</div></div>`;
 }
 
 async function doPhotoSearch(e) {
@@ -911,13 +958,19 @@ async function doSearch() {
   const maxP = document.getElementById("f-max")?.value || "";
 
   const wrap = document.getElementById("search-results");
-  wrap.innerHTML = `<div class="spinner" style="padding:32px"><div class="spin"></div></div>`;
 
   const chips = [];
   if (city) chips.push(`<span class="pill" onclick="clearFilter('city')" style="cursor:pointer">${esc(city)} ✕</span>`);
   if (cat)  chips.push(`<span class="pill" onclick="clearFilter('cat')"  style="cursor:pointer">${esc(cat)} ✕</span>`);
   if (minP||maxP) chips.push(`<span class="pill" onclick="clearFilter('price')" style="cursor:pointer">${minP||'0'} — ${maxP||'∞'} ₽ ✕</span>`);
   document.getElementById("filter-chips").innerHTML = chips.join("");
+
+  if (!q && !city && !cat && !minP && !maxP) {
+    showSearchEmptyState();
+    return;
+  }
+
+  wrap.innerHTML = `<div class="spinner" style="padding:32px"><div class="spin"></div></div>`;
 
   try {
     const params = new URLSearchParams();
@@ -927,9 +980,9 @@ async function doSearch() {
     if (minP) params.set("min_price", minP);
     if (maxP) params.set("max_price", maxP);
     const data = await apiFetch(`/api/search?${params}`);
-    renderAdList(wrap, data.items, data.total, q||"объявления");
+    renderAdList(wrap, data.items, data.total, q || "Фильтры");
   } catch(_) {
-    wrap.innerHTML = `<div class="error-screen"><div class="error-icon">😕</div><div class="error-title">Ошибка загрузки</div></div>`;
+    wrap.innerHTML = `<div class="error-screen"><div class="error-icon"><svg class="empty-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M9 9h.01M15 9h.01M8 16c1.1-1 2.4-1.5 4-1.5s2.9.5 4 1.5"/></svg></div><div class="error-title">Ошибка загрузки</div></div>`;
   }
 }
 
@@ -942,7 +995,7 @@ function clearFilter(type) {
 
 function renderAdList(wrap, items, total, label) {
   if (!items || !items.length) {
-    wrap.innerHTML = `<div class="fav-empty"><div class="fav-empty-icon">🔍</div>
+    wrap.innerHTML = `<div class="fav-empty"><div class="fav-empty-icon">${monoIcon("search","empty-icon")}</div>
       <div class="fav-empty-title">Ничего не найдено</div>
       <div class="fav-empty-text">Попробуйте изменить запрос или фильтры</div></div>`;
     return;
@@ -956,7 +1009,7 @@ function adCardHtml(ad) {
   const photos = ad.photos || [];
   const thumb = photos[0]
     ? `<img src="${esc(photos[0])}" loading="lazy">`
-    : "📷";
+    : monoIcon("photo","placeholder-icon");
   const categoryStr = ad.category ? " · " + esc(ad.category.replace(/^·\s*/,"")) : "";
   return `<div class="ad-card" onclick="openAdFromFav(${ad.id})">
     <div class="ad-card-thumb">${thumb}</div>
@@ -975,7 +1028,7 @@ async function loadStats() {
     renderStats(data.items || []);
   } catch(e) {
     document.getElementById("stats-skeleton").innerHTML =
-      `<div class="error-screen"><div class="error-icon">😕</div><div class="error-title">Не удалось загрузить</div></div>`;
+      `<div class="error-screen"><div class="error-icon"><svg class="empty-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M9 9h.01M15 9h.01M8 16c1.1-1 2.4-1.5 4-1.5s2.9.5 4 1.5"/></svg></div><div class="error-title">Не удалось загрузить</div></div>`;
   }
 }
 
@@ -1000,7 +1053,7 @@ function renderStats(items) {
 
   if (!items.length) {
     wrap.innerHTML = `<div class="fav-empty">
-      <div class="fav-empty-icon">📊</div>
+      <div class="fav-empty-icon">${monoIcon("chart","empty-icon")}</div>
       <div class="fav-empty-title">Нет объявлений</div>
       <div class="fav-empty-text">Разместите первое объявление через бота</div></div>`;
     return;
@@ -1048,7 +1101,7 @@ function renderStats(items) {
             <div style="font-size:15px;font-weight:700">Просмотры по объявлениям</div>
             <div style="font-size:12px;color:var(--c-text-second);margin-top:2px">Последние популярные позиции</div>
           </div>
-          <div style="font-size:22px">📈</div>
+          <div>${monoIcon("chart","chart-icon")}</div>
         </div>
         <div class="stats-bars">
           ${topForBars.map(ad => {
@@ -1069,7 +1122,7 @@ function renderStats(items) {
         <div class="stats-card" onclick="toggleStatChart(${ad._idx})">
           <div class="stats-card-top">
             <div class="stats-thumb">
-              ${ad.photo ? `<img src="${esc(ad.photo)}" loading="lazy">` : "📷"}
+              ${ad.photo ? `<img src="${esc(ad.photo)}" loading="lazy">` : monoIcon("photo","placeholder-icon")}
             </div>
             <div class="stats-info">
               <div class="stats-title">${esc(ad._title)}</div>
@@ -1090,11 +1143,11 @@ function renderStats(items) {
           </div>
           <div class="stats-detail" id="stat-chart-${ad._idx}">
             <div class="stats-line">
-              <div class="stats-line-head"><span>👁 Просмотры</span><span>${fmtNum(ad._views)}</span></div>
+              <div class="stats-line-head"><span class="stat-line-head-icon">${monoIcon("view")} Просмотры</span><span>${fmtNum(ad._views)}</span></div>
               <div class="stats-progress"><div class="stats-progress-fill views" style="width:${viewsPct}%"></div></div>
             </div>
             <div class="stats-line">
-              <div class="stats-line-head"><span>♡ Добавили в избранное</span><span>${fmtNum(ad._favs)}</span></div>
+              <div class="stats-line-head"><span class="stat-line-head-icon">${monoIcon("fav")} Добавили в избранное</span><span>${fmtNum(ad._favs)}</span></div>
               <div class="stats-progress"><div class="stats-progress-fill favs" style="width:${favsPct}%"></div></div>
             </div>
             <div class="stats-hint">Полосы показывают результат относительно самого сильного объявления в вашем списке.</div>
@@ -1151,12 +1204,12 @@ async function loadAd(adId) {
     const errBox = document.getElementById("ad-error");
     if (e.status === 404) {
       errBox.innerHTML = `
-        <div class="error-icon">📭</div>
+        <div class="error-icon"><svg class="empty-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16v11a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2z"/><path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><path d="M9 13h6"/></svg></div>
         <div class="error-title">Объявление не найдено</div>
         <div class="error-text">Возможно, оно снято с публикации.</div>`;
     } else {
       errBox.innerHTML = `
-        <div class="error-icon">⏳</div>
+        <div class="error-icon"><svg class="empty-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg></div>
         <div class="error-title">Ошибка соединения</div>
         <div class="error-text">Сервер ответил, но приложение не смогло обработать данные.<br>Попробуйте перезагрузить.</div>`;
     }
@@ -1183,7 +1236,7 @@ function renderAd(d) {
         <div class="gallery-counter" id="gallery-counter">${photos.length>1?`1 / ${photos.length}`:""}</div>
       </div>`;
   } else {
-    galleryHtml = `<div class="gallery-no-photo">📷</div>`;
+    galleryHtml = `<div class="gallery-no-photo">${monoIcon("photo","empty-icon")}</div>`;
   }
 
   const pills = [];
@@ -1206,7 +1259,7 @@ function renderAd(d) {
          style="width:100%;height:100%;object-fit:cover;display:none"
          data-uid="${sellerId}">`;
 
-  const verBadge = s.is_verified ? `<span class="verified-badge">✅</span>` : "";
+  const verBadge = s.is_verified ? `<span class="verified-badge">${monoIcon("ok")}</span>` : "";
 
   const addrVal = d.address
     ? `<a href="https://yandex.ru/maps/?text=${encodeURIComponent((d.city||'')+' '+d.address)}"
@@ -1231,8 +1284,8 @@ function renderAd(d) {
 
   const statsHtml = `
     <div class="stats-row" style="margin-top:10px">
-      <span>👁 ${fmtNum(d.views)} просмотров</span>
-      ${d.created_at ? `<span>📅 ${fmtDate(d.created_at)}</span>` : ""}
+      <span>${monoIcon("view")} ${fmtNum(d.views)} просмотров</span>
+      ${d.created_at ? `<span>${monoIcon("calendar")} ${fmtDate(d.created_at)}</span>` : ""}
     </div>`;
 
   const descLong = d.description && d.description.length > 280;
@@ -1444,7 +1497,7 @@ async function loadFavs() {
   } catch(e) {
     document.getElementById("favs-skeleton").innerHTML = `
       <div class="error-screen">
-        <div class="error-icon">😕</div>
+        <div class="error-icon"><svg class="empty-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M9 9h.01M15 9h.01M8 16c1.1-1 2.4-1.5 4-1.5s2.9.5 4 1.5"/></svg></div>
         <div class="error-title">Не удалось загрузить</div>
         <div class="error-text">Проверьте соединение и попробуйте снова.</div>
       </div>`;
