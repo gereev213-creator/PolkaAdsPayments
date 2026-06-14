@@ -413,6 +413,107 @@ a{color:inherit;text-decoration:none}
 .fav-empty-title{font-size:20px;font-weight:700}
 .fav-empty-text{font-size:15px;color:var(--c-text-second);line-height:1.5}
 
+
+/* ── My ads dashboard ───────────────────────────────────────────────────── */
+.stats-dashboard{
+  padding:12px 12px 20px;
+}
+.stats-hero{
+  position:relative;
+  overflow:hidden;
+  border-radius:18px;
+  padding:18px;
+  color:#fff;
+  background:linear-gradient(135deg,#3f8ae0 0%,#735ce6 55%,#ff7a59 100%);
+  box-shadow:0 10px 28px rgba(63,138,224,.24);
+}
+.stats-hero::after{
+  content:"";
+  position:absolute;
+  right:-44px;top:-52px;
+  width:160px;height:160px;
+  border-radius:50%;
+  background:rgba(255,255,255,.18);
+}
+.stats-hero-title{font-size:14px;font-weight:600;opacity:.9;margin-bottom:10px;position:relative;z-index:1}
+.stats-hero-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;position:relative;z-index:1}
+.stats-hero-item{
+  background:rgba(255,255,255,.16);
+  border:1px solid rgba(255,255,255,.18);
+  border-radius:14px;
+  padding:10px 8px;
+  backdrop-filter:blur(8px);
+}
+.stats-hero-value{font-size:22px;font-weight:800;line-height:1.1;white-space:nowrap}
+.stats-hero-label{font-size:11px;opacity:.82;margin-top:4px}
+.stats-section-title{
+  padding:16px 4px 8px;
+  font-size:13px;font-weight:700;
+  color:var(--c-text-second);
+  text-transform:uppercase;letter-spacing:.5px;
+}
+.stats-chart-card{
+  background:var(--c-card);
+  border-radius:16px;
+  padding:14px;
+  margin-top:10px;
+  box-shadow:0 1px 0 rgba(0,0,0,.03);
+}
+.stats-bars{display:flex;align-items:flex-end;gap:8px;height:112px;margin:8px 0 6px}
+.stats-bar-wrap{flex:1;min-width:0;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%;gap:6px}
+.stats-bar{
+  width:100%;max-width:34px;min-height:6px;
+  border-radius:10px 10px 4px 4px;
+  background:linear-gradient(180deg,var(--c-accent),#7aa7ff);
+  transition:height .45s ease;
+}
+.stats-bar-label{font-size:10px;color:var(--c-text-second);max-width:44px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-align:center}
+.stats-card{
+  background:var(--c-card);
+  border-radius:16px;
+  padding:12px;
+  margin-top:10px;
+  box-shadow:0 1px 0 rgba(0,0,0,.03);
+  cursor:pointer;
+  transition:transform .12s,background .15s;
+}
+.stats-card:active{transform:scale(.985);background:var(--c-pill-bg)}
+.stats-card-top{display:flex;gap:12px;align-items:center}
+.stats-thumb{
+  width:64px;height:64px;border-radius:14px;overflow:hidden;flex-shrink:0;
+  background:var(--c-skeleton);display:flex;align-items:center;justify-content:center;font-size:24px;color:var(--c-text-second);
+}
+.stats-thumb img{width:100%;height:100%;object-fit:cover}
+.stats-info{flex:1;min-width:0}
+.stats-title{font-size:15px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.stats-price{font-size:13px;color:var(--c-text-second);margin-top:2px}
+.stats-status{
+  display:inline-flex;align-items:center;gap:5px;
+  margin-top:8px;padding:4px 8px;border-radius:999px;
+  font-size:12px;font-weight:600;
+}
+.stats-status.active{background:rgba(75,179,75,.12);color:var(--c-green)}
+.stats-status.moderation{background:rgba(255,160,0,.14);color:var(--c-orange)}
+.stats-status.inactive{background:var(--c-pill-bg);color:var(--c-text-second)}
+.stats-status-dot{width:6px;height:6px;border-radius:50%;background:currentColor}
+.stats-numbers{display:flex;gap:8px;align-items:center;flex-shrink:0}
+.stats-mini{
+  min-width:54px;text-align:center;
+  background:var(--c-pill-bg);border-radius:12px;
+  padding:7px 6px;
+}
+.stats-mini-value{font-size:15px;font-weight:800}
+.stats-mini-label{font-size:10px;color:var(--c-text-second);margin-top:1px}
+.stats-chevron{color:var(--c-text-second);font-size:20px;transition:transform .2s}
+.stats-detail{display:none;margin-top:14px;padding-top:14px;border-top:1px solid var(--c-divider)}
+.stats-line{margin-bottom:12px}
+.stats-line-head{display:flex;justify-content:space-between;font-size:12px;color:var(--c-text-second);margin-bottom:6px}
+.stats-progress{height:9px;background:var(--c-pill-bg);border-radius:999px;overflow:hidden}
+.stats-progress-fill{height:100%;border-radius:999px;transition:width .5s ease}
+.stats-progress-fill.views{background:linear-gradient(90deg,var(--c-accent),#7aa7ff)}
+.stats-progress-fill.favs{background:linear-gradient(90deg,var(--c-red),#ff8a8a)}
+.stats-hint{font-size:11px;color:var(--c-text-second);line-height:1.4;margin-top:10px;text-align:center}
+
 /* ── Error / 404 ────────────────────────────────────────────────────────── */
 .error-screen{
   display:flex;flex-direction:column;align-items:center;justify-content:center;
@@ -878,6 +979,20 @@ async function loadStats() {
   }
 }
 
+function normalizeAdStatus(status) {
+  const raw = String(status || "active").trim().toLowerCase();
+  if (!raw || ["active", "published", "publish", "posted", "open", "активно", "активный", "опубликовано", "размещено"].includes(raw)) {
+    return { key: "active", label: "Активно" };
+  }
+  if (["moderation", "pending", "review", "на модерации", "модерация", "ожидает"].includes(raw)) {
+    return { key: "moderation", label: "На модерации" };
+  }
+  if (["inactive", "closed", "archived", "deleted", "removed", "sold", "hidden", "снято", "закрыто", "архив", "продано", "удалено", "скрыто"].includes(raw)) {
+    return { key: "inactive", label: "Снято" };
+  }
+  return { key: "active", label: "Активно" };
+}
+
 function renderStats(items) {
   document.getElementById("stats-skeleton").style.display = "none";
   const wrap = document.getElementById("stats-content");
@@ -891,76 +1006,109 @@ function renderStats(items) {
     return;
   }
 
-  const totalViews = items.reduce((s,a) => s + (a.views||0), 0);
-  const totalFavs  = items.reduce((s,a) => s + (a.fav_count||0), 0);
-  const active     = items.filter(a => a.status==="active").length;
+  const prepared = items.map((ad, idx) => ({
+    ...ad,
+    _idx: idx,
+    _status: normalizeAdStatus(ad.status),
+    _title: ad.title ? ad.title : (ad.description ? trimTitle(ad.description, 35) : "Объявление без названия"),
+    _views: Number(ad.views || 0),
+    _favs: Number(ad.fav_count || 0),
+  }));
 
-  const maxViews = Math.max(1, ...items.map(a => a.views||0));
-  const maxFavs  = Math.max(1, ...items.map(a => a.fav_count||0));
+  const totalViews = prepared.reduce((s,a) => s + a._views, 0);
+  const totalFavs  = prepared.reduce((s,a) => s + a._favs, 0);
+  const active     = prepared.filter(a => a._status.key === "active").length;
+  const maxViews   = Math.max(1, ...prepared.map(a => a._views));
+  const maxFavs    = Math.max(1, ...prepared.map(a => a._favs));
+  const topForBars = [...prepared].sort((a,b) => b._views - a._views).slice(0, 6).reverse();
 
   wrap.innerHTML = `
-    <div class="stat-card" style="margin-top:12px">
-      <div class="stat-num">
-        <span>${active}<small>активных</small></span>
-        <span>${fmtNum(totalViews)}<small>просмотров</small></span>
-        <span>${fmtNum(totalFavs)}<small>в избранном</small></span>
+    <div class="stats-dashboard">
+      <div class="stats-hero">
+        <div class="stats-hero-title">Мои объявления</div>
+        <div class="stats-hero-grid">
+          <div class="stats-hero-item">
+            <div class="stats-hero-value">${active}</div>
+            <div class="stats-hero-label">активных</div>
+          </div>
+          <div class="stats-hero-item">
+            <div class="stats-hero-value">${fmtNum(totalViews)}</div>
+            <div class="stats-hero-label">просмотров</div>
+          </div>
+          <div class="stats-hero-item">
+            <div class="stats-hero-value">${fmtNum(totalFavs)}</div>
+            <div class="stats-hero-label">в избранном</div>
+          </div>
+        </div>
       </div>
-    </div>
-    <div style="padding:12px 12px 4px;font-size:13px;font-weight:600;color:var(--c-text-second);text-transform:uppercase;letter-spacing:.5px">
-      Мои объявления
-    </div>
-    ${items.map((ad,idx) => {
-      const safeTitle = ad.title ? ad.title : (ad.description ? trimTitle(ad.description, 35) : "Объявление без названия");
-      const viewsPct = Math.round((ad.views||0) / maxViews * 100);
-      const favsPct  = Math.round((ad.fav_count||0) / maxFavs * 100);
-      return `
-      <div class="stat-card" style="margin-top:4px;cursor:pointer" onclick="toggleStatChart(${idx})">
-        <div style="display:flex;gap:10px;align-items:center">
-          <div style="width:48px;height:48px;border-radius:8px;overflow:hidden;flex-shrink:0;background:var(--c-skeleton);display:flex;align-items:center;justify-content:center;font-size:20px;">
-            ${ad.photo ? `<img src="${esc(ad.photo)}" style="width:100%;height:100%;object-fit:cover">` : "📷"}
+
+      <div class="stats-chart-card">
+        <div style="display:flex;justify-content:space-between;align-items:center;gap:12px">
+          <div>
+            <div style="font-size:15px;font-weight:700">Просмотры по объявлениям</div>
+            <div style="font-size:12px;color:var(--c-text-second);margin-top:2px">Последние популярные позиции</div>
           </div>
-          <div style="flex:1;min-width:0">
-            <div style="font-size:14px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--c-text-primary);">${esc(safeTitle)}</div>
-            <div style="font-size:13px;color:var(--c-text-second)">${fmtPrice(ad.price)}</div>
-          </div>
-          <div style="text-align:right;flex-shrink:0">
-            <div style="font-size:13px;color:var(--c-text-second)">👁 ${fmtNum(ad.views||0)}</div>
-            <div style="font-size:13px;color:var(--c-text-second)">♡ ${ad.fav_count||0}</div>
-          </div>
-          <div style="color:var(--c-text-second);font-size:18px;transform:rotate(0deg);transition:transform .2s" id="stat-chevron-${idx}">›</div>
+          <div style="font-size:22px">📈</div>
         </div>
-        <div style="margin-top:6px;font-size:12px;${ad.status==='active'
-          ? 'color:var(--c-green)'
-          : 'color:var(--c-text-second)'}">
-          ${ad.status==='active' ? '● Активно' : ad.status==='moderation' ? '○ На модерации' : '○ Снято с публикации'}
+        <div class="stats-bars">
+          ${topForBars.map(ad => {
+            const h = Math.max(8, Math.round(ad._views / maxViews * 100));
+            return `<div class="stats-bar-wrap" title="${esc(ad._title)} · ${fmtNum(ad._views)}">
+              <div class="stats-bar" style="height:${h}%"></div>
+              <div class="stats-bar-label">${esc(trimTitle(ad._title, 10))}</div>
+            </div>`;
+          }).join("")}
         </div>
-        <div id="stat-chart-${idx}" style="display:none;margin-top:14px;padding-top:14px;border-top:1px solid var(--c-divider)">
-          <div style="font-size:12px;color:var(--c-text-second);margin-bottom:6px;display:flex;justify-content:space-between">
-            <span>👁 Просмотры</span><span>${fmtNum(ad.views||0)}</span>
+      </div>
+
+      <div class="stats-section-title">Список объявлений</div>
+      ${prepared.map(ad => {
+        const viewsPct = Math.max(3, Math.round(ad._views / maxViews * 100));
+        const favsPct  = Math.max(3, Math.round(ad._favs / maxFavs * 100));
+        return `
+        <div class="stats-card" onclick="toggleStatChart(${ad._idx})">
+          <div class="stats-card-top">
+            <div class="stats-thumb">
+              ${ad.photo ? `<img src="${esc(ad.photo)}" loading="lazy">` : "📷"}
+            </div>
+            <div class="stats-info">
+              <div class="stats-title">${esc(ad._title)}</div>
+              <div class="stats-price">${fmtPrice(ad.price)}</div>
+              <div class="stats-status ${ad._status.key}"><span class="stats-status-dot"></span>${ad._status.label}</div>
+            </div>
+            <div class="stats-numbers">
+              <div class="stats-mini">
+                <div class="stats-mini-value">${fmtNum(ad._views)}</div>
+                <div class="stats-mini-label">просм.</div>
+              </div>
+              <div class="stats-mini">
+                <div class="stats-mini-value">${fmtNum(ad._favs)}</div>
+                <div class="stats-mini-label">избр.</div>
+              </div>
+              <div class="stats-chevron" id="stat-chevron-${ad._idx}">›</div>
+            </div>
           </div>
-          <div style="height:8px;background:var(--c-pill-bg);border-radius:4px;overflow:hidden;margin-bottom:12px">
-            <div style="height:100%;width:${viewsPct}%;background:var(--c-accent);border-radius:4px;transition:width .6s ease"></div>
+          <div class="stats-detail" id="stat-chart-${ad._idx}">
+            <div class="stats-line">
+              <div class="stats-line-head"><span>👁 Просмотры</span><span>${fmtNum(ad._views)}</span></div>
+              <div class="stats-progress"><div class="stats-progress-fill views" style="width:${viewsPct}%"></div></div>
+            </div>
+            <div class="stats-line">
+              <div class="stats-line-head"><span>♡ Добавили в избранное</span><span>${fmtNum(ad._favs)}</span></div>
+              <div class="stats-progress"><div class="stats-progress-fill favs" style="width:${favsPct}%"></div></div>
+            </div>
+            <div class="stats-hint">Полосы показывают результат относительно самого сильного объявления в вашем списке.</div>
           </div>
-          <div style="font-size:12px;color:var(--c-text-second);margin-bottom:6px;display:flex;justify-content:space-between">
-            <span>♡ В избранном</span><span>${ad.fav_count||0}</span>
-          </div>
-          <div style="height:8px;background:var(--c-pill-bg);border-radius:4px;overflow:hidden">
-            <div style="height:100%;width:${favsPct}%;background:var(--c-red);border-radius:4px;transition:width .6s ease"></div>
-          </div>
-          <div style="font-size:11px;color:var(--c-text-second);margin-top:10px;text-align:center">
-            Относительно вашего самого популярного объявления
-          </div>
-        </div>
-      </div>`;
-    }).join("")}
-    <div style="height:16px"></div>`;
+        </div>`;
+      }).join("")}
+    </div>`;
 }
 
 function toggleStatChart(idx) {
   const chart = document.getElementById(`stat-chart-${idx}`);
   const chevron = document.getElementById(`stat-chevron-${idx}`);
   if (!chart) return;
-  const isOpen = chart.style.display !== "none";
+  const isOpen = chart.style.display !== "none" && chart.style.display !== "";
   chart.style.display = isOpen ? "none" : "block";
   if (chevron) chevron.style.transform = isOpen ? "rotate(0deg)" : "rotate(90deg)";
   haptic("light");
