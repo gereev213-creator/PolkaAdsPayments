@@ -4,7 +4,11 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
 <title>Полка</title>
-<script src="https://unpkg.com/@vkontakte/vk-bridge/dist/browser.min.js"></script>
+<!-- VK Bridge загружаем асинхронно - приложение работает и без него -->
+<script>
+window.vkBridge = { send: () => Promise.resolve({}) };
+</script>
+<script src="https://unpkg.com/@vkontakte/vk-bridge/dist/browser.min.js" async></script>
 <style>
 /* ── VK Human Interface tokens ─────────────────────────────────────────── */
 :root {
@@ -652,29 +656,29 @@ const STATE = {
 };
 
 async function initVK() {
-  const hasBridge = typeof vkBridge !== "undefined" && vkBridge && typeof vkBridge.send === "function";
+  // Читаем user_id из URL параметров (VK всегда передаёт их)
+  STATE.launchParams = window.location.search.slice(1);
+  try {
+    const uid = new URLSearchParams(window.location.search).get("vk_user_id");
+    if (uid) STATE.vkUserId = parseInt(uid);
+  } catch(_) {}
 
-  if (hasBridge) {
-    try { await vkBridge.send("VKWebAppInit"); } catch(_) {}
-    try {
-      const cfg = await vkBridge.send("VKWebAppGetConfig");
-      if (cfg.appearance === "dark")
-        document.documentElement.setAttribute("data-theme","dark");
-    } catch(_) {}
+  // VK Bridge — пробуем но не ждём и не падаем
+  try {
+    await Promise.race([
+      vkBridge.send("VKWebAppInit"),
+      new Promise(r => setTimeout(r, 2000))
+    ]);
     try {
       const u = await vkBridge.send("VKWebAppGetUserInfo");
       if (u && u.id) { STATE.vkUserId = u.id; STATE.vkUserPhoto = u.photo_100 || ""; }
     } catch(_) {}
-    try { await vkBridge.send("VKWebAppSetSwipeSettings", { history: true }); } catch(_) {}
-    try { await vkBridge.send("VKWebAppEnableSwipeBack"); } catch(_) {}
-  }
-
-  // Всегда читаем user_id из URL launch_params — работает даже без Bridge
-  STATE.launchParams = window.location.search.slice(1);
-  if (!STATE.vkUserId) {
-    const uid = parseInt(new URLSearchParams(window.location.search).get("vk_user_id"));
-    if (uid) STATE.vkUserId = uid;
-  }
+    try {
+      const cfg = await vkBridge.send("VKWebAppGetConfig");
+      if (cfg && cfg.appearance === "dark")
+        document.documentElement.setAttribute("data-theme","dark");
+    } catch(_) {}
+  } catch(_) {}
 }
 
 async function haptic(style="light") {
