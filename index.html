@@ -454,23 +454,27 @@ a{color:inherit;text-decoration:none}
 }
 .stats-hero-illustration{
   position:absolute;
-  right:-22px;
-  top:-30px;
-  width:155px;
-  height:155px;
+  right:8px;
+  top:52%;
+  width:clamp(92px,30vw,132px);
+  height:auto;
+  max-height:132px;
   object-fit:contain;
-  opacity:.95;
-  filter:drop-shadow(0 16px 26px rgba(23,34,59,.14));
+  opacity:.96;
+  filter:drop-shadow(0 16px 26px rgba(23,34,59,.16));
+  transform:translate3d(0,-50%,0) rotate(-2deg);
+  transform-origin:50% 55%;
   animation:heroFloat 5.5s ease-in-out infinite;
   pointer-events:none;
+  will-change:transform;
 }
 @keyframes softRise{
   from{opacity:0;transform:translateY(8px)}
   to{opacity:1;transform:translateY(0)}
 }
 @keyframes heroFloat{
-  0%,100%{transform:translate3d(0,0,0) rotate(-3deg) scale(1)}
-  50%{transform:translate3d(-6px,8px,0) rotate(2deg) scale(1.03)}
+  0%,100%{transform:translate3d(0,-50%,0) rotate(-2deg)}
+  50%{transform:translate3d(-5px,calc(-50% + 6px),0) rotate(1deg)}
 }
 @media (prefers-reduced-motion: reduce){
   *,*::before,*::after{animation:none!important;transition:none!important}
@@ -484,24 +488,33 @@ a{color:inherit;text-decoration:none}
   position:relative;
   overflow:hidden;
   border-radius:22px;
-  padding:18px;
+  min-height:164px;
+  padding:18px 132px 18px 18px;
   color:#fff;
   background:
-    radial-gradient(circle at 88% 10%,rgba(255,255,255,.26) 0 18%,transparent 19%),
-    linear-gradient(135deg,#3373FA 0%,#6EA0FF 100%);
+    radial-gradient(circle at 100% 50%,rgba(255,255,255,.34) 0 18%,transparent 19%),
+    radial-gradient(circle at 10% 0%,rgba(255,255,255,.22) 0 0,transparent 34%),
+    linear-gradient(135deg,#3373FA 0%,#5D92FF 52%,#E7EFF6 155%);
   box-shadow:0 16px 36px rgba(51,115,250,.26);
 }
 .stats-hero::before{
   content:"";
   position:absolute;
-  inset:auto -20px -55px 18px;
-  height:96px;
+  inset:auto -30px -58px 72px;
+  height:112px;
   border-radius:999px;
-  background:rgba(255,255,255,.12);
-  transform:rotate(-4deg);
+  background:linear-gradient(90deg,rgba(255,255,255,.16),rgba(255,255,255,.05));
+  transform:rotate(-7deg);
 }
-.stats-hero-title{font-size:14px;font-weight:600;opacity:.95;margin-bottom:10px;position:relative;z-index:2}
-.stats-hero-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;position:relative;z-index:2}
+.stats-hero::after{
+  content:"";
+  position:absolute;
+  right:-44px;top:18px;
+  width:150px;height:150px;border-radius:50%;
+  background:rgba(255,255,255,.10);
+}
+.stats-hero-title{font-size:14px;font-weight:600;opacity:.95;margin-bottom:10px;position:relative;z-index:2;max-width:210px}
+.stats-hero-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;position:relative;z-index:2;max-width:210px}
 .stats-hero-item{
   background:rgba(255,255,255,.18);
   border:1px solid rgba(255,255,255,.24);
@@ -511,6 +524,21 @@ a{color:inherit;text-decoration:none}
 }
 .stats-hero-value{font-size:22px;font-weight:800;line-height:1.1;white-space:nowrap}
 .stats-hero-label{font-size:11px;opacity:.82;margin-top:4px}
+@media (max-width:380px){
+  .stats-hero{padding-right:108px;min-height:172px}
+  .stats-hero-illustration{right:-2px;width:104px;max-height:116px}
+  .stats-hero-title,.stats-hero-grid{max-width:198px}
+  .stats-hero-item{padding:9px 7px}
+  .stats-hero-value{font-size:20px}
+}
+@media (max-width:330px){
+  .stats-hero{padding-right:18px;padding-bottom:104px}
+  .stats-hero-illustration{right:12px;top:auto;bottom:8px;width:96px;transform:rotate(-2deg)}
+  @keyframes heroFloat{
+    0%,100%{transform:translate3d(0,0,0) rotate(-2deg)}
+    50%{transform:translate3d(-4px,5px,0) rotate(1deg)}
+  }
+}
 .stats-section-title{
   padding:16px 4px 8px;
   font-size:13px;font-weight:700;
@@ -588,6 +616,11 @@ a{color:inherit;text-decoration:none}
 .empty-icon{width:64px;height:64px;color:var(--c-accent);opacity:.82}
 .chart-icon{width:24px;height:24px;color:var(--c-accent)}
 .placeholder-icon{width:24px;height:24px;color:var(--c-text-second)}
+.fav-button-icon{width:24px;height:24px;color:currentColor}
+.fav-empty .empty-icon{margin-bottom:2px}
+.chip-close-icon{width:13px;height:13px;margin-left:4px;vertical-align:-.16em;color:currentColor}
+.fav-del .mono-icon{width:20px;height:20px}
+.error-icon .empty-icon{display:block}
 .stat-line-head-icon{display:inline-flex;align-items:center;gap:5px}
 .search-empty-state{padding:72px 28px;text-align:center;color:var(--c-text-second)}
 .search-empty-state .empty-icon{margin:0 auto 14px;display:block}
@@ -930,10 +963,23 @@ function monoIcon(name, cls="mono-icon") {
     view: '<svg class="'+cls+'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 12s3.5-6 9.5-6 9.5 6 9.5 6-3.5 6-9.5 6-9.5-6-9.5-6z"/><circle cx="12" cy="12" r="3"/></svg>',
     calendar: '<svg class="'+cls+'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M8 3v4M16 3v4M4 10h16"/></svg>',
     fav: '<svg class="'+cls+'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20.8 4.6a5.4 5.4 0 0 0-7.7 0L12 5.7l-1.1-1.1a5.4 5.4 0 0 0-7.7 7.7L12 21l8.8-8.7a5.4 5.4 0 0 0 0-7.7z"/></svg>',
+    favFilled: '<svg class="'+cls+'" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20.8 4.6a5.4 5.4 0 0 0-7.7 0L12 5.7l-1.1-1.1a5.4 5.4 0 0 0-7.7 7.7L12 21l8.8-8.7a5.4 5.4 0 0 0 0-7.7z"/></svg>',
+    close: '<svg class="'+cls+'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>',
+    tag: '<svg class="'+cls+'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12V6a2 2 0 0 1 2-2h6l8 8-8 8-8-8z"/><circle cx="9" cy="9" r="1.4"/></svg>',
     ok: '<svg class="'+cls+'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>',
     wait: '<svg class="'+cls+'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8"/><path d="M12 8v5l3 2"/></svg>'
   };
   return icons[name] || icons.empty;
+}
+
+function favIconHtml(active=false, cls="fav-button-icon") {
+  return monoIcon(active ? "favFilled" : "fav", cls);
+}
+
+function setFavButton(btn, active) {
+  if (!btn) return;
+  btn.innerHTML = favIconHtml(active);
+  btn.classList.toggle("is-fav", active);
 }
 
 function showSearchEmptyState() {
@@ -1023,9 +1069,9 @@ async function doSearch() {
   const wrap = document.getElementById("search-results");
 
   const chips = [];
-  if (city) chips.push(`<span class="pill" onclick="clearFilter('city')" style="cursor:pointer">${esc(city)} ✕</span>`);
-  if (cat)  chips.push(`<span class="pill" onclick="clearFilter('cat')"  style="cursor:pointer">${esc(cat)} ✕</span>`);
-  if (minP||maxP) chips.push(`<span class="pill" onclick="clearFilter('price')" style="cursor:pointer">${minP||'0'} — ${maxP||'∞'} ₽ ✕</span>`);
+  if (city) chips.push(`<span class="pill" onclick="clearFilter('city')" style="cursor:pointer">${esc(city)} ${monoIcon("close","chip-close-icon")}</span>`);
+  if (cat)  chips.push(`<span class="pill" onclick="clearFilter('cat')"  style="cursor:pointer">${esc(cat)} ${monoIcon("close","chip-close-icon")}</span>`);
+  if (minP||maxP) chips.push(`<span class="pill" onclick="clearFilter('price')" style="cursor:pointer">${minP||'0'} — ${maxP||'∞'} ₽ ${monoIcon("close","chip-close-icon")}</span>`);
   document.getElementById("filter-chips").innerHTML = chips.join("");
 
   if (!q && !city && !cat && !minP && !maxP) {
@@ -1395,7 +1441,7 @@ function renderAd(d) {
           <div style="aspect-ratio:1;background:var(--c-skeleton);overflow:hidden">
             ${s.photos&&s.photos[0]
               ? `<img src="${esc(s.photos[0])}" style="width:100%;height:100%;object-fit:cover" loading="lazy">`
-              : `<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:28px;color:var(--c-text-second)">📷</div>`}
+              : `<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;color:var(--c-text-second)">${monoIcon("photo","placeholder-icon")}</div>`}
           </div>
           <div style="padding:8px">
             <div style="font-size:14px;font-weight:700">${fmtPrice(s.price)}</div>
@@ -1413,7 +1459,7 @@ function renderAd(d) {
         Написать продавцу
       </button>
       <button class="btn btn-fav ${STATE.isFavorite?"is-fav":""}" id="btn-fav" onclick="toggleFavorite()" title="${STATE.isFavorite?"Убрать из избранного":"В избранное"}">
-        ${STATE.isFavorite ? "♥" : "♡"}
+        ${favIconHtml(STATE.isFavorite)}
       </button>
     </div>`;
 
@@ -1516,11 +1562,10 @@ async function toggleFavorite() {
     // Обновляем кнопку
     const btn = document.getElementById("btn-fav");
     if (btn) {
-      btn.textContent = STATE.isFavorite ? "♥" : "♡";
-      btn.classList.toggle("is-fav", STATE.isFavorite);
+      setFavButton(btn, STATE.isFavorite);
     }
 
-    showToast(STATE.isFavorite ? "♥ Добавлено в избранное" : "Убрано из избранного");
+    showToast(STATE.isFavorite ? "Добавлено в избранное" : "Убрано из избранного");
     
     // Сбрасываем кэш и сразу обновляем список
     STATE.favsData = null;
@@ -1578,7 +1623,7 @@ function renderFavs(items) {
   if (!items.length) {
     wrap.innerHTML = `
       <div class="fav-empty">
-        <div class="fav-empty-icon">🤍</div>
+        <div class="fav-empty-icon">${monoIcon("fav","empty-icon")}</div>
         <div class="fav-empty-title">Пока пусто</div>
         <div class="fav-empty-text">Нажмите кнопку избранного в понравившихся объявлениях,<br>и они появятся здесь.</div>
       </div>`;
@@ -1599,14 +1644,14 @@ function renderFavs(items) {
           <div class="fav-thumb">
             ${ad.photos&&ad.photos[0]
               ? `<img src="${esc(ad.photos[0])}" loading="lazy">`
-              : "📷"}
+              : monoIcon("photo","placeholder-icon")}
           </div>
           <div class="fav-info">
             <div class="fav-price">${fmtPrice(ad.price)}</div>
             <div class="fav-title">${esc(ad.title || "Без названия")}</div>
             <div class="fav-city">${esc(ad.city||"")}</div>
           </div>
-          <button class="fav-del" onclick="removeFav(event,${ad.id})" title="Убрать">✕</button>
+          <button class="fav-del" onclick="removeFav(event,${ad.id})" title="Убрать">${monoIcon("close")}</button>
         </div>`).join("")}
     </div>`;
 }
@@ -1631,7 +1676,7 @@ async function removeFav(e, adId) {
     if (adId === STATE.adId) {
       STATE.isFavorite = false;
       const btn = document.getElementById("btn-fav");
-      if (btn) { btn.textContent="♡"; btn.classList.remove("is-fav"); }
+      setFavButton(btn, false);
     }
     showToast("Убрано из избранного");
   } catch(e) {
@@ -1760,7 +1805,7 @@ async function main() {
     document.getElementById("ad-skeleton").style.display = "none";
     document.getElementById("ad-error").style.display    = "";
     document.getElementById("ad-error").innerHTML = `
-      <div class="error-icon">🏷️</div>
+      <div class="error-icon">${monoIcon("tag","empty-icon")}</div>
       <div class="error-title">Полка</div>
       <div class="error-text">Откройте любое объявление из группы,<br>чтобы увидеть его здесь.</div>`;
     
