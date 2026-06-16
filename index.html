@@ -128,7 +128,7 @@ a{color:inherit;text-decoration:none}
 #tabs{
   flex-shrink:0;
   height: var(--tab-h);
-  display:grid;grid-template-columns:1fr 1fr 1fr 1fr 1fr;
+  display:grid;grid-template-columns:1fr 1fr 1fr 1fr 1fr 1fr;
   background:var(--c-card);
   border-top:1px solid var(--c-divider);
   z-index:10;
@@ -630,12 +630,14 @@ a{color:inherit;text-decoration:none}
 .create-input,.create-select{height:42px}.create-textarea{min-height:96px;resize:vertical;line-height:1.45}
 .create-input:focus,.create-select:focus,.create-textarea:focus{border-color:var(--c-accent);box-shadow:0 8px 22px rgba(51,115,250,.12)}
 .create-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.create-photo-box{border:1.5px dashed var(--c-divider);border-radius:14px;padding:14px;text-align:center;color:var(--c-text-second);background:var(--c-pill-bg);cursor:pointer}
-.create-photo-box b{display:block;color:var(--c-text-primary);margin-bottom:3px}.create-preview{display:grid;grid-template-columns:repeat(auto-fill,minmax(116px,1fr));gap:8px;margin-top:10px}.create-photo-card{background:var(--c-pill-bg);border:1px solid var(--c-divider);border-radius:12px;padding:7px;display:grid;gap:6px}.create-photo-card img{width:100%;aspect-ratio:1;border-radius:9px;object-fit:cover;background:var(--c-skeleton)}.create-photo-actions{display:grid;grid-template-columns:1fr 1fr;gap:5px}.create-mini-btn{min-height:30px;border-radius:8px;background:var(--c-card);border:1px solid var(--c-divider);color:var(--c-text-primary);font-size:11px;font-weight:700}.create-mini-btn.danger{color:var(--c-red)}.create-desc-tools{display:flex;gap:8px;align-items:center;margin-top:7px;flex-wrap:wrap}.create-ai-btn{height:36px;border-radius:10px;background:var(--c-accent-soft);color:var(--c-accent);padding:0 12px;font-weight:800}.create-helper-text{font-size:12px;color:var(--c-text-second)}
-.create-stepper{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;margin-top:10px}.create-step-pill{min-width:0;border-radius:999px;background:var(--c-pill-bg);color:var(--c-text-second);font-size:11px;font-weight:800;padding:7px 6px;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.create-step-pill.active{background:var(--c-accent);color:#fff}.create-step{display:none}.create-step.active{display:block;animation:softRise .24s ease both}.create-step-head{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:12px}.create-step-kicker{font-size:12px;font-weight:800;color:var(--c-accent);text-transform:uppercase;letter-spacing:.35px}.create-step-title{font-size:18px;font-weight:800;margin-top:2px}.create-summary{background:var(--c-pill-bg);border:1px solid var(--c-divider);border-radius:14px;padding:12px;font-size:13px;color:var(--c-text-second);line-height:1.55}.create-summary b{display:block;color:var(--c-text-primary);font-size:15px;margin-bottom:4px}.create-nav{position:sticky;bottom:8px;z-index:6;display:grid;grid-template-columns:auto 1fr;gap:8px;background:rgba(255,255,255,.75);backdrop-filter:blur(12px);border:1px solid var(--c-divider);border-radius:16px;padding:8px;margin-top:10px}.create-nav-btn,.create-submit{height:46px;border-radius:12px;font-size:15px;font-weight:800}.create-nav-btn.secondary{padding:0 14px;background:var(--c-pill-bg);color:var(--c-text-primary)}.create-nav-btn.primary{background:var(--c-accent);color:#fff;box-shadow:0 10px 22px rgba(51,115,250,.22)}.create-submit{width:100%;background:var(--c-accent);color:#fff;box-shadow:0 10px 22px rgba(51,115,250,.22)}
+.create-photo-box{border:1.5px dashed var(--c-divider);border-radius:16px;padding:16px;text-align:center;color:var(--c-text-second);background:linear-gradient(180deg,var(--c-card),var(--c-pill-bg));cursor:pointer;transition:border-color .18s ease,transform .18s ease,box-shadow .18s ease}.create-photo-box:active{transform:scale(.99);border-color:var(--c-accent)}
+.create-photo-box b{display:block;color:var(--c-text-primary);margin-bottom:3px}.create-preview{display:grid;grid-template-columns:repeat(auto-fill,minmax(138px,1fr));gap:10px;margin-top:12px}.create-photo-card{position:relative;background:var(--c-card);border:1px solid var(--c-divider);border-radius:16px;padding:8px;display:grid;gap:8px;box-shadow:0 8px 22px rgba(23,34,59,.05);overflow:hidden}.create-photo-card.processing{pointer-events:none}.create-photo-card.processing::after{content:attr(data-status);position:absolute;inset:8px;border-radius:13px;background:rgba(15,23,42,.62);color:#fff;display:flex;align-items:center;justify-content:center;text-align:center;font-size:12px;font-weight:800;backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);padding:10px}.create-photo-card img{width:100%;aspect-ratio:1;border-radius:12px;object-fit:cover;background:var(--c-skeleton)}.create-photo-actions{display:grid;grid-template-columns:1fr 1fr;gap:6px}.create-mini-btn{min-height:34px;border-radius:10px;background:var(--c-pill-bg);border:1px solid var(--c-divider);color:var(--c-text-primary);font-size:11px;font-weight:800;display:flex;align-items:center;justify-content:center;gap:4px;transition:transform .14s ease,background .14s ease,border-color .14s ease}.create-mini-btn:active{transform:scale(.97)}.create-mini-btn.primary{background:var(--c-accent-soft);color:var(--c-accent);border-color:rgba(51,115,250,.25)}.create-mini-btn.magic{background:linear-gradient(135deg,var(--c-accent),var(--c-accent-2));color:#fff;border-color:transparent}.create-mini-btn.danger{color:var(--c-red);background:rgba(216,79,79,.08);border-color:rgba(216,79,79,.18)}.create-photo-hint{margin-top:9px;font-size:12px;color:var(--c-text-second);line-height:1.4}.create-photo-tools-title{font-size:12px;font-weight:800;color:var(--c-text-second);margin-top:2px;text-transform:uppercase;letter-spacing:.3px}.create-desc-tools{display:flex;gap:8px;align-items:center;margin-top:7px;flex-wrap:wrap}.create-ai-btn{height:36px;border-radius:10px;background:var(--c-accent-soft);color:var(--c-accent);padding:0 12px;font-weight:800}.create-helper-text{font-size:12px;color:var(--c-text-second)}
+.create-stepper{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;margin-top:10px}.create-step-pill{min-width:0;border-radius:999px;background:var(--c-pill-bg);color:var(--c-text-second);font-size:11px;font-weight:800;padding:7px 6px;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.create-step-pill.active{background:var(--c-accent);color:#fff}.create-step{display:none}.create-step.active{display:block;animation:softRise .24s ease both}.create-step-head{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:12px}.create-step-kicker{font-size:12px;font-weight:800;color:var(--c-accent);text-transform:uppercase;letter-spacing:.35px}.create-step-title{font-size:18px;font-weight:800;margin-top:2px}.create-summary{background:var(--c-pill-bg);border:1px solid var(--c-divider);border-radius:14px;padding:12px;font-size:13px;color:var(--c-text-second);line-height:1.55}.create-summary b{display:block;color:var(--c-text-primary);font-size:15px;margin-bottom:4px}.create-nav{position:sticky;bottom:max(8px,var(--safe-b));z-index:6;display:grid;grid-template-columns:auto minmax(0,1fr);gap:8px;background:color-mix(in srgb,var(--c-card) 82%,transparent);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border:1px solid var(--c-divider);border-radius:16px;padding:8px;margin-top:10px}.create-nav.is-first{grid-template-columns:1fr}.create-nav.is-first #create-next{width:100%}.create-nav-btn,.create-submit{height:46px;border-radius:12px;font-size:15px;font-weight:800;min-width:0}.create-nav-btn.secondary{padding:0 14px;background:var(--c-pill-bg);color:var(--c-text-primary);white-space:nowrap}.create-nav-btn.primary{background:var(--c-accent);color:#fff;box-shadow:0 10px 22px rgba(51,115,250,.22)}.create-submit{width:100%;background:var(--c-accent);color:#fff;box-shadow:0 10px 22px rgba(51,115,250,.22)}
 .create-submit:disabled,.create-nav-btn:disabled{opacity:.6;box-shadow:none}.create-note{font-size:12px;color:var(--c-text-second);line-height:1.45;margin-top:8px;text-align:center}
-@media (max-width:420px){.create-stepper{grid-template-columns:1fr 1fr}.create-nav{bottom:6px}}
-@media (max-width:360px){.create-row{grid-template-columns:1fr}.tab-btn{font-size:8px}.tab-btn svg{width:21px;height:21px}}
+@media (max-width:520px){#header{padding-left:max(12px,var(--safe-l));padding-right:max(12px,var(--safe-r))}.create-wrap{padding:10px max(10px,var(--safe-r)) calc(18px + var(--safe-b)) max(10px,var(--safe-l))}.create-card{border-radius:16px;padding:12px}.create-title{font-size:19px}.create-sub{font-size:12.5px}.create-row{grid-template-columns:1fr}.create-nav{bottom:max(6px,var(--safe-b));border-radius:15px}.search-action-btn{min-width:74px;padding:0 12px}.stats-card-top{align-items:flex-start}.stats-numbers{gap:6px}.stats-mini{min-width:48px;padding:6px 5px}}
+@media (max-width:420px){.create-stepper{grid-template-columns:1fr 1fr}.create-step-pill{font-size:10.5px;padding:7px 5px}.create-desc-tools{align-items:stretch}.create-ai-btn{width:100%;height:40px}.create-helper-text{width:100%}.create-preview{grid-template-columns:repeat(auto-fill,minmax(96px,1fr))}.action-bar{padding-left:max(10px,var(--safe-l));padding-right:max(10px,var(--safe-r))}.stats-hero-grid{grid-template-columns:1fr;max-width:150px}.stats-hero-item{padding:8px 6px}.stats-hero-value{font-size:18px}.stats-hero-label{font-size:9.5px}.stats-bars{gap:5px}}
+@media (max-width:360px){.tab-btn{font-size:8px}.tab-btn svg{width:21px;height:21px}.create-step-title{font-size:17px}.create-input,.create-select{height:40px}.create-textarea{min-height:88px}.create-nav-btn,.create-submit{height:44px;font-size:14px}.search-action-btn{min-width:64px;padding:0 10px;font-size:14px}.ad-card{padding:9px 10px}.fav-item{padding:10px 12px}.meta-row{font-size:14px}.meta-key{flex-basis:88px}.price{font-size:25px}}
+@media (min-width:720px){body{background:var(--c-bg)}#app{left:50%;right:auto;width:min(100vw,520px);transform:translateX(-50%);box-shadow:0 0 0 1px var(--c-divider),0 28px 80px rgba(23,34,59,.18)}.gallery,.gallery-no-photo{aspect-ratio:16/10}.create-wrap,.stats-dashboard{padding-left:16px;padding-right:16px}.create-card{padding:16px}.create-row{grid-template-columns:1fr 1fr}.create-preview{grid-template-columns:repeat(auto-fill,minmax(128px,1fr))}}
 
 /* ── Error / 404 ────────────────────────────────────────────────────────── */
 .error-screen{
@@ -896,8 +898,9 @@ a{color:inherit;text-decoration:none}
           </div>
           <label class="create-photo-box" for="create-photos">
             <b>Добавить фото</b>
-            До 10 изображений, можно выбрать сразу несколько. После загрузки можно улучшить фото или попробовать убрать фон.
+            До 10 изображений, можно выбрать сразу несколько. После загрузки появятся кнопки обработки: улучшение, удаление фона и замена фото.
           </label>
+          <div class="create-photo-hint">Совет: сначала нажмите «Улучшить», затем при необходимости «Убрать фон». Если сервис удаления фона не настроен, приложение покажет точную причину.</div>
           <input id="create-photos" name="photos" type="file" accept="image/*" multiple style="display:none" onchange="previewCreatePhotos(event)">
           <div class="create-preview" id="create-preview"></div>
         </div>
@@ -921,16 +924,44 @@ a{color:inherit;text-decoration:none}
               </div>
             </div>
             <div class="create-summary" id="create-summary"></div>
-            <div class="create-note">После публикации карточку можно открыть из ленты группы и из приложения.</div>
+            <div class="create-note">После отправки объявление попадёт на модерацию. После одобрения оно появится в приложении и группах.</div>
           </div>
         </div>
 
         <div class="create-nav">
           <button class="create-nav-btn secondary" id="create-prev" type="button" onclick="prevCreateStep()">Назад</button>
           <button class="create-nav-btn primary" id="create-next" type="button" onclick="nextCreateStep()">Дальше</button>
-          <button class="create-submit" id="create-submit" type="submit">Опубликовать</button>
+          <button class="create-submit" id="create-submit" type="submit">Отправить</button>
         </div>
       </form>
+    </div>
+
+    <!-- Вид: профиль и админка -->
+    <div class="view hidden" id="view-admin">
+      <div class="card">
+        <div style="font-size:18px;font-weight:800;margin-bottom:6px">Профиль</div>
+        <div id="profile-box" style="font-size:14px;color:var(--c-text-second)">Загружаем…</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px">
+          <button class="btn btn-primary" onclick="requestVerify()">Верификация</button>
+          <button class="btn btn-fav" onclick="saveCurrentSearch()">Сохранить поиск</button>
+        </div>
+      </div>
+      <div class="card">
+        <div style="font-size:18px;font-weight:800;margin-bottom:6px">Сохранённые поиски</div>
+        <div id="saved-searches-box" style="font-size:14px;color:var(--c-text-second)">Загружаем…</div>
+      </div>
+      <div id="admin-panel" style="display:none">
+        <div class="card">
+          <div style="font-size:18px;font-weight:800;margin-bottom:6px">Админ-панель</div>
+          <div id="admin-summary" style="font-size:14px;color:var(--c-text-second)">Загружаем…</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-top:12px">
+            <button class="btn btn-primary" onclick="loadAdminModeration()">Модерация</button>
+            <button class="btn btn-fav" onclick="loadAdminReports()">Жалобы</button>
+            <button class="btn btn-fav" onclick="loadAdminVerifications()">Верификация</button>
+          </div>
+        </div>
+        <div id="admin-list"></div>
+      </div>
     </div>
 
   </div>
@@ -969,6 +1000,12 @@ a{color:inherit;text-decoration:none}
         <line x1="6" y1="20" x2="6" y2="14"/>
       </svg>
       Мои
+    </button>
+    <button class="tab-btn" id="tab-admin" onclick="switchTab('admin')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="8" r="4"/><path d="M4 21c1.8-4 5-6 8-6s6.2 2 8 6"/>
+      </svg>
+      Профиль
     </button>
   </div>
 
@@ -1015,6 +1052,9 @@ const STATE = {
   initialSearchDone: false,
   createPhotoFiles: [],
   createStep: 1,
+  replacePhotoIndex: null,
+  processingPhotoIndex: undefined,
+  processingPhotoLabel: "",
 };
 
 async function initVK() {
@@ -1051,13 +1091,16 @@ async function apiFetch(path, opts={}) {
   const headers = {
     "X-VK-Sign":                STATE.launchParams,
     "X-VK-User-Id":             String(STATE.vkUserId),
-    "Content-Type":             "application/json",
     "ngrok-skip-browser-warning": "true",
     ...(opts.headers||{}),
   };
+  if (!(opts.body instanceof FormData) && !headers["Content-Type"]) headers["Content-Type"] = "application/json";
   const res = await fetch(CFG.API_BASE + path, { ...opts, headers });
-  if (!res.ok) throw Object.assign(new Error("API error"), { status: res.status });
-  return res.json();
+  const text = await res.text();
+  let data = {};
+  try { data = text ? JSON.parse(text) : {}; } catch(_) { data = {message:text}; }
+  if (!res.ok) throw Object.assign(new Error(data.message || data.error || `Ошибка ${res.status}`), { status: res.status, data });
+  return data;
 }
 
 function switchTab(tab) {
@@ -1472,10 +1515,12 @@ function updateCreateStepUI() {
   document.querySelectorAll("[data-step-pill]").forEach(el => {
     el.classList.toggle("active", Number(el.dataset.stepPill) <= step);
   });
+  const nav = document.querySelector(".create-nav");
   const prev = document.getElementById("create-prev");
   const next = document.getElementById("create-next");
   const submit = document.getElementById("create-submit");
-  if (prev) prev.style.visibility = step === 1 ? "hidden" : "visible";
+  if (nav) nav.classList.toggle("is-first", step === 1);
+  if (prev) prev.style.display = step === 1 ? "none" : "block";
   if (next) next.style.display = step === 4 ? "none" : "block";
   if (submit) submit.style.display = step === 4 ? "block" : "none";
   updateCreateSummary();
@@ -1510,21 +1555,38 @@ function renderCreatePhotos() {
   const wrap = document.getElementById("create-preview");
   const files = STATE.createPhotoFiles || [];
   if (!wrap) return;
-  wrap.innerHTML = files.map((f, i) => `
-    <div class="create-photo-card">
+  wrap.innerHTML = files.map((f, i) => {
+    const busy = STATE.processingPhotoIndex === i;
+    const status = STATE.processingPhotoLabel || "Обрабатываем…";
+    return `
+    <div class="create-photo-card ${busy ? "processing" : ""}" data-status="${esc(status)}">
       <img src="${URL.createObjectURL(f)}" alt="Фото ${i + 1}">
+      <div class="create-photo-tools-title">Фото ${i + 1}</div>
       <div class="create-photo-actions">
-        <button type="button" class="create-mini-btn" onclick="processCreatePhoto(${i}, 'improve')">Улучшить</button>
-        <button type="button" class="create-mini-btn" onclick="processCreatePhoto(${i}, 'remove-bg')">Фон</button>
+        <button type="button" class="create-mini-btn magic" onclick="processCreatePhoto(${i}, 'improve')">Улучшить</button>
+        <button type="button" class="create-mini-btn primary" onclick="processCreatePhoto(${i}, 'remove-bg')">Убрать фон</button>
+        <button type="button" class="create-mini-btn" onclick="replaceCreatePhoto(${i})">Заменить</button>
         <button type="button" class="create-mini-btn danger" onclick="removeCreatePhoto(${i})">Удалить</button>
-        <button type="button" class="create-mini-btn" onclick="document.getElementById('create-photos').click()">Ещё</button>
       </div>
-    </div>`).join("");
+    </div>`;
+  }).join("");
+}
+
+function replaceCreatePhoto(index) {
+  STATE.replacePhotoIndex = index;
+  const input = document.getElementById("create-photos");
+  if (input) input.click();
 }
 
 function previewCreatePhotos(e) {
-  const picked = Array.from(e.target.files || []);
-  STATE.createPhotoFiles = [...(STATE.createPhotoFiles || []), ...picked].slice(0, 10);
+  const picked = Array.from(e.target.files || []).filter(f => (f.type || "").startsWith("image/"));
+  if (!picked.length) { e.target.value = ""; return; }
+  if (Number.isInteger(STATE.replacePhotoIndex) && STATE.createPhotoFiles[STATE.replacePhotoIndex]) {
+    STATE.createPhotoFiles[STATE.replacePhotoIndex] = picked[0];
+    STATE.replacePhotoIndex = null;
+  } else {
+    STATE.createPhotoFiles = [...(STATE.createPhotoFiles || []), ...picked].slice(0, 10);
+  }
   e.target.value = "";
   renderCreatePhotos();
   updateCreateSummary();
@@ -1544,11 +1606,14 @@ function fileFromBlob(blob, oldFile, suffix, mime) {
 
 async function processCreatePhoto(index, action) {
   const file = STATE.createPhotoFiles[index];
-  if (!file || STATE.createLoading) return;
+  if (!file || STATE.createLoading || STATE.processingPhotoIndex !== undefined) return;
   const endpoint = action === "remove-bg" ? "/api/photo/remove-bg" : "/api/photo/improve";
   const label = action === "remove-bg" ? "Убираем фон…" : "Улучшаем фото…";
   const fd = new FormData();
   fd.append("photo", file);
+  STATE.processingPhotoIndex = index;
+  STATE.processingPhotoLabel = label;
+  renderCreatePhotos();
   showToast(label);
   try {
     const res = await fetch(CFG.API_BASE + endpoint, {
@@ -1560,15 +1625,24 @@ async function processCreatePhoto(index, action) {
       },
       body: fd
     });
-    if (!res.ok) throw new Error("photo process failed");
+    if (!res.ok) {
+      const text = await res.text().catch(() => "");
+      let msg = text;
+      try { const j = JSON.parse(text); msg = j.message || j.error || msg; } catch(_) {}
+      throw new Error(msg || `Ошибка ${res.status}`);
+    }
     const blob = await res.blob();
+    if (!blob.size) throw new Error("Сервер вернул пустой файл");
     const mime = res.headers.get("Content-Type")?.includes("png") ? "image/png" : "image/jpeg";
     STATE.createPhotoFiles[index] = fileFromBlob(blob, file, action, mime);
+    showToast(action === "remove-bg" ? "Фон убран" : "Фото улучшено");
+  } catch(e) {
+    showToast(e?.message || (action === "remove-bg" ? "Не удалось убрать фон" : "Не удалось обработать фото"));
+  } finally {
+    delete STATE.processingPhotoIndex;
+    STATE.processingPhotoLabel = "";
     renderCreatePhotos();
     updateCreateSummary();
-    showToast(action === "remove-bg" ? "Фон убран" : "Фото улучшено");
-  } catch(_) {
-    showToast(action === "remove-bg" ? "Удаление фона не настроено" : "Не удалось обработать фото");
   }
 }
 
@@ -1624,7 +1698,7 @@ async function submitCreateAd(e) {
 
   STATE.createLoading = true;
   btn.disabled = true;
-  btn.textContent = "Публикуем…";
+  btn.textContent = "Отправляем…";
   try {
     const res = await fetch(CFG.API_BASE + "/api/ad", {
       method: "POST",
@@ -1638,7 +1712,7 @@ async function submitCreateAd(e) {
     const data = await res.json().catch(() => ({}));
     if (!res.ok || !data.ok) throw new Error(data.message || "create failed");
     haptic("medium");
-    showToast("Объявление опубликовано");
+    showToast(data.message || "Объявление отправлено на модерацию");
     form.reset();
     STATE.createPhotoFiles = [];
     STATE.createStep = 1;
@@ -1647,11 +1721,11 @@ async function submitCreateAd(e) {
     await loadAd(data.ad_id);
     switchTab("ad");
   } catch(err) {
-    showToast("Не удалось опубликовать. Проверьте поля и попробуйте ещё раз");
+    showToast(err.message || "Не удалось отправить объявление")
   } finally {
     STATE.createLoading = false;
     btn.disabled = false;
-    btn.textContent = "Опубликовать";
+    btn.textContent = "Отправить";
   }
 }
 
@@ -1828,7 +1902,14 @@ function renderAd(d) {
         </div>`).join("")}
     </div>` : "";
 
-  const actionBar = d.is_owner ? "" : `
+  const ownerActions = d.is_owner ? `
+    <div class="action-bar" style="grid-template-columns:1fr 1fr 1fr">
+      <button class="btn btn-primary" onclick="editCurrentAd()">Редактировать</button>
+      <button class="btn btn-fav" onclick="duplicateCurrentAd()">Дублировать</button>
+      <button class="btn btn-fav" onclick="archiveCurrentAd()">Снять</button>
+    </div>` : "";
+
+  const actionBar = d.is_owner ? ownerActions : `
     <div class="action-bar">
       <button class="btn btn-primary" onclick="contactSeller()">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -1839,6 +1920,7 @@ function renderAd(d) {
       <button class="btn btn-fav ${STATE.isFavorite?"is-fav":""}" id="btn-fav" onclick="toggleFavorite()" title="${STATE.isFavorite?"Убрать из избранного":"В избранное"}">
         ${favIconHtml(STATE.isFavorite)}
       </button>
+      <button class="btn btn-fav" onclick="reportCurrentAd()" title="Пожаловаться">!</button>
     </div>`;
 
   document.getElementById("ad-skeleton").style.display = "none";
@@ -2076,6 +2158,44 @@ function openAdFromFav(adId) {
   loadAd(adId);
 }
 
+async function editCurrentAd() {
+  const d = STATE.adData; if (!d) return;
+  const title = prompt("Название", d.title || ""); if (title === null) return;
+  const price = prompt("Цена", d.price || 0); if (price === null) return;
+  const description = prompt("Описание", d.description || ""); if (description === null) return;
+  try {
+    await apiFetch(`/api/ad/${d.id}`, {method:"PUT", body:JSON.stringify({title, price, description})});
+    showToast("Изменения отправлены на модерацию");
+    await loadAd(d.id);
+  } catch(e) { showToast(e.message || "Не удалось сохранить"); }
+}
+
+async function archiveCurrentAd() {
+  const d = STATE.adData; if (!d) return;
+  if (!confirm("Снять объявление с публикации?")) return;
+  try { await apiFetch(`/api/ad/${d.id}/status`, {method:"POST", body:JSON.stringify({action:"archive"})}); showToast("Объявление снято"); await loadStats(); switchTab("stats"); }
+  catch(e) { showToast(e.message || "Не удалось снять"); }
+}
+
+async function duplicateCurrentAd() {
+  const d = STATE.adData; if (!d) return;
+  try { const r = await apiFetch(`/api/ad/${d.id}/duplicate`, {method:"POST", body:JSON.stringify({})}); showToast("Копия отправлена на модерацию"); await loadAd(r.ad_id); switchTab("ad"); }
+  catch(e) { showToast(e.message || "Не удалось дублировать"); }
+}
+
+async function reportCurrentAd() {
+  const d = STATE.adData; if (!d) return;
+  const reason = prompt("Причина жалобы", ""); if (reason === null) return;
+  try { await apiFetch(`/api/ad/${d.id}/report`, {method:"POST", body:JSON.stringify({reason})}); showToast("Жалоба отправлена"); }
+  catch(e) { showToast(e.message || "Не удалось отправить жалобу"); }
+}
+
+async function subscribeSeller() {
+  const d = STATE.adData; const sid = d?.seller?.id; if (!sid) return;
+  try { const r = await apiFetch(`/api/subscribe/seller/${sid}`, {method:"POST", body:JSON.stringify({})}); showToast(r.subscribed ? "Продавец добавлен в подписки" : "Подписка снята"); }
+  catch(e) { showToast(e.message || "Не удалось изменить подписку"); }
+}
+
 function contactSeller() {
   if (!STATE.adData || !STATE.adData.seller || !STATE.adData.seller.id) {
     showToast("Ошибка: продавец не найден");
@@ -2121,6 +2241,70 @@ function openVKLink(url) {
     window.open(url, "_blank");
   }
 }
+
+
+async function loadProfilePanel() {
+  const box = document.getElementById("profile-box");
+  try {
+    const r = await apiFetch("/api/profile");
+    const p = r.profile || {};
+    box.innerHTML = `${esc(p.first_name || "Пользователь")} · ${p.is_verified?"верифицирован":"без верификации"}${p.verification_pending?" · заявка ожидает":""}`;
+    document.getElementById("admin-panel").style.display = r.is_admin ? "" : "none";
+    await loadSavedSearches();
+    if (r.is_admin) await loadAdminSummary();
+  } catch(e) { box.textContent = e.message || "Не удалось загрузить профиль"; }
+}
+
+async function requestVerify() {
+  try { const r = await apiFetch("/api/verify/request", {method:"POST", body:JSON.stringify({})}); showToast(r.message || "Заявка отправлена"); await loadProfilePanel(); }
+  catch(e) { showToast(e.message || "Не удалось отправить заявку"); }
+}
+
+async function saveCurrentSearch() {
+  const query = document.getElementById("search-input")?.value || "";
+  const city = document.getElementById("f-city")?.value || "";
+  const category = document.getElementById("f-cat")?.value || "";
+  try { await apiFetch("/api/saved-searches", {method:"POST", body:JSON.stringify({query, city, category})}); showToast("Поиск сохранён"); await loadSavedSearches(); }
+  catch(e) { showToast(e.message || "Не удалось сохранить поиск"); }
+}
+
+async function loadSavedSearches() {
+  const box = document.getElementById("saved-searches-box");
+  try {
+    const r = await apiFetch("/api/saved-searches");
+    const items = r.items || [];
+    box.innerHTML = items.length ? items.map(x => `<div class="stat-row"><span>${esc(x.query||"Без запроса")} ${esc(x.city||"")}</span><button onclick="deleteSavedSearch(${x.id})" style="color:var(--c-red)">Удалить</button></div>`).join("") : "Нет сохранённых поисков";
+  } catch(e) { box.textContent = e.message || "Не удалось загрузить"; }
+}
+async function deleteSavedSearch(id) { try { await apiFetch(`/api/saved-searches/${id}`, {method:"DELETE"}); await loadSavedSearches(); } catch(e) { showToast(e.message || "Ошибка"); } }
+
+async function loadAdminSummary() {
+  const box = document.getElementById("admin-summary");
+  try { const r = await apiFetch("/api/admin/summary"); box.innerHTML = `На модерации: <b>${r.pending_ads}</b> · Жалобы: <b>${r.pending_reports}</b> · Верификация: <b>${r.pending_verify}</b><br>Пользователей: ${r.total_users} · Объявлений: ${r.total_ads}`; }
+  catch(e) { box.textContent = e.message || "Нет доступа"; }
+}
+
+async function loadAdminModeration() {
+  const box = document.getElementById("admin-list"); box.innerHTML = `<div class="spinner"><div class="spin"></div></div>`;
+  try { const r = await apiFetch("/api/admin/moderation"); box.innerHTML = (r.items||[]).length ? (r.items||[]).map(a => `<div class="card"><b>${esc(a.title)}</b><div style="color:var(--c-text-second);margin:6px 0">${fmtPrice(a.price)} · ${esc(a.city||"")} · #${a.id}</div><div style="display:flex;gap:8px"><button class="btn btn-primary" onclick="moderateAd(${a.id},true)">Принять</button><button class="btn btn-fav" onclick="moderateAd(${a.id},false)">Отклонить</button></div></div>`).join("") : `<div class="card">Нет объявлений на модерации</div>`; }
+  catch(e) { box.innerHTML = `<div class="card">${esc(e.message||"Ошибка")}</div>`; }
+}
+async function moderateAd(id, approve) { const reason = approve ? "" : (prompt("Причина отклонения", "") || "Отклонено"); try { await apiFetch(`/api/admin/ad/${id}/moderate`, {method:"POST", body:JSON.stringify({approve, reason})}); showToast(approve?"Объявление принято":"Объявление отклонено"); await loadAdminModeration(); await loadAdminSummary(); } catch(e) { showToast(e.message || "Ошибка модерации"); } }
+
+async function loadAdminReports() {
+  const box = document.getElementById("admin-list");
+  try { const r = await apiFetch("/api/admin/reports"); box.innerHTML = (r.items||[]).length ? (r.items||[]).map(x => `<div class="card"><b>Жалоба #${x.id}</b><div style="color:var(--c-text-second);margin:6px 0">${esc(x.title||"Объявление")} · ${esc(x.reason||"")}</div><div style="display:flex;gap:8px"><button class="btn btn-primary" onclick="resolveReport(${x.id},'accept')">Снять</button><button class="btn btn-fav" onclick="resolveReport(${x.id},'reject')">Отклонить</button><button class="btn btn-fav" onclick="resolveReport(${x.id},'ban')">Бан</button></div></div>`).join("") : `<div class="card">Нет жалоб</div>`; }
+  catch(e) { box.innerHTML = `<div class="card">${esc(e.message||"Ошибка")}</div>`; }
+}
+async function resolveReport(id, action) { try { await apiFetch(`/api/admin/report/${id}/resolve`, {method:"POST", body:JSON.stringify({action})}); await loadAdminReports(); await loadAdminSummary(); } catch(e) { showToast(e.message || "Ошибка"); } }
+
+async function loadAdminVerifications() {
+  const box = document.getElementById("admin-list");
+  try { const r = await apiFetch("/api/admin/verifications"); box.innerHTML = (r.items||[]).length ? (r.items||[]).map(u => `<div class="card"><b>${esc(u.first_name||"Пользователь")}</b><div style="color:var(--c-text-second);margin:6px 0">ID ${u.user_id} ${esc(u.phone||"")}</div><div style="display:flex;gap:8px"><button class="btn btn-primary" onclick="verifyUser(${u.user_id},true)">Подтвердить</button><button class="btn btn-fav" onclick="verifyUser(${u.user_id},false)">Отклонить</button></div></div>`).join("") : `<div class="card">Нет заявок</div>`; }
+  catch(e) { box.innerHTML = `<div class="card">${esc(e.message||"Ошибка")}</div>`; }
+}
+async function verifyUser(uid, approve) { try { await apiFetch(`/api/admin/user/${uid}/verify`, {method:"POST", body:JSON.stringify({approve})}); await loadAdminVerifications(); await loadAdminSummary(); } catch(e) { showToast(e.message || "Ошибка"); } }
+
 
 function fmtPrice(p) {
   if (!p) return "Цена не указана";
