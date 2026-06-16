@@ -439,11 +439,17 @@ a{color:inherit;text-decoration:none}
 }
 .platform-icon-btn{
   width:30px;height:30px;border-radius:10px;
-  justify-content:center;background:var(--c-accent-soft);
+  display:flex;align-items:center;justify-content:center;
+  background:var(--c-accent-soft);
   color:var(--c-accent)!important;
   transition:transform .18s ease,background .18s ease;
 }
 .platform-icon-btn:active{transform:scale(.94);background:rgba(51,115,250,.18)}
+.search-photo-btn{position:absolute;right:6px;top:50%;transform:translateY(-50%);cursor:pointer;padding:0}
+.search-photo-btn:active{transform:translateY(-50%) scale(.94)}
+.search-action-btn{height:40px;min-width:82px;padding:0 16px;border-radius:12px;background:var(--c-accent);color:#fff;font-size:15px;font-weight:700;display:flex;align-items:center;justify-content:center;box-shadow:0 10px 22px rgba(51,115,250,.22);transition:transform .18s ease,box-shadow .18s ease,opacity .12s}
+.search-action-btn:active{transform:scale(.97)}
+.city-custom-hint{font-size:11px;color:var(--c-text-second);margin:4px 0 0 2px}
 .ad-card,.fav-item,.stats-card,.stats-chart-card{
   border:1px solid rgba(51,115,250,.08);
   box-shadow:0 8px 24px rgba(23,34,59,.04);
@@ -626,8 +632,9 @@ a{color:inherit;text-decoration:none}
 .create-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .create-photo-box{border:1.5px dashed var(--c-divider);border-radius:14px;padding:14px;text-align:center;color:var(--c-text-second);background:var(--c-pill-bg);cursor:pointer}
 .create-photo-box b{display:block;color:var(--c-text-primary);margin-bottom:3px}.create-preview{display:grid;grid-template-columns:repeat(auto-fill,minmax(116px,1fr));gap:8px;margin-top:10px}.create-photo-card{background:var(--c-pill-bg);border:1px solid var(--c-divider);border-radius:12px;padding:7px;display:grid;gap:6px}.create-photo-card img{width:100%;aspect-ratio:1;border-radius:9px;object-fit:cover;background:var(--c-skeleton)}.create-photo-actions{display:grid;grid-template-columns:1fr 1fr;gap:5px}.create-mini-btn{min-height:30px;border-radius:8px;background:var(--c-card);border:1px solid var(--c-divider);color:var(--c-text-primary);font-size:11px;font-weight:700}.create-mini-btn.danger{color:var(--c-red)}.create-desc-tools{display:flex;gap:8px;align-items:center;margin-top:7px;flex-wrap:wrap}.create-ai-btn{height:36px;border-radius:10px;background:var(--c-accent-soft);color:var(--c-accent);padding:0 12px;font-weight:800}.create-helper-text{font-size:12px;color:var(--c-text-second)}
-.create-submit{width:100%;height:48px;border-radius:12px;background:var(--c-accent);color:#fff;font-size:16px;font-weight:700;box-shadow:0 10px 22px rgba(51,115,250,.22)}
-.create-submit:disabled{opacity:.6;box-shadow:none}.create-note{font-size:12px;color:var(--c-text-second);line-height:1.45;margin-top:8px;text-align:center}
+.create-stepper{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;margin-top:10px}.create-step-pill{min-width:0;border-radius:999px;background:var(--c-pill-bg);color:var(--c-text-second);font-size:11px;font-weight:800;padding:7px 6px;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.create-step-pill.active{background:var(--c-accent);color:#fff}.create-step{display:none}.create-step.active{display:block;animation:softRise .24s ease both}.create-step-head{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:12px}.create-step-kicker{font-size:12px;font-weight:800;color:var(--c-accent);text-transform:uppercase;letter-spacing:.35px}.create-step-title{font-size:18px;font-weight:800;margin-top:2px}.create-summary{background:var(--c-pill-bg);border:1px solid var(--c-divider);border-radius:14px;padding:12px;font-size:13px;color:var(--c-text-second);line-height:1.55}.create-summary b{display:block;color:var(--c-text-primary);font-size:15px;margin-bottom:4px}.create-nav{position:sticky;bottom:8px;z-index:6;display:grid;grid-template-columns:auto 1fr;gap:8px;background:rgba(255,255,255,.75);backdrop-filter:blur(12px);border:1px solid var(--c-divider);border-radius:16px;padding:8px;margin-top:10px}.create-nav-btn,.create-submit{height:46px;border-radius:12px;font-size:15px;font-weight:800}.create-nav-btn.secondary{padding:0 14px;background:var(--c-pill-bg);color:var(--c-text-primary)}.create-nav-btn.primary{background:var(--c-accent);color:#fff;box-shadow:0 10px 22px rgba(51,115,250,.22)}.create-submit{width:100%;background:var(--c-accent);color:#fff;box-shadow:0 10px 22px rgba(51,115,250,.22)}
+.create-submit:disabled,.create-nav-btn:disabled{opacity:.6;box-shadow:none}.create-note{font-size:12px;color:var(--c-text-second);line-height:1.45;margin-top:8px;text-align:center}
+@media (max-width:420px){.create-stepper{grid-template-columns:1fr 1fr}.create-nav{bottom:6px}}
 @media (max-width:360px){.create-row{grid-template-columns:1fr}.tab-btn{font-size:8px}.tab-btn svg{width:21px;height:21px}}
 
 /* ── Error / 404 ────────────────────────────────────────────────────────── */
@@ -748,7 +755,7 @@ a{color:inherit;text-decoration:none}
               style="width:100%;height:40px;border-radius:12px;border:1.5px solid var(--c-divider);
                      padding:0 40px 0 12px;font-size:15px;background:var(--c-card);color:var(--c-text-primary);outline:none"
               oninput="onSearchInput()" onkeydown="if(event.key==='Enter')doSearch()">
-            <label for="photo-search-input" class="platform-icon-btn" style="position:absolute;right:6px;top:50%;transform:translateY(-50%);cursor:pointer;padding:4px;display:flex;align-items:center;color:var(--c-text-second)">
+            <label for="photo-search-input" class="platform-icon-btn search-photo-btn">
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/>
                 <circle cx="12" cy="13" r="4"/>
@@ -756,18 +763,13 @@ a{color:inherit;text-decoration:none}
             </label>
             <input id="photo-search-input" type="file" accept="image/*" style="display:none" onchange="doPhotoSearch(event)">
           </div>
-          <button onclick="doSearch()" style="height:40px;padding:0 14px;background:var(--c-accent);
-            color:#fff;border:none;border-radius:12px;font-size:15px;font-weight:600;cursor:pointer;transition:transform .18s ease,box-shadow .18s ease">
-            Найти
-          </button>
+          <button onclick="doSearch()" class="search-action-btn">Найти</button>
         </div>
         <div id="filter-chips" style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px"></div>
         <div id="filter-panel" style="display:none;background:var(--c-card);border-radius:12px;padding:12px;margin-bottom:8px">
           <div style="display:flex;gap:8px;margin-bottom:8px">
-            <select id="f-city" style="flex:1;height:36px;border-radius:8px;border:1px solid var(--c-divider);
+            <input id="f-city" list="cities-list" placeholder="Все города" style="flex:1;height:36px;border-radius:8px;border:1px solid var(--c-divider);
               padding:0 8px;font-size:14px;background:var(--c-card);color:var(--c-text-primary)">
-              <option value="">Все города</option>
-            </select>
             <select id="f-cat" style="flex:1;height:36px;border-radius:8px;border:1px solid var(--c-divider);
               padding:0 8px;font-size:14px;background:var(--c-card);color:var(--c-text-primary)">
               <option value="">Все категории</option>
@@ -806,9 +808,24 @@ a{color:inherit;text-decoration:none}
     <!-- Вид: создание объявления -->
     <div class="view hidden" id="view-create">
       <form class="create-wrap" id="create-form" onsubmit="submitCreateAd(event)">
-        <div class="create-card">
+        <div class="create-card create-intro-card">
           <div class="create-title">Разместить объявление</div>
-          <div class="create-sub">Заполните карточку один раз — объявление появится в приложении и в ленте группы.</div>
+          <div class="create-sub">Идём по шагам: сначала основные данные, затем описание, фото и публикация.</div>
+          <div class="create-stepper" id="create-stepper">
+            <div class="create-step-pill active" data-step-pill="1">1. Данные</div>
+            <div class="create-step-pill" data-step-pill="2">2. Описание</div>
+            <div class="create-step-pill" data-step-pill="3">3. Фото</div>
+            <div class="create-step-pill" data-step-pill="4">4. Публикация</div>
+          </div>
+        </div>
+
+        <div class="create-card create-step" data-create-step="1">
+          <div class="create-step-head">
+            <div>
+              <div class="create-step-kicker">Шаг 1 из 4</div>
+              <div class="create-step-title">Основные данные</div>
+            </div>
+          </div>
           <div class="create-grid">
             <div class="create-field">
               <label for="create-title-input">Название</label>
@@ -821,7 +838,8 @@ a{color:inherit;text-decoration:none}
               </div>
               <div class="create-field">
                 <label for="create-city">Город</label>
-                <select class="create-select" id="create-city" name="city" required><option value="">Выберите</option></select>
+                <input class="create-input" id="create-city" name="city" list="cities-list" required placeholder="Начните вводить или укажите свой город">
+                <div class="city-custom-hint">Можно выбрать город из списка или написать свой вариант.</div>
               </div>
             </div>
             <div class="create-row">
@@ -849,14 +867,49 @@ a{color:inherit;text-decoration:none}
                 </select>
               </div>
             </div>
-            <div class="create-field">
-              <label for="create-description">Описание</label>
-              <textarea class="create-textarea" id="create-description" name="description" maxlength="2000" placeholder="Состояние, комплект, детали, условия передачи"></textarea>
-              <div class="create-desc-tools">
-                <button class="create-ai-btn" id="create-generate-desc" type="button" onclick="generateCreateDescription()">Сгенерировать описание</button>
-                <span class="create-helper-text">По названию, цене, категории и городу</span>
-              </div>
+          </div>
+        </div>
+
+        <div class="create-card create-step" data-create-step="2">
+          <div class="create-step-head">
+            <div>
+              <div class="create-step-kicker">Шаг 2 из 4</div>
+              <div class="create-step-title">Описание</div>
             </div>
+          </div>
+          <div class="create-field">
+            <label for="create-description">Описание</label>
+            <textarea class="create-textarea" id="create-description" name="description" maxlength="2000" placeholder="Состояние, комплект, детали, условия передачи"></textarea>
+            <div class="create-desc-tools">
+              <button class="create-ai-btn" id="create-generate-desc" type="button" onclick="generateCreateDescription()">Сгенерировать описание</button>
+              <span class="create-helper-text">Работает по названию, цене, категории и городу. Если ИИ недоступен, будет создано аккуратное базовое описание.</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="create-card create-step" data-create-step="3">
+          <div class="create-step-head">
+            <div>
+              <div class="create-step-kicker">Шаг 3 из 4</div>
+              <div class="create-step-title">Фотографии</div>
+            </div>
+          </div>
+          <label class="create-photo-box" for="create-photos">
+            <b>Добавить фото</b>
+            До 10 изображений, можно выбрать сразу несколько. После загрузки можно улучшить фото или попробовать убрать фон.
+          </label>
+          <input id="create-photos" name="photos" type="file" accept="image/*" multiple style="display:none" onchange="previewCreatePhotos(event)">
+          <div class="create-preview" id="create-preview"></div>
+        </div>
+
+        <div class="create-card create-step" data-create-step="4">
+          <div class="create-step-head">
+            <div>
+              <div class="create-step-kicker">Шаг 4 из 4</div>
+              <div class="create-step-title">Контакты и публикация</div>
+            </div>
+          </div>
+          <div class="create-grid">
             <div class="create-row">
               <div class="create-field">
                 <label for="create-contact">Контакт</label>
@@ -867,15 +920,15 @@ a{color:inherit;text-decoration:none}
                 <input class="create-input" id="create-address" name="address" maxlength="200" placeholder="Необязательно">
               </div>
             </div>
-            <label class="create-photo-box" for="create-photos">
-              <b>Добавить фото</b>
-              До 10 изображений, можно выбрать сразу несколько
-            </label>
-            <input id="create-photos" name="photos" type="file" accept="image/*" multiple style="display:none" onchange="previewCreatePhotos(event)">
-            <div class="create-preview" id="create-preview"></div>
-            <button class="create-submit" id="create-submit" type="submit">Опубликовать</button>
+            <div class="create-summary" id="create-summary"></div>
             <div class="create-note">После публикации карточку можно открыть из ленты группы и из приложения.</div>
           </div>
+        </div>
+
+        <div class="create-nav">
+          <button class="create-nav-btn secondary" id="create-prev" type="button" onclick="prevCreateStep()">Назад</button>
+          <button class="create-nav-btn primary" id="create-next" type="button" onclick="nextCreateStep()">Дальше</button>
+          <button class="create-submit" id="create-submit" type="submit">Опубликовать</button>
         </div>
       </form>
     </div>
@@ -933,6 +986,7 @@ a{color:inherit;text-decoration:none}
 
 <!-- Toast -->
 <div id="toast"></div>
+<datalist id="cities-list"></datalist>
 
 <script>
 const CFG = {
@@ -960,6 +1014,7 @@ const STATE = {
   createLoading: false,
   initialSearchDone: false,
   createPhotoFiles: [],
+  createStep: 1,
 };
 
 async function initVK() {
@@ -1134,18 +1189,32 @@ function toggleFilters() {
   p.style.display = p.style.display === "none" ? "" : "none";
 }
 
+function fillCitiesDatalist(cities) {
+  const list = document.getElementById("cities-list");
+  if (!list) return;
+  const known = new Set();
+  list.innerHTML = "";
+  (cities || []).forEach(c => {
+    c = String(c || "").trim();
+    if (!c || known.has(c)) return;
+    known.add(c);
+    list.innerHTML += `<option value="${esc(c)}"></option>`;
+  });
+}
+
 async function loadFilters() {
   try {
     const data = await apiFetch("/api/filters");
     const cityEl = document.getElementById("f-city");
     const catEl  = document.getElementById("f-cat");
     
-    cityEl.innerHTML = '<option value="">Все города</option>';
+    if (cityEl && cityEl.tagName === "SELECT") cityEl.innerHTML = '<option value="">Все города</option>';
     catEl.innerHTML = '<option value="">Все категории</option>';
 
-    (data.cities||[]).forEach(c => {
-      cityEl.innerHTML += `<option value="${esc(c)}">${esc(c)}</option>`;
-    });
+    fillCitiesDatalist(data.cities || []);
+    if (cityEl && cityEl.tagName === "SELECT") {
+      (data.cities||[]).forEach(c => { cityEl.innerHTML += `<option value="${esc(c)}">${esc(c)}</option>`; });
+    }
     (data.categories||[]).forEach(c => {
       catEl.innerHTML += `<option value="${esc(c)}">${esc(c)}</option>`;
     });
@@ -1373,24 +1442,68 @@ function toggleStatChart(idx) {
 
 
 async function ensureCreateFormReady() {
+  updateCreateStepUI();
   if (STATE.createCitiesLoaded) return;
+  const fallbackCities = ["Ижевск","Сарапул","Воткинск","Глазов","Можга","Камбарка","Ува","Балезино","Кизнер","Игра","Якшур-Бодья","Малая Пурга","Дебёсы","Селты","Сюмси","Алнаши","Грахово","Каракулино","Юкаменское","Шаркан","Вавож"];
   try {
     const data = await apiFetch("/api/filters");
-    const cityEl = document.getElementById("create-city");
-    const known = new Set();
-    cityEl.innerHTML = '<option value="">Выберите</option>';
-    (data.cities || []).forEach(c => {
-      if (!c || known.has(c)) return;
-      known.add(c);
-      cityEl.innerHTML += `<option value="${esc(c)}">${esc(c)}</option>`;
-    });
-    ["Ижевск","Сарапул","Воткинск","Глазов","Можга","Камбарка","Ува","Балезино","Кизнер","Игра","Якшур-Бодья","Малая Пурга","Дебёсы","Селты","Сюмси","Алнаши","Грахово","Каракулино","Юкаменское","Шаркан","Вавож"].forEach(c => {
-      if (!known.has(c)) cityEl.innerHTML += `<option value="${esc(c)}">${esc(c)}</option>`;
-    });
+    fillCitiesDatalist([...(data.cities || []), ...fallbackCities]);
     STATE.createCitiesLoaded = true;
   } catch(_) {
+    fillCitiesDatalist(fallbackCities);
     STATE.createCitiesLoaded = true;
   }
+}
+
+function updateCreateSummary() {
+  const el = document.getElementById("create-summary");
+  if (!el) return;
+  const d = collectCreateDraft();
+  const photos = (STATE.createPhotoFiles || []).length;
+  el.innerHTML = `<b>${esc(d.title || "Без названия")}</b>${esc(d.city || "Город не выбран")} · ${esc(d.category || "Категория не выбрана")}<br>Цена: ${esc(d.price || "0")} ₽ · Фото: ${photos}`;
+}
+
+function updateCreateStepUI() {
+  const step = Math.min(4, Math.max(1, STATE.createStep || 1));
+  STATE.createStep = step;
+  document.querySelectorAll(".create-step").forEach(el => {
+    el.classList.toggle("active", Number(el.dataset.createStep) === step);
+  });
+  document.querySelectorAll("[data-step-pill]").forEach(el => {
+    el.classList.toggle("active", Number(el.dataset.stepPill) <= step);
+  });
+  const prev = document.getElementById("create-prev");
+  const next = document.getElementById("create-next");
+  const submit = document.getElementById("create-submit");
+  if (prev) prev.style.visibility = step === 1 ? "hidden" : "visible";
+  if (next) next.style.display = step === 4 ? "none" : "block";
+  if (submit) submit.style.display = step === 4 ? "block" : "none";
+  updateCreateSummary();
+}
+
+function validateCreateStep(step) {
+  const title = document.getElementById("create-title-input");
+  const price = document.getElementById("create-price");
+  const city = document.getElementById("create-city");
+  if (step === 1) {
+    if (!title?.value.trim()) { showToast("Укажите название"); title?.focus(); return false; }
+    if (!price?.value.trim()) { showToast("Укажите цену"); price?.focus(); return false; }
+    if (!city?.value.trim()) { showToast("Выберите город"); city?.focus(); return false; }
+  }
+  return true;
+}
+
+function nextCreateStep() {
+  if (!validateCreateStep(STATE.createStep)) return;
+  STATE.createStep = Math.min(4, STATE.createStep + 1);
+  updateCreateStepUI();
+  haptic("light");
+}
+
+function prevCreateStep() {
+  STATE.createStep = Math.max(1, STATE.createStep - 1);
+  updateCreateStepUI();
+  haptic("light");
 }
 
 function renderCreatePhotos() {
@@ -1414,11 +1527,13 @@ function previewCreatePhotos(e) {
   STATE.createPhotoFiles = [...(STATE.createPhotoFiles || []), ...picked].slice(0, 10);
   e.target.value = "";
   renderCreatePhotos();
+  updateCreateSummary();
 }
 
 function removeCreatePhoto(index) {
   STATE.createPhotoFiles.splice(index, 1);
   renderCreatePhotos();
+  updateCreateSummary();
 }
 
 function fileFromBlob(blob, oldFile, suffix, mime) {
@@ -1450,6 +1565,7 @@ async function processCreatePhoto(index, action) {
     const mime = res.headers.get("Content-Type")?.includes("png") ? "image/png" : "image/jpeg";
     STATE.createPhotoFiles[index] = fileFromBlob(blob, file, action, mime);
     renderCreatePhotos();
+    updateCreateSummary();
     showToast(action === "remove-bg" ? "Фон убран" : "Фото улучшено");
   } catch(_) {
     showToast(action === "remove-bg" ? "Удаление фона не настроено" : "Не удалось обработать фото");
@@ -1499,6 +1615,7 @@ async function generateCreateDescription() {
 async function submitCreateAd(e) {
   e.preventDefault();
   if (STATE.createLoading) return;
+  if (!validateCreateStep(1)) { STATE.createStep = 1; updateCreateStepUI(); return; }
   const form = document.getElementById("create-form");
   const btn = document.getElementById("create-submit");
   const fd = new FormData(form);
@@ -1524,7 +1641,9 @@ async function submitCreateAd(e) {
     showToast("Объявление опубликовано");
     form.reset();
     STATE.createPhotoFiles = [];
+    STATE.createStep = 1;
     document.getElementById("create-preview").innerHTML = "";
+    updateCreateStepUI();
     await loadAd(data.ad_id);
     switchTab("ad");
   } catch(err) {
@@ -2054,6 +2173,17 @@ function getAdIdFromUrl() {
 
 async function main() {
   await initVK();
+
+  document.getElementById("create-form")?.addEventListener("input", updateCreateSummary);
+  document.getElementById("create-form")?.addEventListener("change", updateCreateSummary);
+
+  const hashRef = window.location.hash.replace("#", "").trim().toLowerCase();
+  const queryHash = (new URLSearchParams(window.location.search).get("hash") || "").trim().toLowerCase();
+  if (["new_ad", "create"].includes(hashRef) || ["new_ad", "create"].includes(queryHash)) {
+    document.getElementById("ad-skeleton").style.display = "none";
+    switchTab("create");
+    return;
+  }
 
   const adId = getAdIdFromUrl();
 
