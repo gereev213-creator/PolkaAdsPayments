@@ -369,6 +369,15 @@ a{color:inherit;text-decoration:none}
   transition:background .2s,color .2s,opacity .12s,transform .1s;
 }
 .btn-fav.is-fav{background:var(--c-red);color:#fff}
+.btn-share,.btn-bot{
+  flex:0 0 52px;
+  background:var(--c-pill-bg);
+  color:var(--c-accent);
+  font-size:20px;
+}
+.btn-bot{color:var(--c-green)}
+.action-bar.owner-actions{grid-template-columns:1fr 1fr}
+.action-bar.owner-actions .btn{flex:1}
 
 /* ── Favourites list ─────────────────────────────────────────────────────── */
 .fav-list{padding:8px 0 16px}
@@ -912,8 +921,8 @@ async function apiFetch(path, opts={}) {
 }
 
 function switchTab(tab) {
-  // Приложение открывается только как карточка объявления из поста.
-  // Поиск, избранное отдельной вкладкой и статистика остаются в боте.
+  // В приложении оставляем только карточку объявления.
+  // Нижняя навигация скрыта, но нижние виджеты карточки остаются.
   if (tab !== "ad") tab = "ad";
   STATE.activeTab = tab;
   
@@ -1452,16 +1461,30 @@ function renderAd(d) {
         </div>`).join("")}
     </div>` : "";
 
-  const actionBar = d.is_owner ? "" : `
+  const actionBar = d.is_owner ? `
+    <div class="action-bar owner-actions">
+      <button class="btn btn-share" onclick="shareAd()" title="Поделиться">
+        ${monoIcon("tag","fav-button-icon")} Поделиться
+      </button>
+      <button class="btn btn-bot" onclick="openCreateInBot()" title="Разместить объявление">
+        ${monoIcon("ok","fav-button-icon")} В бота
+      </button>
+    </div>` : `
     <div class="action-bar">
       <button class="btn btn-primary" onclick="contactSeller()">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
         </svg>
-        Написать продавцу
+        Написать
       </button>
       <button class="btn btn-fav ${STATE.isFavorite?"is-fav":""}" id="btn-fav" onclick="toggleFavorite()" title="${STATE.isFavorite?"Убрать из избранного":"В избранное"}">
         ${favIconHtml(STATE.isFavorite)}
+      </button>
+      <button class="btn btn-share" onclick="shareAd()" title="Поделиться">
+        ${monoIcon("tag","fav-button-icon")}
+      </button>
+      <button class="btn btn-bot" onclick="openCreateInBot()" title="Разместить объявление">
+        ${monoIcon("ok","fav-button-icon")}
       </button>
     </div>`;
 
@@ -1721,6 +1744,11 @@ function contactSeller() {
   
   // Запасной вариант
   openVKLink(`https://vk.com/im?sel=${sellerId}`);
+}
+
+function openCreateInBot() {
+  haptic("light");
+  openVKLink(`https://vk.com/write-${CFG.BOT_GROUP}`);
 }
 
 async function shareAd() {
