@@ -664,6 +664,249 @@ a{color:inherit;text-decoration:none}
   50% { top: 100%; }
   100% { top: 0%; }
 }
+
+
+/* ── Stats refresh ─────────────────────────────────────────────────────── */
+.stats-dashboard{
+  padding:10px 10px 18px;
+}
+.stats-hero{
+  min-height:136px;
+  padding:16px;
+  border-radius:20px;
+  background:linear-gradient(135deg,#256BFF 0%,#6FA3FF 58%,#EAF2FF 145%);
+}
+.stats-hero-title{
+  max-width:100%;
+  margin-bottom:12px;
+  font-size:15px;
+}
+.stats-hero-grid{
+  max-width:100%;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:8px;
+}
+.stats-hero-item{
+  min-width:0;
+  padding:10px 8px;
+  border-radius:16px;
+  background:rgba(255,255,255,.20);
+  border-color:rgba(255,255,255,.28);
+}
+.stats-hero-label{
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+.stats-hero-illustration{
+  display:none;
+}
+.stats-section-title{
+  padding:18px 2px 8px;
+  font-size:12px;
+  letter-spacing:.7px;
+}
+.stats-chart-card{
+  border-radius:20px;
+  border:1px solid rgba(51,115,250,.08);
+  box-shadow:0 10px 28px rgba(23,34,59,.05);
+}
+.stats-card{
+  overflow:hidden;
+  padding:0;
+  border-radius:20px;
+  background:var(--c-card);
+  border:1px solid rgba(51,115,250,.10);
+  box-shadow:0 12px 30px rgba(23,34,59,.06);
+}
+.stats-card:active{
+  transform:none;
+  background:var(--c-card);
+}
+.stats-card-main{
+  display:grid;
+  grid-template-columns:92px minmax(0,1fr);
+  gap:12px;
+  padding:12px;
+  align-items:stretch;
+}
+.stats-thumb{
+  width:92px;
+  height:92px;
+  border-radius:18px;
+  background:linear-gradient(135deg,#E8F1FF,#D7E6F8);
+}
+.stats-thumb img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+}
+.stats-thumb-empty{
+  width:100%;
+  height:100%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  color:#6D7E99;
+}
+.stats-thumb-empty .mono-icon{
+  width:30px;
+  height:30px;
+}
+.stats-info{
+  min-width:0;
+  display:flex;
+  flex-direction:column;
+  justify-content:space-between;
+  gap:8px;
+}
+.stats-title-row{
+  display:flex;
+  gap:8px;
+  align-items:flex-start;
+}
+.stats-title-wrap{
+  flex:1;
+  min-width:0;
+}
+.stats-title{
+  font-size:17px;
+  line-height:1.18;
+  letter-spacing:-.01em;
+}
+.stats-price{
+  font-size:14px;
+  margin-top:4px;
+}
+.stats-status{
+  margin-top:0;
+  padding:5px 9px;
+  border-radius:999px;
+  font-size:11px;
+  white-space:nowrap;
+  flex-shrink:0;
+}
+.stats-metrics{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:8px;
+}
+.stats-mini{
+  min-width:0;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:8px;
+  text-align:left;
+  border-radius:14px;
+  padding:9px 10px;
+  background:linear-gradient(180deg,#F5F8FF,#EEF4FF);
+}
+.stats-mini-label{
+  margin:0;
+  font-size:11px;
+}
+.stats-mini-value{
+  font-size:16px;
+}
+.stats-actions{
+  display:flex;
+  gap:8px;
+  padding:0 12px 12px;
+}
+.stats-action-btn,
+.stats-feed-link{
+  flex:1;
+  min-height:38px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:6px;
+  border-radius:13px;
+  font-size:13px;
+  font-weight:700;
+  background:var(--c-pill-bg);
+  color:var(--c-text-primary);
+}
+.stats-feed-link{
+  background:linear-gradient(135deg,var(--c-accent),var(--c-accent-2));
+  color:#fff;
+}
+.stats-action-btn:active,
+.stats-feed-link:active{
+  opacity:.72;
+}
+.stats-chevron{
+  display:inline-flex;
+  font-size:17px;
+  transition:transform .18s ease;
+}
+.stats-detail{
+  margin:0 12px 12px;
+  padding:12px;
+  border-top:0;
+  border-radius:16px;
+  background:linear-gradient(180deg,#F8FAFF,#F2F6FF);
+}
+.stats-line:last-of-type{
+  margin-bottom:0;
+}
+.stats-progress{
+  height:8px;
+}
+.stats-hint{
+  margin-top:10px;
+  font-size:10.5px;
+}
+@media (max-width:380px){
+  .stats-card-main{
+    grid-template-columns:78px minmax(0,1fr);
+    gap:10px;
+    padding:10px;
+  }
+  .stats-thumb{
+    width:78px;
+    height:78px;
+    border-radius:16px;
+  }
+  .stats-title{
+    font-size:15px;
+  }
+  .stats-status{
+    font-size:10px;
+    padding:4px 7px;
+  }
+  .stats-mini{
+    padding:8px;
+  }
+  .stats-mini-value{
+    font-size:15px;
+  }
+  .stats-actions{
+    padding:0 10px 10px;
+  }
+}
+@media (max-width:330px){
+  .stats-card-main{
+    grid-template-columns:70px minmax(0,1fr);
+  }
+  .stats-thumb{
+    width:70px;
+    height:70px;
+  }
+  .stats-metrics{
+    gap:6px;
+  }
+  .stats-mini-label{
+    font-size:10px;
+  }
+  .stats-action-btn,
+  .stats-feed-link{
+    min-height:36px;
+    font-size:12px;
+  }
+}
+
 </style>
 </head>
 <body>
@@ -1153,28 +1396,38 @@ function renderStats(items) {
       ${prepared.map(ad => {
         const viewsPct = Math.max(3, Math.round(ad._views / maxViews * 100));
         const favsPct  = Math.max(3, Math.round(ad._favs / maxFavs * 100));
+        const photoUrl = ad.photo || (ad.photos && ad.photos[0]) || "";
+        const postUrl = ad.post_url || ad.vk_post_url || "";
+        const feedLink = postUrl ? `<a class="stats-feed-link" href="${esc(postUrl)}" target="_blank" rel="noopener" onclick="event.stopPropagation()">В ленте</a>` : "";
         return `
-        <div class="stats-card" onclick="toggleStatChart(${ad._idx})">
-          <div class="stats-card-top">
+        <div class="stats-card">
+          <div class="stats-card-main" onclick="openAdFromFav(${ad.id})">
             <div class="stats-thumb">
-              ${ad.photo ? `<img src="${esc(ad.photo)}" loading="lazy">` : monoIcon("photo","placeholder-icon")}
+              ${photoUrl ? `<img src="${esc(photoUrl)}" loading="lazy" alt="">` : `<div class="stats-thumb-empty">${monoIcon("photo")}</div>`}
             </div>
             <div class="stats-info">
-              <div class="stats-title">${esc(ad._title)}</div>
-              <div class="stats-price">${fmtPrice(ad.price)}</div>
-              <div class="stats-status ${ad._status.key}"><span class="stats-status-dot"></span>${ad._status.label}</div>
-            </div>
-            <div class="stats-numbers">
-              <div class="stats-mini">
-                <div class="stats-mini-value">${fmtNum(ad._views)}</div>
-                <div class="stats-mini-label">просм.</div>
+              <div class="stats-title-row">
+                <div class="stats-title-wrap">
+                  <div class="stats-title">${esc(ad._title)}</div>
+                  <div class="stats-price">${fmtPrice(ad.price)}</div>
+                </div>
+                <div class="stats-status ${ad._status.key}"><span class="stats-status-dot"></span>${ad._status.label}</div>
               </div>
-              <div class="stats-mini">
-                <div class="stats-mini-value">${fmtNum(ad._favs)}</div>
-                <div class="stats-mini-label">избр.</div>
+              <div class="stats-metrics">
+                <div class="stats-mini">
+                  <div class="stats-mini-label">Просмотры</div>
+                  <div class="stats-mini-value">${fmtNum(ad._views)}</div>
+                </div>
+                <div class="stats-mini">
+                  <div class="stats-mini-label">Избранное</div>
+                  <div class="stats-mini-value">${fmtNum(ad._favs)}</div>
+                </div>
               </div>
-              <div class="stats-chevron" id="stat-chevron-${ad._idx}">›</div>
             </div>
+          </div>
+          <div class="stats-actions">
+            <button class="stats-action-btn" onclick="toggleStatChart(${ad._idx})">Подробнее <span class="stats-chevron" id="stat-chevron-${ad._idx}">›</span></button>
+            ${feedLink}
           </div>
           <div class="stats-detail" id="stat-chart-${ad._idx}">
             <div class="stats-line">
@@ -1182,10 +1435,10 @@ function renderStats(items) {
               <div class="stats-progress"><div class="stats-progress-fill views" style="width:${viewsPct}%"></div></div>
             </div>
             <div class="stats-line">
-              <div class="stats-line-head"><span class="stat-line-head-icon">${monoIcon("fav")} Добавили в избранное</span><span>${fmtNum(ad._favs)}</span></div>
+              <div class="stats-line-head"><span class="stat-line-head-icon">${monoIcon("fav")} В избранном</span><span>${fmtNum(ad._favs)}</span></div>
               <div class="stats-progress"><div class="stats-progress-fill favs" style="width:${favsPct}%"></div></div>
             </div>
-            <div class="stats-hint">Полосы показывают результат относительно самого сильного объявления в вашем списке.</div>
+            <div class="stats-hint">Сравнение внутри ваших объявлений.</div>
           </div>
         </div>`;
       }).join("")}
